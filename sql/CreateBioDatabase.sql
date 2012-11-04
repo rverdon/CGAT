@@ -1,0 +1,76 @@
+CREATE TABLE Users (
+   UserId MEDIUMINT UNSIGNED NOT NULL AUTO_INCREMENT,
+   FirstName VARCHAR(20) NOT NULL,
+   LastName VARCHAR(40) NOT NULL,
+   Email VARCHAR(60) NOT NULL,
+   pass CHAR(64) NOT NULL,
+   LastLoginDate DATETIME NOT NULL,
+   RegistrationDate DATETIME NOT NULL,
+   LastModifiedDate DATETIME NOT NULL,
+   PRIMARY KEY ( UserId )
+);
+   
+CREATE TABLE Groups (
+   GroupId MEDIUMINT UNSIGNED NOT NULL AUTO_INCREMENT,
+   Name VARCHAR(40) NOT NULL,
+   GroupDescription TEXT NOT NULL,
+   CreateDate DATETIME NOT NULL,
+   LastModifiedDate DATETIME NOT NULL,
+   PRIMARY KEY ( GroupId )
+);
+
+CREATE TABLE Contigs (
+   ContigId MEDIUMINT UNSIGNED NOT NULL AUTO_INCREMENT,
+   Name VARCHAR(40) NOT NULL,
+   Difficulty FLOAT NOT NULL,
+   Sequence TEXT NOT NULL,
+   UploaderId MEDIUMINT UNSIGNED NOT NULL
+   CreateDate DATETIME NOT NULL,
+   PRIMARY KEY ( ContigId )
+);
+
+CREATE TABLE Membership (
+   GroupId MEDIUMINT UNSIGNED NOT NULL,
+   UserId MEDIUMINT UNSIGNED NOT NULL,
+   JoinDate DATETIME NOT NULL,
+   PRIMARY KEY ( GroupId, UserId )
+);
+
+CREATE TABLE PendingNotifications (
+   UserId MEDIUMINT UNSIGNED NOT NULL,
+   ContigId MEDIUMINT UNSIGNED NOT NULL,
+   CreatedDate DATETIME NOT NULL,
+   UNIQUE(UserId, ContigId),
+   INDEX(UserId)
+);
+
+CREATE TABLE Annotations (
+   AnnotationId MEDIUMINT UNSIGNED NOT NULL AUTO_INCREMENT,
+   GeneId INT NOT NULL,
+   StartPos INT UNSIGNED NOT NULL,
+   EndPos INT UNSIGNED NOT NULL,
+   ReverseComplement BOOL NOT NULL,
+   PartialSubmission BOOL NOT NULL,
+   ExpertSubmission BOOL NOT NULL,   
+   ContigId MEDIUMINT UNSIGNED NOT NULL,
+   UserId MEDIUMINT UNSIGNED NOT NULL,
+   CreateDate DATETIME NOT NULL,
+   LastModifiedDate DATETIME NOT NULL,
+   PRIMARY KEY ( AnnotationId ),
+   INDEX(UserId)
+);
+
+CREATE TABLE Exons (
+   ExonId MEDIUMINT UNSIGNED NOT NULL AUTO_INCREMENT,
+   StartPos INT UNSIGNED NOT NULL,
+   EndPos INT UNSIGNED NOT NULL,
+   ExonDescription TEXT,
+   AnnotationId,
+   PRIMARY KEY ( ExonId )
+);
+
+CREATE TABLE GeneNames (
+   GeneId INT NOT NULL AUTO_INCREMENT,
+   Name VARCHAR(255),
+   PRIMARY KEY ( GeneId )
+);
