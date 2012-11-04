@@ -29,28 +29,34 @@
          </div>
          <div id='content' class='top-level-area'>
             <div class='dna-viewer'>
-               <div class='dna-ruler'>
-               </div>
-               <div class='top-dna'>
-                  <div id='dna-selection-draggable' class='draggable ui-widget-content'>
+               <div class='second-level-area'>
+                  <div class='dna-ruler'>
                   </div>
-               </div>
-               <div id='debug-selection-coordinates' class='debug'>
-                  <span>X: </span><span id='debug-selection-x'>0</span>
-                  <span>%: </span><span id='debug-selection-percent'>0</span>
+                  <div class='top-dna'>
+                     <div id='dna-selection-draggable' class='draggable ui-widget-content'>
+                     </div>
+                  </div>
+                  <div id='debug-selection-coordinates' class='debug'>
+                     <span>X: </span><span id='debug-selection-x'>0</span>
+                     <span>%: </span><span id='debug-selection-percent'>0</span>
+                  </div>
                </div>
                <div class='dna-closeups'>
                   <div class='closeup-dna'>
-                     <h2 onclick='toggleCollapse("standard-collapse-button", "standard-sequence");'>Sequence <div class='collapse-button' id='standard-collapse-button'></div></h2>
-                     <div id='standard-sequence' class='sequence-closeup'>
+                     <div class='second-level-area'>
+                        <h2 onclick='toggleCollapse("standard-collapse-button", "standard-sequence");'>Sequence <div class='collapse-button' id='standard-collapse-button'></div></h2>
+                        <div id='standard-sequence' class='sequence-closeup'>
+                        </div>
                      </div>
-                     <h2 onclick='toggleCollapse("rc-collapse-button", "rc-sequence");'>Reverse Compliment <div class='collapse-button collapse-on' id='rc-collapse-button'></div></h2>
-                     <div id='rc-sequence' class='sequence-closeup collapse'>
+                     <div class='second-level-area'>
+                        <h2 onclick='toggleCollapse("rc-collapse-button", "rc-sequence");'>Reverse Compliment <div class='collapse-button collapse-on' id='rc-collapse-button'></div></h2>
+                        <div id='rc-sequence' class='sequence-closeup collapse'>
+                        </div>
                      </div>
                   </div>
                </div>
             </div><!-- dna-viewer -->
-            <div id='add-exon-area'>
+            <div id='add-exon-area' class='second-level-area'>
                <h2 onclick='toggleCollapse("add-exon-collapse-button", "add-exon-collapse-area");'>Add Exon <div class='collapse-button' id='add-exon-collapse-button'></div></h2>
                <div id='add-exon-collapse-area'>
                   <span>Start: </span>
@@ -62,7 +68,7 @@
                   <button onclick='addExonFromButton();'>Add Exon</button>
                </div>
             </div>
-            <div id='exon-area'>
+            <div id='exon-area' class='second-level-area'>
                <h2 onclick='toggleCollapse("exons-collapse-button", "exons");'>Exons <div class='collapse-button' id='exons-collapse-button'></div></h2>
                <div id='exons'>
                </div>

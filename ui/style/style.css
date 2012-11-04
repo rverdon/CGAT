@@ -24,7 +24,8 @@ html {
 body {
    width: 100%;
    height: 100%;
-   background: #C0C0C0;
+   /*background: #C0C0C0;*/
+   background: #c2d995;
 }
 
 .debug {
@@ -65,9 +66,22 @@ body {
 .top-level-area {
    position: relative;
    width: 1000px;
+   /*background: #B0C4DE;*/
    background: #B0C4DE;
+   /*background: #ffffff;*/
    margin-left: auto;
    margin-right: auto;
+   margin-top: 10px;
+   margin-bottom: 10px;
+   padding: 10px;
+   border-radius: 10px;
+   box-shadow: 5px 5px 5px #888;
+}
+
+.second-level-area {
+   position: relative;
+   /*background: #C0C0C0;*/
+   background: #395668;
    margin-top: 10px;
    margin-bottom: 10px;
    padding: 10px;
