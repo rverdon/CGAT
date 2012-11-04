@@ -1,220 +1,76 @@
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, font, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td {
+        border: 0;
+        font-family: inherit;
+        font-size: 100%;
+        font-style: inherit;
+        font-weight: inherit;
+        margin: 0;
+        outline: 0;
+        padding: 0;
+        vertical-align: baseline;
+}
+
+html {
+   font-family: "Goudy Old Style", Garamond, "Big Caslon", "Times New Roman", serif;
+}
+
+body {
+   width: 100%;
+   height: 100%;
+   background: #C0C0C0;
+}
+
 .debug {
    background: #d87d86;
    display: none;
 }
 
-#page {
+.logo-link {
+   overflow: hidden;
+   display: inline-block;
+}
+
+#top-nav {
+   float: right;
+}
+
+.nav ul {
+   list-style: none;
+}
+
+.nav a {
+   text-decoration: none;
+}
+
+.nav {
+   display: inline-block;
+}
+
+#bottom-nav li {
+   display: inline-block;
+}
+
+#colophon {
+   display: inline-block;
+   float: right;
+}
+
+.top-level-area {
+   position: relative;
    width: 1000px;
+   background: #B0C4DE;
    margin-left: auto;
    margin-right: auto;
-   position: relative;
-}
-
-/** BEGIN DNA VIEWER **/
-
-.dna-viewer {
-   width: 1000px;
-   margin-bottom: 20px;
-}
-
-.dna-ruler {
-   overflow: hidden;
-}
-
-.dna-ruler-tick {
-   width: 100px;
-   text-align: right;
-   float: left;
-   display: inline;
-   margin: 0;
-}
-
-.top-dna {
-   height: 32px;
-   width: 100%;
-   background: white url('../images/double_helix.png') repeat-x;
-   position: relative;
-}
-
-.top-dna-exon-marker {
-   position: absolute;
-   opacity: 0.4;
-   background: purple;
-   height: 16px;
-   z-index: 5;
-}
-
-#dna-selection-draggable {
-   background: initial;
-   border: 2px solid red;
-   width: 20px;
-   height: 28px;
-   z-index: 20;
-}
-
-.draggable {
-   float: left;
-}
-
-.dna-closeups h2 {
-   cursor: pointer;
-}
-
-.collapse-button {
-   display: inline-block;
-   width: 0;
-   height: 0;
-   border-style: solid;
-   border-width: 10px;
-   border-color: black transparent transparent transparent;
-   -webkit-transition: all 0.25s;
-   transition: all 0.25s;
-   -moz-transition: all 0.25s;
-   -o-transition: all 0.25s;
-}
-
-.collapse-on {
-   -webkit-transform:rotate(-90deg);
-   transform:rotate(-90deg);
-   -ms-transform:rotate(-90deg);
-   -moz-transform:rotate(-90deg);
-   -o-transform:rotate(-90deg);
-}
-
-.sequence-closeup {
-   overflow: visible;
-   margin-top: 20px;
-   margin-bottom: 20px;
-   -webkit-transition: opacity 0.25s;
-   transition: opacity 0.25s;
-   -moz-transition: opacity 0.25s;
-   -o-transition: opacity 0.25s;
-
-   opacity: 1;
-   visibility: visible;
-}
-
-/* This must be after .sequence-closeup */
-.collapse {
-   visibility: hidden;
-   opacity: 0;
-   height: 0;
-}
-
-.selected-nucleotide {
-   outline: 2px solid purple;
-   z-index: 5;
-}
-
-.nucleotide {
-   height: 20px;
-   width: 20px;
-   font-size: 18px;
-   color: white;
-   text-align: center;
-   display: inline-block;
-   margin-bottom: 35px;
-   cursor: pointer;
-   position:relative;
-}
-
-.nucleotide:hover {
-   outline: 2px solid black;
-   z-index: 5;
-}
-
-.nucleotide:hover:before {
-   content: '';
-   position: absolute;
-   top: -10px;
-   left: 0;
-   z-index: 20;
-   width: 0;
-   height: 0;
-   opacity: 0.8;
-   border: 10px solid black;
-   border-left-color: transparent;
-   border-right-color: transparent;
-   border-bottom-color: transparent;
-}
-
-.nucleotide:hover:after {
-   content: attr(data-position);
-   position: absolute;
-   top: -30px;
-   left: -5px;
-   border-radius: 5px;
-   opacity: 0.8;
-   font-size: 10px;
-   text-align: center;
-   height: 10px;
-   min-width: 20px;
-   padding: 5px;
-   color: white;
-   background: black;
-}
-
-.exonStart:after, .exonEnd:after {
-   position: absolute;
-   top: -30px;
-   border-radius: 5px;
-   opacity: 0.8;
-   font-size: 10px;
-   text-align: center;
-   height: 10px;
-   min-width: 20px;
-   padding: 5px;
-   color: white;
-   background: purple;
-}
-
-.exonStart:after {
-   content: "START";
-   left: -10px;
-}
-
-.exonEnd:after {
-   content: "END";
-   left: -7px;
-}
-
-.exonStart:before, .exonEnd:before {
-   content: '';
-   position: absolute;
-   top: -10px;
-   left: 0;
-   z-index: 20;
-   width: 0;
-   height: 0;
-   opacity: 0.8;
-   border: 10px solid purple;
-   border-left-color: transparent;
-   border-right-color: transparent;
-   border-bottom-color: transparent;
-}
-
-.nucleotide-A {
-   background: #64F73F;
-}
-
-.nucleotide-C {
-   background: #FFB340;
-}
-
-.nucleotide-G {
-   background: #EB413C;
-}
-
-.nucleotide-T {
-   background: #3C88EE;
-}
-
-/** END DNA VIEWER **/
-
-.exon span {
-   margin-left: 10px;
-}
-
-#add-exon-area span {
-   margin-left: 10px;
+   margin-top: 10px;
+   margin-bottom: 10px;
+   padding: 10px;
+   border-radius: 10px;
+   box-shadow: 5px 5px 5px #888;
 }
