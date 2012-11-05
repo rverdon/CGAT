@@ -1,8 +1,8 @@
 "use strict";
 
-// Get the reverse compliment of a sequence
+// Get the reverse complement of a sequence
 // Will return undefined if the sequence is not valid (not upcase ATCG).
-function reverseCompliment(sequence) {
+function reverseComplement(sequence) {
    var rc = [];
 
    for (var i = sequence.length - 1; i >= 0; i--) {
@@ -40,4 +40,9 @@ function toggleCollapse(buttonId, collapseAreaId) {
       collapseButton.classList.add('collapse-on');
       collapseArea.classList.add('collapse');
    }
+}
+
+// This assumes that the page is under the normal framework and uses header.php.
+function setSubtitle(subtitle) {
+   document.getElementById('top-subtitle-text').innerHTML = subtitle;
 }

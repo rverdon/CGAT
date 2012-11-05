@@ -1,14 +1,18 @@
 "use strict";
 
+// TODO(eriq): Number of nucleotides per window should be a variable somewhere.
+// Math should not have to be done to calc it (in multiple places).
+
 document.addEventListener('DOMContentLoaded', function () {
    window.cgat = {};
    window.cgat.exons = [];
-   window.cgat.currentStandardExon = null;
-   window.cgat.currentRCExon = null;
+   window.cgat.currentExon = null;
    window.cgat.selectionStart = 0;
    window.cgat.selectionEnd = 0;
    window.cgat.exonKey = 0;
    window.cgat.dna = '';
+   window.cgat.geneName = '';
+   window.cgat.reverseComplement = false;
 
    $.ajax({
       url: 'fetch/annotation.php',
@@ -32,7 +36,42 @@ document.addEventListener('DOMContentLoaded', function () {
          }
 
          fillRuler(window.cgat.dna.length);
+
+         // TODO(eriq): Set the value in #nucleotides-per-window.
+         var sizeRatio =
+               document.getElementById('dna-selection-draggable').offsetWidth /
+               document.getElementsByClassName('top-dna')[0].offsetWidth;
+         var nucleotidesPerWindow = sizeRatio * window.cgat.dna.length;
+         document.getElementById('nucleotides-per-window').value = Math.floor(nucleotidesPerWindow);
       },
+   });
+
+   // Change the size of the slider with the number box.
+   document.getElementById('nucleotides-per-window').addEventListener('change', function() {
+      var nucleotidesPerWindow = document.getElementById('nucleotides-per-window').value;
+      // TODO(eriq): Validation should be done through proper channels.
+      if (nucleotidesPerWindow <= 0) {
+         nucleotidesPerWindow = 1;
+      }
+
+      var sizeRatio = nucleotidesPerWindow / window.cgat.dna.length;
+      document.getElementById('dna-selection-draggable').style.width = Math.floor(sizeRatio *
+         document.getElementsByClassName('top-dna')[0].offsetWidth);
+      updateDnaSelection(document.getElementById('dna-selection-draggable').offsetLeft);
+   });
+
+   // Change the title of the page with the gene name.
+   document.getElementById('annotation-name').addEventListener('change', function() {
+      var newName = document.getElementById('annotation-name').value;
+      window.cgat.geneName = newName;
+      document.title = 'Annotate: ' + newName;
+      setSubtitle(newName);
+   });
+
+   // Pay attention to changin the rc checkbox.
+   document.getElementById('annotation-rc').addEventListener('change', function() {
+      window.cgat.reverseComplement = document.getElementById('annotation-rc').checked;
+      updateDnaSelection(document.getElementById('dna-selection-draggable').offsetLeft);
    });
 });
 
@@ -52,32 +91,29 @@ function fillRuler(length) {
    document.getElementsByClassName('dna-ruler')[0].innerHTML = ruler.join('');
 }
 
-function nucleotideClicked(position, reverseCompliment) {
-   var currentExonKey = reverseCompliment ? 'currentRCExon' : 'currentStandardExon';
-   var prefix = reverseCompliment ? 'rc-' : 'std-';
-
-   if (window.cgat[currentExonKey]) {
-      if (window.cgat[currentExonKey] === position) {
-         window.cgat[currentExonKey] = null;
-         document.getElementById(prefix + 'nucleotide-' + position).className =
-               document.getElementById(prefix + 'nucleotide-' + position)
+function nucleotideClicked(position) {
+   if (window.cgat.currentExon != null) {
+      if (window.cgat.currentExon === position) {
+         window.cgat.currentExon = null;
+         document.getElementById('nucleotide-' + position).className =
+               document.getElementById('nucleotide-' + position)
                   .className.replace(/selected-nucleotide/, '');
       } else {
-         var start = Math.min(window.cgat[currentExonKey], position);
-         var end = Math.max(window.cgat[currentExonKey], position);
+         var start = Math.min(window.cgat.currentExon, position);
+         var end = Math.max(window.cgat.currentExon, position);
 
-         var selectedElement = document.getElementById(prefix + 'nucleotide-' + window.cgat[currentExonKey]);
+         var selectedElement = document.getElementById('nucleotide-' + window.cgat.currentExon);
          // Selected element may no longer be visible.
          if (selectedElement) {
             selectedElement.className = selectedElement.className.replace(/selected-nucleotide/, '');
          }
 
-         addExon(start, end, reverseCompliment);
-         window.cgat[currentExonKey] = null;
+         addExon(start, end);
+         window.cgat.currentExon = null;
       }
    } else {
-      window.cgat[currentExonKey] = position;
-      document.getElementById(prefix + 'nucleotide-' + position).classList.add('selected-nucleotide');
+      window.cgat.currentExon = position;
+      document.getElementById('nucleotide-' + position).classList.add('selected-nucleotide');
    }
 }
 
@@ -89,9 +125,9 @@ function removeExon(key) {
    placeExons();
 }
 
-function addExon(start, end, reverseCompliment) {
-   createExonElement(start, end, window.cgat.exonKey, reverseCompliment);
-   window.cgat.exons[window.cgat.exonKey] = {start: start, end: end, rc: reverseCompliment};
+function addExon(start, end) {
+   createExonElement(start, end, window.cgat.exonKey);
+   window.cgat.exons[window.cgat.exonKey] = {start: start, end: end};
    window.cgat.exonKey++;
 
    // TODO(eriq): Only place delta
@@ -99,15 +135,13 @@ function addExon(start, end, reverseCompliment) {
 }
 
 function addExonFromButton() {
-   var reverseCompliment = document.getElementById('add-exon-rc').checked;
    var start = document.getElementById('add-exon-start').value;
    var end = document.getElementById('add-exon-end').value;
 
-   addExon(start, end, reverseCompliment);
+   addExon(start, end);
 }
 
-function createExonElement(start, end, key, reverseCompliment) {
-   var checked = reverseCompliment ? 'checked' : '';
+function createExonElement(start, end, key) {
    var exonElement = document.createElement('div');
    exonElement.id = 'exon-' + key;
    exonElement.classList.add('exon');
@@ -121,9 +155,6 @@ function createExonElement(start, end, key, reverseCompliment) {
          "<input type='number' id='exon-end-" + key + "'" +
             " value=" + end +
             " onchange='updateExon(" + key + ");'/>" +
-         "<span>Reverse Compliment: </span>" +
-         "<input type='checkbox' id='exon-rc-" + key + "' " + checked +
-            " onchange='updateExon(" + key + ");'/>" +
          "<button onclick='removeExon(" + key + ");'>Remove Exon</button>";
 
    exonElement.innerHTML = exonElementString;
@@ -136,12 +167,12 @@ function updateExon(key) {
          document.getElementById('exon-start-' + key).value;
    window.cgat.exons[key].end =
          document.getElementById('exon-end-' + key).value;
-   window.cgat.exons[key].rc =
-         document.getElementById('exon-rc-' + key).checked;
    // TODO(eriq): Only place delta
    placeExons();
 }
 
+// TODO(eriq): Exons should be validated earlier.
+//  Also, the annotation start/end should be possiblty modified.
 function placeExons() {
    // Clear all old exons.
    var oldNucleotides = document.getElementsByClassName('nucleotide');
@@ -153,16 +184,15 @@ function placeExons() {
    // Mark the exons on the viewer.
    for (var exonKey in window.cgat.exons) {
       var exon = window.cgat.exons[exonKey];
-      var prefix = exon.rc ? 'rc-' : 'std-';
 
       if (exon.start >= window.cgat.selectionStart &&
           exon.start < window.cgat.selectionEnd) {
-         document.getElementById(prefix + 'nucleotide-' + exon.start).classList.add('exonStart');
+         document.getElementById('nucleotide-' + exon.start).classList.add('exonStart');
       }
 
       if (exon.end >= window.cgat.selectionStart &&
           exon.end < window.cgat.selectionEnd) {
-         document.getElementById(prefix + 'nucleotide-' + exon.end).classList.add('exonEnd');
+         document.getElementById('nucleotide-' + exon.end).classList.add('exonEnd');
       }
    }
 
@@ -176,7 +206,7 @@ function placeExons() {
    // Place the new ones.
    for (var exonKey in window.cgat.exons) {
       var exon = window.cgat.exons[exonKey];
-      var topOffset = exon.rc ? '16' : '0';
+      var topOffset = window.cgat.reverseComplement ? '16' : '0';
 
       var marker = document.createElement('div');
       marker.className = 'top-dna-exon-marker';
@@ -189,13 +219,11 @@ function placeExons() {
    }
 }
 
-function createNucleotideDiv(nucleotide, position, reverseCompliment) {
-   var prefix = reverseCompliment ? 'rc-' : 'std-';
-
+function createNucleotideDiv(nucleotide, position) {
    return "<div class='nucleotide nucleotide-" + nucleotide + "'" +
           " data-position='" + position + "'" +
-          " onClick='nucleotideClicked(" + position + ", " + reverseCompliment + ");'" +
-          " id='" + prefix + "nucleotide-" + position + "'>" +
+          " onClick='nucleotideClicked(" + position + ");'" +
+          " id='" + "nucleotide-" + position + "'>" +
           nucleotide + "</div>";
 }
 
@@ -221,20 +249,18 @@ function updateDnaSelection(leftEdge) {
    document.getElementById('debug-selection-x').innerHTML = leftEdge;
    document.getElementById('debug-selection-percent').innerHTML = leftEdgePercent * 100;
 
-   var sequence = window.cgat.dna.substring(start, start + windowSize);
-   var rcSequence = reverseCompliment(sequence);
+   var sequence = null;
+   if (window.cgat.reverseComplement) {
+      sequence = reverseComplement(window.cgat.dna.substring(start, start + windowSize));
+   } else {
+      sequence = window.cgat.dna.substring(start, start + windowSize);
+   }
 
    var sequenceDivs = [];
    for (var i = 0; i < sequence.length; i++) {
       sequenceDivs.push(createNucleotideDiv(sequence[i], start + i, false));
    }
    document.getElementById('standard-sequence').innerHTML = sequenceDivs.join('');
-
-   var rcDivs = [];
-   for (var i = 0; i < rcSequence.length; i++) {
-      rcDivs.push(createNucleotideDiv(rcSequence[i], start + i, true));
-   }
-   document.getElementById('rc-sequence').innerHTML = rcDivs.join('');
 
    placeExons();
 }

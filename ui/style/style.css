@@ -33,12 +33,29 @@ body {
    display: none;
 }
 
+#header {
+}
+
 .logo-link {
    overflow: hidden;
    display: inline-block;
 }
 
+#top-title {
+   display: inline-block;
+   width: 300px;
+   text-align: center;
+   margin-left: 50px;
+   font-size: 40px;
+   vertical-align: top;
+}
+
+#top-subtitle-text {
+   font-size: 20px;
+}
+
 #top-nav {
+   width: 150px;
    float: right;
 }
 
@@ -56,6 +73,7 @@ body {
 
 #bottom-nav li {
    display: inline-block;
+   margin-right: 15px;
 }
 
 #colophon {
@@ -87,4 +105,26 @@ body {
    padding: 10px;
    border-radius: 10px;
    box-shadow: 5px 5px 5px #888;
+   color: #E2E2E2;
+}
+
+.collapse-button {
+   display: inline-block;
+   width: 0;
+   height: 0;
+   border-style: solid;
+   border-width: 10px;
+   border-color: black transparent transparent transparent;
+   -webkit-transition: all 0.25s;
+   transition: all 0.25s;
+   -moz-transition: all 0.25s;
+   -o-transition: all 0.25s;
+}
+
+.collapse-on {
+   -webkit-transform:rotate(-90deg);
+   transform:rotate(-90deg);
+   -ms-transform:rotate(-90deg);
+   -moz-transform:rotate(-90deg);
+   -o-transform:rotate(-90deg);
 }

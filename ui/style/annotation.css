@@ -1,10 +1,5 @@
 /** BEGIN DNA VIEWER **/
 
-.dna-viewer {
-   width: 1000px;
-   margin-bottom: 20px;
-}
-
 .dna-ruler {
    overflow: hidden;
 }
@@ -33,7 +28,7 @@
 }
 
 #dna-selection-draggable {
-   background: initial;
+   background: transparent;
    border: 2px solid red;
    width: 20px;
    height: 28px;
@@ -44,29 +39,20 @@
    float: left;
 }
 
-.dna-closeups h2 {
-   cursor: pointer;
-}
-
-.collapse-button {
+.annotation-data {
+   margin-bottom: 10px;
+   width: 450px;
    display: inline-block;
-   width: 0;
-   height: 0;
-   border-style: solid;
-   border-width: 10px;
-   border-color: black transparent transparent transparent;
-   -webkit-transition: all 0.25s;
-   transition: all 0.25s;
-   -moz-transition: all 0.25s;
-   -o-transition: all 0.25s;
 }
 
-.collapse-on {
-   -webkit-transform:rotate(-90deg);
-   transform:rotate(-90deg);
-   -ms-transform:rotate(-90deg);
-   -moz-transform:rotate(-90deg);
-   -o-transform:rotate(-90deg);
+.annotation-data-left {
+}
+
+.annotation-data-right {
+}
+
+.dna-closeup h2 {
+   cursor: pointer;
 }
 
 .sequence-closeup {
