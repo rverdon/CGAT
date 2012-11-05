@@ -25,6 +25,7 @@ document.addEventListener('DOMContentLoaded', function () {
          var topDnas = document.getElementsByClassName('top-dna');
          var selector = null;
          for (var i = 0; i < topDnas.length; i++) {
+            // TODO(eriq): This is bugged when you cliock the same place twice in a row.
             topDnas[i].addEventListener('click', function(mouseEvent) {
                updateDnaSelection(mouseEvent.offsetX);
                selector = document.getElementById('dna-selection-draggable');
@@ -210,12 +211,20 @@ function placeExons() {
    }
 }
 
-function createNucleotideDiv(nucleotide, position) {
+// markPosition is meant to mark the first nucleotide in each line.
+function createNucleotideDiv(nucleotide, position, markPosition) {
+   var positionMarker = '';
+   if (markPosition) {
+      positionMarker = '<div class="line-position-marker">' + position + '</div>';
+   }
+
    return "<div class='nucleotide nucleotide-" + nucleotide + "'" +
           " data-position='" + position + "'" +
           " onClick='nucleotideClicked(" + position + ");'" +
           " id='" + "nucleotide-" + position + "'>" +
-          nucleotide + "</div>";
+          nucleotide +
+          positionMarker +
+          "</div>";
 }
 
 function selectorStopped(eventObj, uiObj) {
@@ -247,8 +256,11 @@ function updateDnaSelection(leftEdge) {
    }
 
    var sequenceDivs = [];
+   var markPosition = false;
    for (var i = 0; i < sequence.length; i++) {
-      sequenceDivs.push(createNucleotideDiv(sequence[i], start + i, false));
+      // TODO(eriq): 50 is magic for number of nucleotides per line. Put it in constants.
+      markPosition = (i % 50) === 0;
+      sequenceDivs.push(createNucleotideDiv(sequence[i], start + i, markPosition));
    }
    document.getElementById('standard-sequence').innerHTML = sequenceDivs.join('');
 
