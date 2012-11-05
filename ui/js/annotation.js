@@ -1,8 +1,5 @@
 "use strict";
 
-// TODO(eriq): Number of nucleotides per window should be a variable somewhere.
-// Math should not have to be done to calc it (in multiple places).
-
 document.addEventListener('DOMContentLoaded', function () {
    window.cgat = {};
    window.cgat.exons = [];
@@ -13,6 +10,7 @@ document.addEventListener('DOMContentLoaded', function () {
    window.cgat.dna = '';
    window.cgat.geneName = '';
    window.cgat.reverseComplement = false;
+   window.cgat.nucleoditesPerWindow = 200;
 
    $.ajax({
       url: 'fetch/annotation.php',
@@ -37,26 +35,19 @@ document.addEventListener('DOMContentLoaded', function () {
 
          fillRuler(window.cgat.dna.length);
 
-         // TODO(eriq): Set the value in #nucleotides-per-window.
-         var sizeRatio =
-               document.getElementById('dna-selection-draggable').offsetWidth /
-               document.getElementsByClassName('top-dna')[0].offsetWidth;
-         var nucleotidesPerWindow = sizeRatio * window.cgat.dna.length;
-         document.getElementById('nucleotides-per-window').value = Math.floor(nucleotidesPerWindow);
+         // Set the value in #nucleotides-per-window.
+         document.getElementById('nucleotides-per-window').value = window.cgat.nucleoditesPerWindow;
       },
    });
 
    // Change the size of the slider with the number box.
    document.getElementById('nucleotides-per-window').addEventListener('change', function() {
-      var nucleotidesPerWindow = document.getElementById('nucleotides-per-window').value;
+      window.cgat.nucleoditesPerWindow = parseInt(document.getElementById('nucleotides-per-window').value, 10);
       // TODO(eriq): Validation should be done through proper channels.
-      if (nucleotidesPerWindow <= 0) {
-         nucleotidesPerWindow = 1;
+      if (window.cgat.nucleoditesPerWindow <= 0) {
+         window.cgat.nucleoditesPerWindow = 1;
       }
 
-      var sizeRatio = nucleotidesPerWindow / window.cgat.dna.length;
-      document.getElementById('dna-selection-draggable').style.width = Math.floor(sizeRatio *
-         document.getElementsByClassName('top-dna')[0].offsetWidth);
       updateDnaSelection(document.getElementById('dna-selection-draggable').offsetLeft);
    });
 
@@ -234,26 +225,25 @@ function selectorStopped(eventObj, uiObj) {
 // TODO(eriq): Multiple dna viewers will break everything.
 function updateDnaSelection(leftEdge) {
    var topDnaWidth = document.getElementsByClassName('top-dna')[0].offsetWidth;
-   var selectorWidth = document.getElementById('dna-selection-draggable').offsetWidth;
+   var sizeRatio = window.cgat.nucleoditesPerWindow / window.cgat.dna.length;
+   var selectorWidth = Math.floor(sizeRatio * topDnaWidth);
+   document.getElementById('dna-selection-draggable').style.width = selectorWidth;
 
    var leftEdgePercent = leftEdge / topDnaWidth;
-   // Number of neucliotides in a window.
-   // TODO(eriq): Solidify size constants and use less to enforce them in js.
-   // (selector size / top dna size) * total sequence length.
-   var windowSize = Math.floor(selectorWidth / topDnaWidth * window.cgat.dna.length);
    var start = Math.floor(leftEdgePercent * window.cgat.dna.length);
 
+   // TODO(eriq): Don't go off the edge.
    window.cgat.selectionStart = start;
-   window.cgat.selectionEnd = start + windowSize;
+   window.cgat.selectionEnd = start + window.cgat.nucleoditesPerWindow;
 
    document.getElementById('debug-selection-x').innerHTML = leftEdge;
    document.getElementById('debug-selection-percent').innerHTML = leftEdgePercent * 100;
 
    var sequence = null;
    if (window.cgat.reverseComplement) {
-      sequence = reverseComplement(window.cgat.dna.substring(start, start + windowSize));
+      sequence = reverseComplement(window.cgat.dna.substring(start, start + window.cgat.nucleoditesPerWindow));
    } else {
-      sequence = window.cgat.dna.substring(start, start + windowSize);
+      sequence = window.cgat.dna.substring(start, start + window.cgat.nucleoditesPerWindow);
    }
 
    var sequenceDivs = [];
