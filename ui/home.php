@@ -3,6 +3,7 @@
       <link rel='stylesheet' type='text/css' media='screen' href='style/style.css' />
       <script src='js/jquery-1.8.2.js'></script>
       <script src='js/script.js' type='text/javascript'></script>
+      <script src='js/home.js' type='text/javascript'></script>
       <title>Profile Home</title>
    </head>
    <body>
@@ -15,6 +16,9 @@
 
          <div id='content' class='top-level-area'>
             <div id='bio-info'>
+               <img id='profile-user-pic' src='images/defaultProfile.png'></img>
+               <h2 id='profile-user-name'></h2>
+               <h2 id='profile-user-email'></h2>
             </div>
 
             <div id='notifications' class='second-level-area'>

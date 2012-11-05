@@ -9,7 +9,9 @@ document.addEventListener('DOMContentLoaded', function () {
          console.log("Error fetching annotations: " + textStatus);
       },
       success: function(data, textStatus, jqXHR) {
-         //TODO: here
+         $('#profile-user-name').text(data.name);
+         $('#profile-user-email').text(data.email);
+         $('#profile-user-pic').attr('src', data.profilePic);
       }
    });
 });
