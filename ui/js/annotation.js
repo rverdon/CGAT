@@ -1,5 +1,12 @@
 "use strict";
 
+// TODO(eriq): It is stupid that top-dna is class.
+//  Just make it an id and rethink having multiple.
+
+// TODO(eriq): Validation is not done where someone shrinks the gene size smaller
+//  than the range of the current exons.
+//  Aldrin says to just yell at them on gene start/end change.
+
 document.addEventListener('DOMContentLoaded', function () {
    window.cgat = {};
    window.cgat.exons = [];
@@ -11,6 +18,8 @@ document.addEventListener('DOMContentLoaded', function () {
    window.cgat.geneName = '';
    window.cgat.reverseComplement = false;
    window.cgat.nucleoditesPerWindow = 200;
+   window.cgat.geneStart = 0;
+   window.cgat.geneEnd = 0;
 
    $.ajax({
       url: 'fetch/annotation',
@@ -35,6 +44,11 @@ document.addEventListener('DOMContentLoaded', function () {
          }
 
          fillRuler(window.cgat.dna.length);
+
+         // Set the gene end.
+         window.cgat.geneEnd = window.cgat.dna.length - 1;
+         $('#annotation-end').val(window.cgat.geneEnd);
+         updateBoundingMarkers();
 
          // Set the value in #nucleotides-per-window.
          document.getElementById('nucleotides-per-window').value = window.cgat.nucleoditesPerWindow;
@@ -72,6 +86,33 @@ document.addEventListener('DOMContentLoaded', function () {
       window.cgat.reverseComplement = document.getElementById('annotation-rc').checked;
       updateDnaSelection(document.getElementById('dna-selection-draggable').offsetLeft);
    });
+
+   // Validate and update start/end of gene.
+   document.getElementById('annotation-start').addEventListener('change', function() {
+      var newStart = parseInt($('#annotation-start').val());
+      if (!startEndValidate(newStart, window.cgat.geneEnd, 'annotation-start-area')) {
+         $('#annotation-start').val(window.cgat.geneStart);
+         return;
+      }
+      // Clear the error for the end also.
+      clearValidationError('annotation-end-area');
+
+      window.cgat.geneStart = newStart;
+      updateBoundingMarkers();
+   });
+
+   document.getElementById('annotation-end').addEventListener('change', function() {
+      var newEnd = parseInt($('#annotation-end').val());
+      if (!startEndValidate(window.cgat.geneStart, newEnd, 'annotation-end-area')) {
+         $('#annotation-end').val(window.cgat.geneEnd);
+         return;
+      }
+      // Clear the error for the start also.
+      clearValidationError('annotation-start-area');
+
+      window.cgat.geneEnd = newEnd;
+      updateBoundingMarkers();
+   });
 });
 
 $(function() {
@@ -79,6 +120,51 @@ $(function() {
                                             containment: 'parent',
                                             stop: selectorStopped});
 });
+
+// TODO(eriq): Abstract this more and move it into script.js.
+// Returns true on no error, false on error.
+// This will clear any errors on the dump if it is valid.
+function startEndValidate(start, end, errorDump) {
+   if (start < 0 || end < 0 ||
+       start >= window.cgat.dna.length ||
+       end >= window.cgat.dna.length) {
+      validationError('Start and End must be >= 0 and < ' + window.cgat.dna.length,
+                      errorDump);
+      return false;
+   } else if (start >= end) {
+      validationError('Start must be < End', errorDump);
+      return false;
+   }
+
+   clearValidationError(errorDump);
+   return true;
+}
+
+// Update the markers that mark the beginning and end of the gene.
+function updateBoundingMarkers() {
+   // Clear the previous markers.
+   $('.top-dna-boundary-marker').remove();
+
+   // TODO(eriq): Constant this and enfore in less
+   var sizeRatio = document.getElementsByClassName('top-dna')[0].offsetWidth / window.cgat.dna.length;
+
+   var startSize = Math.floor(window.cgat.geneStart * sizeRatio);
+   var endSize = Math.floor((window.cgat.dna.length - window.cgat.geneEnd) * sizeRatio);
+
+   var startBound = document.createElement('div');
+   startBound.className = 'top-dna-boundary-marker';
+   startBound.style.top = '0px';
+   startBound.style.width = '' + startSize + 'px';
+   startBound.style.left = '0px';
+   document.getElementsByClassName('top-dna')[0].appendChild(startBound);
+
+   var endBound = document.createElement('div');
+   endBound.className = 'top-dna-boundary-marker';
+   endBound.style.top = '0px';
+   endBound.style.width = '' + endSize + 'px';
+   endBound.style.right = '0px';
+   document.getElementsByClassName('top-dna')[0].appendChild(endBound);
+}
 
 function fillRuler(length) {
    var tick = Math.floor(length / 10);
@@ -137,12 +223,9 @@ function addExonFromButton() {
    var start = document.getElementById('add-exon-start').value;
    var end = document.getElementById('add-exon-end').value;
 
-   // Validate that start < end
-   if (start >= end) {
-      validationError('Start must be < End', 'add-exon-collapse-area');
+   if (!startEndValidate(start, end, 'add-exon-collapse-area')) {
       return;
    }
-   clearValidationError('add-exon-collapse-area');
 
    addExon(start, end);
 }
@@ -167,18 +250,25 @@ function createExonElement(start, end, key) {
    document.getElementById('exons').appendChild(exonElement);
 }
 
-// TODO(eriq): Deal with start getting larger than end and visa-versa.
 function updateExon(key) {
-   window.cgat.exons[key].start =
-         document.getElementById('exon-start-' + key).value;
-   window.cgat.exons[key].end =
-         document.getElementById('exon-end-' + key).value;
+   var newStart = parseInt(document.getElementById('exon-start-' + key).value, 10);
+   var newEnd = parseInt(document.getElementById('exon-end-' + key).value, 10);
+
+   if (!startEndValidate(newStart, newEnd, 'exon-start-' + key)) {
+      document.getElementById('exon-start-' + key).value = window.cgat.exons[key].start;
+      document.getElementById('exon-end-' + key).value = window.cgat.exons[key].end;
+      return;
+   }
+
+   window.cgat.exons[key].start = newStart;
+   window.cgat.exons[key].end = newEnd;
+
    // TODO(eriq): Only place delta
    placeExons();
 }
 
-// TODO(eriq): Exons should be validated earlier.
-//  Also, the annotation start/end should be possiblty modified.
+// Since this is called whenever exons need placement, this is the time
+//  to do any coordination with the global gene end and start.
 function placeExons() {
    // Clear all old exons.
    var oldNucleotides = document.getElementsByClassName('nucleotide');
@@ -186,6 +276,8 @@ function placeExons() {
       oldNucleotides[i].className =
          oldNucleotides[i].className.replace(/exon((Start)|(End))/, '');
    }
+
+   var updateBounds = false;
 
    // Mark the exons on the viewer.
    for (var exonKey in window.cgat.exons) {
@@ -200,6 +292,22 @@ function placeExons() {
           exon.end < window.cgat.selectionEnd) {
          document.getElementById('nucleotide-' + exon.end).classList.add('exonEnd');
       }
+
+      // Check the bounds
+      if (exon.start < window.cgat.geneStart) {
+         window.cgat.geneStart = exon.start;
+         updateBounds = true;
+      }
+      if (exon.end > window.cgat.geneEnd) {
+         window.cgat.geneEnd = exon.end;
+         updateBounds = true;
+      }
+   }
+
+   if (updateBounds) {
+      $('#annotation-start').val(window.cgat.geneStart);
+      $('#annotation-end').val(window.cgat.geneEnd);
+      updateBoundingMarkers();
    }
 
    // Mark the exons on the top dna.

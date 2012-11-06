@@ -27,6 +27,14 @@
    z-index: 5;
 }
 
+.top-dna-boundary-marker {
+   position: absolute;
+   opacity: 0.4;
+   background: black;
+   height: 32px;
+   z-index: 5;
+}
+
 #dna-selection-draggable {
    background: transparent;
    border: 2px solid red;

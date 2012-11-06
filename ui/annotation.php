@@ -42,12 +42,12 @@
                      <span>Reverse Complement: </span>
                      <input type='checkbox' id='annotation-rc' />
                   </div>
-                  <div class='annotation-data annotation-data-left'>
-                     <span>Start: </span>
+                  <div id='annotation-start-area' class='annotation-data annotation-data-left'>
+                     <span>Gene Start: </span>
                      <input type='number' id='annotation-start' value=0 />
                   </div>
-                  <div class='annotation-data annotation-data-right'>
-                     <span>End: </span>
+                  <div id='annotation-end-area' class='annotation-data annotation-data-right'>
+                     <span>Gene End: </span>
                      <input type='number' id='annotation-end' value=0 />
                   </div>
                   <div class='annotation-data annotation-data-left'>
