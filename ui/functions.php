@@ -6,8 +6,18 @@ function getGravatar($email, $size, $defaultImage) {
           "?s=$size" .
           "&d=" . urlencode($defaultImage) .
           "&r=pg";
-   error_log($rtn);
    return $rtn;
+}
+
+function randString($length) {
+   $chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";   
+   $size = strlen($chars);
+   $str = '';
+   for($i = 0; $i < $length; $i++) {
+      $str .= $chars[rand(0, $size - 1)];
+   }
+
+   return $str;
 }
 
 ?>

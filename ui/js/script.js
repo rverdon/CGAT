@@ -46,3 +46,28 @@ function toggleCollapse(buttonId, collapseAreaId) {
 function setSubtitle(subtitle) {
    document.getElementById('top-subtitle-text').innerHTML = subtitle;
 }
+
+// Note that this accepts SECONDS, but JS defaults to miliseconds.
+function formatEpochDate(epochTime) {
+   var date = new Date(epochTime * 1000);
+
+   return (date.getMonth() + 1) + "/" +
+          date.getDate() + "/" +
+          date.getFullYear() + " -- " +
+          date.getHours() + ":" +
+          date.getMinutes();
+}
+
+// |invalidElement| is the element that the validation error will be attached to.
+function validationError(error, errorDump) {
+   console.log('Validation Error: ' + error);
+   $('#' + errorDump).attr('data-validation-error', error);
+   $('#' + errorDump).addClass('validation-error');
+}
+
+// This will empty out the entire error dump.
+// If you want to remove a specific error, that functionality will have to be added.
+function clearValidationError(errorDump) {
+   $('#' + errorDump).removeClass('validation-error');
+   $('#' + errorDump).removeAttr('data-validation-error');
+}

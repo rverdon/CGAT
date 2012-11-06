@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', function () {
    window.cgat.nucleoditesPerWindow = 200;
 
    $.ajax({
-      url: 'fetch/annotation.php',
+      url: 'fetch/annotation',
       dataType: 'json',
       error: function(jqXHR, textStatus, errorThrown) {
          // TODO(eriq): Do more.
@@ -25,7 +25,7 @@ document.addEventListener('DOMContentLoaded', function () {
          var topDnas = document.getElementsByClassName('top-dna');
          var selector = null;
          for (var i = 0; i < topDnas.length; i++) {
-            // TODO(eriq): This is bugged when you cliock the same place twice in a row.
+            // TODO(eriq): This is bugged when you click the same place twice in a row.
             topDnas[i].addEventListener('click', function(mouseEvent) {
                updateDnaSelection(mouseEvent.offsetX);
                selector = document.getElementById('dna-selection-draggable');
@@ -42,13 +42,20 @@ document.addEventListener('DOMContentLoaded', function () {
    });
 
    // Change the size of the slider with the number box.
-   document.getElementById('nucleotides-per-window').addEventListener('change', function() {
-      window.cgat.nucleoditesPerWindow = parseInt(document.getElementById('nucleotides-per-window').value, 10);
-      // TODO(eriq): Validation should be done through proper channels.
-      if (window.cgat.nucleoditesPerWindow <= 0) {
-         window.cgat.nucleoditesPerWindow = 1;
-      }
+   document.getElementById('nucleotides-per-window').addEventListener('change', function(test, test2) {
+      var inputBox = document.getElementById('nucleotides-per-window');
+      var newValue = parseInt(inputBox.value, 10);
 
+      // Validate the field. Must be > 0 and <= dna.length.
+      if (newValue < 1 || newValue > window.cgat.dna.length) {
+         // Reset the field to the previous value.
+         inputBox.value = window.cgat.nucleoditesPerWindow;
+         validationError('Must be between 1 and ' + window.cgat.dna.length, 'nucleotides-per-window-span');
+         return;
+      }
+      clearValidationError('nucleotides-per-window-span');
+
+      window.cgat.nucleoditesPerWindow = newValue;
       updateDnaSelection(document.getElementById('dna-selection-draggable').offsetLeft);
    });
 
@@ -129,6 +136,13 @@ function addExon(start, end) {
 function addExonFromButton() {
    var start = document.getElementById('add-exon-start').value;
    var end = document.getElementById('add-exon-end').value;
+
+   // Validate that start < end
+   if (start >= end) {
+      validationError('Start must be < End', 'add-exon-collapse-area');
+      return;
+   }
+   clearValidationError('add-exon-collapse-area');
 
    addExon(start, end);
 }

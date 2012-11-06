@@ -13,9 +13,9 @@
          ?>
 
          <div id='content' class='top-level-area'>
-            <a href='annotation.php'>Sample Annotation</a>
+            <a href='annotation'>Sample Annotation</a>
             <br />
-            <a href='home.php'>Sample Profile Home</a>
+            <a href='profile'>Sample Profile Home</a>
          </div>
 
          <?php

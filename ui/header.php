@@ -28,7 +28,8 @@
    </div>
    <div id='top-nav' class='nav'>
       <ul>
-         <li><a href='login.php'>Login</a> / <a href='register.php'>Register</a></li>
+         <?php /* TODO(eriq): Referencing root in these link will break while on test vhosts. */ ?>
+         <li><a href='/login'>Login</a> / <a href='/register'>Register</a></li>
          <li><a href='#'>Something</a></li>
          <li><a href='#'>Something Else</a></li>
          <li><a href='#'>Another Thing</a></li>
