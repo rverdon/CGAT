@@ -18,14 +18,22 @@ table, caption, tbody, tfoot, thead, tr, th, td {
 }
 
 html {
-   font-family: "Goudy Old Style", Garamond, "Big Caslon", "Times New Roman", serif;
+   /*
+   font-family: "Century Gothic", CenturyGothic, AppleGothic, sans-serif;
+   */
+   font-family: Copperplate, "Copperplate Gothic Light", fantasy;
 }
 
 body {
    width: 100%;
    height: 100%;
    /*background: #C0C0C0;*/
-   background: #c2d995;
+   background: #C6C9C0;
+}
+
+h2 {
+   font-size: 24px;
+   margin-bottom: 10px;
 }
 
 .debug {
@@ -116,25 +124,31 @@ body {
    border-style: solid;
    border-width: 10px;
    border-color: black transparent transparent transparent;
+   margin-right: 20px;
+
+   -webkit-transform: translateY(5px);
+
    -webkit-transition: all 0.25s;
    transition: all 0.25s;
    -moz-transition: all 0.25s;
    -o-transition: all 0.25s;
 
    /* Move the rotation orgin to the center of the arrow. */
+   /*
    transform-origin: 50% 25%;
    -ms-transform-origin: 50% 25%;
    -webkit-transform-origin: 50% 25%;
    -moz-transform-origin: 50% 25%;
    -o-transform-origin: 50% 25%;
+   */
 }
 
 .collapse-on {
-   -webkit-transform:rotate(-90deg);
-   transform:rotate(-90deg);
-   -ms-transform:rotate(-90deg);
-   -moz-transform:rotate(-90deg);
-   -o-transform:rotate(-90deg);
+   -webkit-transform: rotate(-90deg) translateY(5px);
+   transform: rotate(-90deg);
+   -ms-transform: rotate(-90deg);
+   -moz-transform: rotate(-90deg);
+   -o-transform: rotate(-90deg);
 }
 
 .collapsing-area {
@@ -204,5 +218,5 @@ body {
 .second-level-area button:active {
    background: #2B2B2B;
    color: white;
-   text-shadow: 1px 1px #888;
+   text-shadow: 1px 1px black;
 }

@@ -32,7 +32,10 @@
             </div>
 
             <div id='annotation-data' class='second-level-area'>
-               <h2 onclick='toggleCollapse("annotation-collapse-button", "annotation-data-area");'>Annotation Data <div class='collapse-button' id='annotation-collapse-button'></div></h2>
+               <h2 onclick='toggleCollapse("annotation-collapse-button", "annotation-data-area");'>
+                  <div class='collapse-button' id='annotation-collapse-button'></div>
+                  Annotation Data
+               </h2>
                <div id='annotation-data-area' class='collapsing-area'>
                   <div class='annotation-data annotation-data-left'>
                      <span>Gene Name: </span>
@@ -58,12 +61,18 @@
             </div>
 
             <div class='dna-closeup second-level-area'>
-               <h2 onclick='toggleCollapse("standard-collapse-button", "standard-sequence");'>Sequence <div class='collapse-button' id='standard-collapse-button'></div></h2>
+               <h2 onclick='toggleCollapse("standard-collapse-button", "standard-sequence");'>
+                  <div class='collapse-button' id='standard-collapse-button'></div>
+                  Sequence
+               </h2>
                <div id='standard-sequence' class='sequence-closeup collapsing-area'></div>
             </div>
 
             <div id='add-exon-area' class='second-level-area'>
-               <h2 onclick='toggleCollapse("add-exon-collapse-button", "add-exon-collapse-area");'>Add Exon <div class='collapse-button' id='add-exon-collapse-button'></div></h2>
+               <h2 onclick='toggleCollapse("add-exon-collapse-button", "add-exon-collapse-area");'>
+                  <div class='collapse-button' id='add-exon-collapse-button'></div>
+                  Add Exon
+               </h2>
                <div id='add-exon-collapse-area' class='collapsing-area'>
                   <span id='add-exon-start-span'>Start: </span>
                   <input type='number' id='add-exon-start' value=0 />
@@ -74,7 +83,10 @@
             </div>
 
             <div id='exon-area' class='second-level-area'>
-               <h2 onclick='toggleCollapse("exons-collapse-button", "exons");'>Exons <div class='collapse-button' id='exons-collapse-button'></div></h2>
+               <h2 onclick='toggleCollapse("exons-collapse-button", "exons");'>
+                  <div class='collapse-button' id='exons-collapse-button'></div>
+                  Exons
+               </h2>
                <div id='exons' class='collapsing-area'>
                </div>
             </div>

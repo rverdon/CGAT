@@ -29,17 +29,26 @@
             </div>
 
             <div id='notifications' class='second-level-area'>
-               <h2 onclick='toggleCollapse("notifications-collapse-button", "notifications-area");'>Notifications <div class='collapse-button' id='notifications-collapse-button'></div></h2>
+               <h2 onclick='toggleCollapse("notifications-collapse-button", "notifications-area");'>
+                  <div class='collapse-button' id='notifications-collapse-button'></div>
+                  Notifications
+               </h2>
                <div id='notifications-area' class='collapsing-area'></div>
             </div>
 
             <div id='partials' class='second-level-area'>
-               <h2 onclick='toggleCollapse("partials-collapse-button", "partials-area");'>Working Annotations <div class='collapse-button' id='partials-collapse-button'></div></h2>
+               <h2 onclick='toggleCollapse("partials-collapse-button", "partials-area");'>
+                  <div class='collapse-button' id='partials-collapse-button'></div>
+                  Working Annotations
+                  </h2>
                <div id='partials-area' class='collapsing-area'></div>
             </div>
 
             <div id='recents' class='second-level-area'>
-               <h2 onclick='toggleCollapse("recents-collapse-button", "recents-area");'>Recent Submissions <div class='collapse-button' id='recents-collapse-button'></div></h2>
+               <h2 onclick='toggleCollapse("recents-collapse-button", "recents-area");'>
+                  <div class='collapse-button' id='recents-collapse-button'></div>
+                  Recent Submissions
+               </h2>
                <div id='recents-area' class='collapsing-area'></div>
             </div>
          </div>
