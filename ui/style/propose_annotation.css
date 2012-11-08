@@ -1,0 +1,82 @@
+#contig-method-radio {
+   text-align: center;
+}
+
+#method-area {
+   width: 940px;
+   background: lightSteelBlue;
+   border-radius: 10px;
+   box-shadow: -2px -2px 5px #888;
+   margin: 10px;
+   padding: 10px;
+   color: black;
+   text-shadow: 1px 1px #888;
+   overflow: hidden;
+}
+
+.method {
+   -webkit-transition: opacity 0.25s;
+   transition: opacity 0.25s;
+   -moz-transition: opacity 0.25s;
+   -o-transition: opacity 0.25s;
+   opacity: 0;
+   visibility: hidden;
+   position: absolute;
+   z-index: -1;
+}
+
+.selected-method {
+   position: static;
+   z-index: 5;
+   opacity: 1;
+   visibility: visible;
+}
+
+#method-area input {
+   border: none;
+   background: #C6C9C0;
+   border-radius: 5px;
+   box-shadow: 1px 1px 1px #888;
+   padding-left: 5px;
+}
+
+#method-area input[type='number']::-webkit-outer-spin-button,
+#method-area input[type='number']::-webkit-inner-spin-button {
+   right: 5px;
+}
+
+#method-area button {
+   border-radius: 10px;
+   box-shadow: 2px 2px 2px #888;
+   background: lightSteelBlue;
+   vertical-align: middle;
+   border: none;
+   height: 24px;
+   color: black;
+   text-shadow: 1px 1px white;
+}
+
+#method-area button:hover {
+   background: #5B6775;
+}
+
+#method-area button:active {
+   background: #2B2B2B;
+   color: white;
+   text-shadow: 1px 1px black;
+}
+
+#manual-sequence-area {
+   display: inline-block;
+   overflow: hidden;
+}
+
+#manual-method-sequence {
+   resize: none;
+   width: 300px;
+   height: 300px;
+}
+
+#manual-data-area {
+   display: inline-block;
+}

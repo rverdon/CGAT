@@ -20,8 +20,9 @@ table, caption, tbody, tfoot, thead, tr, th, td {
 html {
    /*
    font-family: "Century Gothic", CenturyGothic, AppleGothic, sans-serif;
-   */
    font-family: Copperplate, "Copperplate Gothic Light", fantasy;
+   */
+   font-family: Tahoma, Verdana, Segoe, sans-serif;
 }
 
 body {

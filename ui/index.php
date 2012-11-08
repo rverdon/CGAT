@@ -16,6 +16,8 @@
             <a href='annotation'>Sample Annotation</a>
             <br />
             <a href='profile'>Sample Profile Home</a>
+            <br />
+            <a href='propose_annotation'>Sample Propose Annotation</a>
          </div>
 
          <?php
