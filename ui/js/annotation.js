@@ -24,12 +24,19 @@ document.addEventListener('DOMContentLoaded', function () {
    $.ajax({
       url: 'fetch/annotation',
       dataType: 'json',
+      data: {'id': window.params.id},
       error: function(jqXHR, textStatus, errorThrown) {
          // TODO(eriq): Do more.
          console.log("Error fetching annotation: " + textStatus);
       },
       success: function(data, textStatus, jqXHR) {
-         window.cgat.dna = data.sequence;
+         if (!data.valid) {
+            // TODO(eriq): Do something Drastic!
+            console.log('INVALID CONTIG');
+            return;
+         }
+
+         window.cgat.dna = data.contig.sequence;
          updateDnaSelection(0);
          var topDnas = document.getElementsByClassName('top-dna');
          var selector = null;

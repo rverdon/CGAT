@@ -8,6 +8,12 @@
       <script src='js/script.js' type='text/javascript'></script>
       <script src='js/annotation.js' type='text/javascript'></script>
       <title>Annotate</title>
+
+      <script>
+         // TODO(eriq): Should this be here, or in js
+         window.params = {};
+         window.params.id = '<?php echo $_GET['id']; ?>';
+      </script>
    </head>
    <body>
 

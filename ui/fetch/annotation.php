@@ -9,13 +9,17 @@
    //error_reporting(E_ALL);
    //ini_set('display_errors', '1');
 
-   // Send a test annotation.
-   $nucleotides = ['A', 'C', 'G', 'T'];
-   $dna = [];
-   for ($i = 0; $i <= 10000; $i++) {
-      $dna[] = $nucleotides[rand(0, 3)];
-   }
+   require_once('../db.php');
 
-   $rtn = array('sequence' => join('', $dna));
+   $rtn = array();
+
+   if (isset($_GET['id'])) {
+      $rtn['annotation'] = getAnnotation($_GET['id']);
+      $rtn['contig'] = getContig($rtn['annotation']['contig_id']);
+      $rtn['valid'] = true;
+   } else {
+      $rtn['valid'] = false;
+   }
+   
    echo json_encode($rtn);
 ?>
