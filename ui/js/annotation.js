@@ -33,7 +33,7 @@ document.addEventListener('DOMContentLoaded', function () {
       },
       success: function(data, textStatus, jqXHR) {
          if (!data.valid) {
-            enableErrorModal('Invalid Contig', 'annotation');
+            enableErrorModal('Invalid Annotation', 'annotation');
             return;
          }
 

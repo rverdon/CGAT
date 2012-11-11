@@ -14,7 +14,7 @@
    $rtn = array();
 
    if (isset($_GET['id'])) {
-      $rtn['annotation'] = getAnnotation($_GET['id']);
+      $rtn['annotation'] = getAnnotation(mongoIdSanitize($_GET['id']));
       $rtn['contig'] = getContig($rtn['annotation']['contig_id']);
       $rtn['valid'] = $rtn['annotation'] && $rtn['contig'];
    } else {

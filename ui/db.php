@@ -1,11 +1,28 @@
 <?php
 
+// Sanitize a value for use as a mongo id.
+function mongoIdSanitize($val) {
+   $clean = preg_replace('/[^a-fA-F0-9]/', '', $val);
+   return substr($clean, 0, 24);
+}
+
+// Sanitize a value for use as a user name.
+// TODO(eriq): Enforce size restrictions.
+function mongoUserSanitize($val) {
+   return preg_replace('/\W/', '', $val);
+}
+
 function getDB() {
    $username = 'cgat';
    $password = 'ILoveData580';
 
-   $mongo = new Mongo("mongodb://${username}:${password}@localhost/cgat");
-   return $mongo->cgat;
+   //TEST
+   //$mongo = new Mongo("mongodb://${username}:${password}@localhost/cgat_test");
+   $mongo = new Mongo("mongodb://${username}:${password}@localhost/cgat_test");
+
+   //TEST
+   //return $mongo->cgat;
+   return $mongo->cgat_test;
 }
 
 function getAnnotation($id) {
@@ -60,12 +77,23 @@ function getExpandedProfile($userName) {
 
    // Expand all the partials
    foreach ($profile['incomplete_annotations'] as $key => $annotationId) {
+      $profile['incomplete_annotations'][$key] = array();
+      $profile['incomplete_annotations'][$key]['annotation_id'] = $annotationId;
       $profile['incomplete_annotations'][$key]['annotation_info'] = getAnnotation($annotationId);
       $profile['incomplete_annotations'][$key]['contig_info'] =
          getContigMeta($profile['incomplete_annotations'][$key]['annotation_info']['contig_id']);
    }
 
    return $profile;
+}
+
+function removeNotification($userId, $taskId) {
+   $db = getDB();
+   $users = $db->users;
+
+   $query = array('_id' => new MongoId($userId));
+   $update = array('$pull' => array('tasks' => array('_id' => new MongoId($taskId))));
+   $users->update($query, $update);
 }
 
 ?>

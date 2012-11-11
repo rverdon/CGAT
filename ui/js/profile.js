@@ -28,16 +28,9 @@ document.addEventListener('DOMContentLoaded', function () {
          $('#profile-user-last-login').text('Last Login: ' + formatEpochDate(data.meta.last_login.sec));
 
          // Notifications
-         // TODO(eriq): Make links to the contig/species and whatnot
          var notifications = '';
          data.tasks.forEach(function(notification) {
-            notifications += "<div class='notification profile-entry' id='notification-" + notification.contig_id +
-                                "' " + "onclick='annotationClicked(" + notification.contig_id + ");'>" +
-                             "<h3>" + notification.contig_meta.meta.name + "</h3>" +
-                             "<span>Species: " + notification.contig_meta.meta.species + "</span>" +
-                             "<span>Difficulty: " + notification.contig_meta.meta.difficulty + "</span>" +
-                             "<div class='cancel-button' onclick='cancelNotification(" + notification.contig_id + ");'></div>" +
-                             "</div>";
+            notifications += makeNotification(notification, data['_id']['$id']);
          });
          $('#notifications-area').html(notifications);
 
@@ -73,20 +66,34 @@ document.addEventListener('DOMContentLoaded', function () {
    });
 });
 
-function cancelNotification(id) {
+function makeNotification(notification, userId) {
+   var notificationId = notification['_id']['$id'];
+   return "<div class='notification profile-entry' id='notification-" + notificationId + "'>" +
+          "<span>Contig: <a href='contig?id=" + notification.contig_meta['_id']['$id'] + "'>" +
+                notification.contig_meta.meta.name + "</a></span>" +
+          "<span>Species: <a href='search?species=" + notification.contig_meta.meta.species + "'>" +
+                notification.contig_meta.meta.species + "</a></span>" +
+          "<span>Difficulty: " + notification.contig_meta.meta.difficulty + "</span>" +
+          "<div class='cancel-button' onclick='cancelNotification(\"" + notificationId + "\", \"" + userId + "\");'></div>" +
+          "<div class='annotate-button' onclick='beginAnnotation(\"" + notificationId + "\", \"" + userId + "\");'></div>" +
+          "</div>";
+}
+
+//TODO(eriq)
+function beginAnnotation(notificationId, userId) {
+   console.log("Begin Annotation: " + notificationId);
+   //window.location.href = 'annotation?id=' + id;
+}
+
+function cancelNotification(id, userId) {
    $('#notification-' + id).remove();
    $.ajax({
       url: 'fetch/cancel_notification',
       type: 'POST',
-      data: {id: id},
+      data: {id: id, user: userId},
       error: function(jqXHR, textStatus, errorThrown) {
          // TODO(eriq): Do more.
          console.log("Error canceling an annotation: " + textStatus);
       }
    });
-}
-
-// TODO(eriq): Navigate to the real annotation.
-function annotationClicked(id) {
-   window.location.href = 'annotation?id=' + id;
 }

@@ -54,7 +54,7 @@
             <div id='recents' class='second-level-area'>
                <h2 onclick='toggleCollapse("recents-collapse-button", "recents-area");'>
                   <div class='collapse-button' id='recents-collapse-button'></div>
-                  Recent Submissions
+                  History
                </h2>
                <div id='recents-area' class='collapsing-area'></div>
             </div>

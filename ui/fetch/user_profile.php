@@ -1,4 +1,6 @@
 <?php
+   // TODO(eriq): I would prefer if ids were used to fetch profiles, they are easier to sanitize.
+
    header('Content-type: application/json');
 
    require_once '../db.php';
@@ -9,7 +11,7 @@
    if (!isset($_GET['user'])) {
       $user['valid'] = false;
    } else {
-      $user = getExpandedProfile($_GET['user']);
+      $user = getExpandedProfile(mongoUserSanitize($_GET['user']));
 
       if ($user) {
          // TODO(eriq): This sucks. When we host somewhere on a default port, we can use our own image.

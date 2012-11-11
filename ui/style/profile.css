@@ -55,11 +55,10 @@
    padding: 10px;
    color: black;
    text-shadow: initial;
-   cursor: pointer;
 }
 
-.notification h3 {
-   display: inline;
+.profile-entry span {
+   margin-right: 20px;
 }
 
 .notification {
@@ -79,6 +78,17 @@
    width: 20px;
    cursor: pointer;
    background: url('../images/cancel.png');
+   display: inline;
+   float: right;
+   margin-left: 10px;
+   margin-right: 10px;
+}
+
+.annotate-button {
+   height: 20px;
+   width: 63px;
+   cursor: pointer;
+   background: url('../images/annotate.png');
    display: inline;
    float: right;
 }
