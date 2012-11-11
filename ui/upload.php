@@ -5,16 +5,21 @@
       <script src='js/jquery-1.8.2.js'></script>
       <script src='js/script.js' type='text/javascript'></script>
       <script src='js/propose_annotation.js' type='text/javascript'></script>
-      <title>Propose Annotation</title>
+      <title>CGAT Upload Contig</title>
    </head>
    <body>
       <div id='page'>
          <?php
-            $title = 'Propose Annotation';
+            $title = 'Upload Contig';
             require('header.php');
          ?>
 
          <div id='content' class='top-level-area'>
+
+            <h1>Upload a Contig</h1>
+            <p>This page will be for uploading contigs</p>
+            <p>You will also be able to assign a task right after an upload</p>
+            <p>Maybe this page, or maybe a link straight to the assign page with fields filled in</p>
 
             <div id='options' class='second-level-area'>
                <h2 onclick='toggleCollapse("options-collapse-button", "options-area");'>

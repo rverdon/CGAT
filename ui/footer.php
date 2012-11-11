@@ -2,9 +2,10 @@
    <div id='bottom-nav' class='nav'>
       <ul>
          <li><a href='/'>Home</a></li>
-         <li><a href='#'>Thing 1</a></li>
-         <li><a href='#'>Thing 2</a></li>
-         <li><a href='#'>Thing 3</a></li>
+         <li><a href='login'>Login / Register</a></li>
+         <li><a href='upload'>Upload A Contig</a></li>
+         <li><a href='assign'>Assign A Task</a></li>
+         <li><a href='search'>Search</a></li>
       </ul>
    </div>
    <div id='colophon'>

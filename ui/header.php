@@ -29,10 +29,10 @@
    <div id='top-nav' class='nav'>
       <ul>
          <?php /* TODO(eriq): Referencing root in these link will break while on test vhosts. */ ?>
-         <li><a href='/login'>Login</a> / <a href='/register'>Register</a></li>
-         <li><a href='#'>Something</a></li>
-         <li><a href='#'>Something Else</a></li>
-         <li><a href='#'>Another Thing</a></li>
+         <li><a href='login'>Login / Register</a></li>
+         <li><a href='upload'>Upload A Contig</a></li>
+         <li><a href='assign'>Assign A Task</a></li>
+         <li><a href='search'>Search</a></li>
       </ul>
    </div>
 </div>
