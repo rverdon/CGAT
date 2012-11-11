@@ -16,10 +16,10 @@
    if (isset($_GET['id'])) {
       $rtn['annotation'] = getAnnotation($_GET['id']);
       $rtn['contig'] = getContig($rtn['annotation']['contig_id']);
-      $rtn['valid'] = true;
+      $rtn['valid'] = $rtn['annotation'] && $rtn['contig'];
    } else {
       $rtn['valid'] = false;
    }
-   
+
    echo json_encode($rtn);
 ?>

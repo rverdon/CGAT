@@ -71,3 +71,27 @@ function clearValidationError(errorDump) {
    $('#' + errorDump).removeClass('validation-error');
    $('#' + errorDump).removeAttr('data-validation-error');
 }
+
+function enableModal(modalInnerHTML, modalClass) {
+   $('#overlay').remove();
+   $('body').append('<div id="overlay"><div id="modal" class="' + modalClass + '">' +
+                    modalInnerHTML + '</div></div>');
+}
+
+function disableModal() {
+   $('#overlay').remove();
+}
+
+function enableLoadingModal(modalPrefix) {
+   enableModal('<div class="' + modalPrefix + '-loading-image">' +
+                  '<img src="images/paring-animation.gif" alt="Loading" />' +
+                  '<p>Loading...</p>' +
+                  '</div>',
+               modalPrefix + '-loading');
+}
+
+function enableErrorModal(errorString, modalPrefix) {
+   enableModal('<div class="error-modal-content"><h1>Error</h1><p>' + errorString + '</p></div>',
+               modalPrefix + '-modal-error');
+   console.log(errorString);
+}

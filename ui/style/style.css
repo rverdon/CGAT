@@ -42,6 +42,40 @@ h2 {
    display: none;
 }
 
+#overlay {
+   position: fixed;
+   height: 100%;
+   width: 100%;
+   z-index: 50;
+   background: rgba(136, 136, 136, 0.7);
+   top: 0;
+   left: 0;
+}
+
+#modal {
+   background: white;
+   width: 400px;
+   margin-left: auto;
+   margin-right: auto;
+   margin-top: 100px;
+   border-radius: 10px;
+   padding: 10px;
+}
+
+.error-modal-content {
+   text-align: center;
+}
+
+.error-modal-content h1 {
+   color: red;
+   font-size: 36px;
+}
+
+.error-modal-content p {
+   font-size: 24px;
+   color: black;
+}
+
 #header {
 }
 

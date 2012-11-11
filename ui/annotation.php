@@ -27,7 +27,8 @@
             <div class='second-level-area'>
                <div class='dna-ruler'>
                </div>
-               <div class='top-dna'>
+               <div id='top-dna'>
+                  <div id='top-dna-overlay'></div>
                   <div id='dna-selection-draggable' class='draggable ui-widget-content'>
                   </div>
                </div>

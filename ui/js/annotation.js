@@ -1,7 +1,7 @@
 "use strict";
 
-// TODO(eriq): It is stupid that top-dna is class.
-//  Just make it an id and rethink having multiple.
+// TODO(eriq): Centralize the annotation data.
+//  Maybe use some setters to update dom elements accordingly.
 
 // TODO(eriq): Validation is not done where someone shrinks the gene size smaller
 //  than the range of the current exons.
@@ -21,45 +21,65 @@ document.addEventListener('DOMContentLoaded', function () {
    window.cgat.geneStart = 0;
    window.cgat.geneEnd = 0;
 
+   // Block interation until the info is loaded.
+   enableLoadingModal('annotation');
+
    $.ajax({
       url: 'fetch/annotation',
       dataType: 'json',
       data: {'id': window.params.id},
       error: function(jqXHR, textStatus, errorThrown) {
-         // TODO(eriq): Do more.
-         console.log("Error fetching annotation: " + textStatus);
+         enableErrorModal('Fetching Annotation', 'annotation');
       },
       success: function(data, textStatus, jqXHR) {
          if (!data.valid) {
-            // TODO(eriq): Do something Drastic!
-            console.log('INVALID CONTIG');
+            enableErrorModal('Invalid Contig', 'annotation');
             return;
          }
 
          window.cgat.dna = data.contig.sequence;
-         updateDnaSelection(0);
-         var topDnas = document.getElementsByClassName('top-dna');
-         var selector = null;
-         for (var i = 0; i < topDnas.length; i++) {
-            // TODO(eriq): This is bugged when you click the same place twice in a row.
-            topDnas[i].addEventListener('click', function(mouseEvent) {
-               updateDnaSelection(mouseEvent.offsetX);
-               selector = document.getElementById('dna-selection-draggable');
-               selector.style.left =
-                     mouseEvent.offsetX - Math.floor(selector.offsetWidth / 2);
-            });
-         }
+         window.cgat.geneStart = data.annotation.start || 0;
+         window.cgat.geneEnd = data.annotation.end || window.cgat.dna.length - 1;
+
+         // Place the exons.
+         data.annotation.exons.forEach(function(exon) {
+            addExonWithoutPlacing(exon.start, exon.end);
+         });
+
+         // Check for RC
+         window.cgat.reverseComplement = data.annotation.reverse_complement;
+         document.getElementById('annotation-rc').checked = data.annotation.reverse_complement;
+
+         // Fill in the gene name
+         window.cgat.geneName = data.annotation.isoform_name;
+         document.title = 'Annotate: ' + window.cgat.geneName;
+         setSubtitle(window.cgat.geneName);
+         $('#annotation-name').val(window.cgat.geneName);
 
          fillRuler(window.cgat.dna.length);
 
          // Set the gene end.
-         window.cgat.geneEnd = window.cgat.dna.length - 1;
          $('#annotation-end').val(window.cgat.geneEnd);
+         $('#annotation-start').val(window.cgat.geneStart);
          updateBoundingMarkers();
 
          // Set the value in #nucleotides-per-window.
          document.getElementById('nucleotides-per-window').value = window.cgat.nucleoditesPerWindow;
-      },
+
+         updateDnaSelection(0);
+
+         // Interation enabled.
+         disableModal();
+      }
+   });
+
+   var topDna = document.getElementById('top-dna');
+   var selector = document.getElementById('dna-selection-draggable');
+   // TODO(eriq): This is bugged when you click the same place twice in a row.
+   topDna.addEventListener('click', function(mouseEvent) {
+      updateDnaSelection(mouseEvent.offsetX);
+      selector.style.left =
+            mouseEvent.offsetX - Math.floor(selector.offsetWidth / 2);
    });
 
    // Change the size of the slider with the number box.
@@ -152,8 +172,7 @@ function updateBoundingMarkers() {
    // Clear the previous markers.
    $('.top-dna-boundary-marker').remove();
 
-   // TODO(eriq): Constant this and enfore in less
-   var sizeRatio = document.getElementsByClassName('top-dna')[0].offsetWidth / window.cgat.dna.length;
+   var sizeRatio = document.getElementById('top-dna').offsetWidth / window.cgat.dna.length;
 
    var startSize = Math.floor(window.cgat.geneStart * sizeRatio);
    var endSize = Math.floor((window.cgat.dna.length - window.cgat.geneEnd) * sizeRatio);
@@ -163,14 +182,14 @@ function updateBoundingMarkers() {
    startBound.style.top = '0px';
    startBound.style.width = '' + startSize + 'px';
    startBound.style.left = '0px';
-   document.getElementsByClassName('top-dna')[0].appendChild(startBound);
+   document.getElementById('top-dna').appendChild(startBound);
 
    var endBound = document.createElement('div');
    endBound.className = 'top-dna-boundary-marker';
    endBound.style.top = '0px';
    endBound.style.width = '' + endSize + 'px';
    endBound.style.right = '0px';
-   document.getElementsByClassName('top-dna')[0].appendChild(endBound);
+   document.getElementById('top-dna').appendChild(endBound);
 }
 
 function fillRuler(length) {
@@ -213,16 +232,19 @@ function removeExon(key) {
    delete window.cgat.exons[key];
    var removeExon = document.getElementById('exon-' + key);
    removeExon.parentElement.removeChild(removeExon);
-   // TODO(eriq): Only place delta
    placeExons();
 }
 
-function addExon(start, end) {
+// This is a dangerous function and should only be called from within
+//  addExon() and the initial placement.
+function addExonWithoutPlacing(start, end) {
    createExonElement(start, end, window.cgat.exonKey);
    window.cgat.exons[window.cgat.exonKey] = {start: start, end: end};
    window.cgat.exonKey++;
+}
 
-   // TODO(eriq): Only place delta
+function addExon(start, end) {
+   addExonWithoutPlacing(start, end);
    placeExons();
 }
 
@@ -270,10 +292,10 @@ function updateExon(key) {
    window.cgat.exons[key].start = newStart;
    window.cgat.exons[key].end = newEnd;
 
-   // TODO(eriq): Only place delta
    placeExons();
 }
 
+// TODO(eriq): Only place delta
 // Since this is called whenever exons need placement, this is the time
 //  to do any coordination with the global gene end and start.
 function placeExons() {
@@ -321,8 +343,7 @@ function placeExons() {
    // Clear the previous markers.
    $('.top-dna-exon-marker').remove();
 
-   // TODO(eriq): Constant this and enfore in less
-   var sizeRatio = document.getElementsByClassName('top-dna')[0].offsetWidth / window.cgat.dna.length;
+   var sizeRatio = document.getElementById('top-dna').offsetWidth / window.cgat.dna.length;
 
    // Place the new ones.
    for (var exonKey in window.cgat.exons) {
@@ -336,7 +357,7 @@ function placeExons() {
       marker.style.left = '' + Math.floor(exon.start * sizeRatio) + 'px';
 
       // TODO(eriq): Append all the kids at the same time.
-      document.getElementsByClassName('top-dna')[0].appendChild(marker);
+      document.getElementById('top-dna').appendChild(marker);
    }
 }
 
@@ -360,9 +381,8 @@ function selectorStopped(eventObj, uiObj) {
    updateDnaSelection(uiObj.position.left);
 }
 
-// TODO(eriq): Multiple dna viewers will break everything.
 function updateDnaSelection(leftEdge) {
-   var topDnaWidth = document.getElementsByClassName('top-dna')[0].offsetWidth;
+   var topDnaWidth = document.getElementById('top-dna').offsetWidth;
    var sizeRatio = window.cgat.nucleoditesPerWindow / window.cgat.dna.length;
    var selectorWidth = Math.floor(sizeRatio * topDnaWidth);
    document.getElementById('dna-selection-draggable').style.width = selectorWidth;
