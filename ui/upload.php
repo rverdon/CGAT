@@ -1,10 +1,10 @@
 <html>
    <head>
       <link rel='stylesheet' type='text/css' media='screen' href='style/style.css' />
-      <link rel='stylesheet' type='text/css' media='screen' href='style/propose_annotation.css' />
+      <link rel='stylesheet' type='text/css' media='screen' href='style/upload.css' />
       <script src='js/jquery-1.8.2.js'></script>
       <script src='js/script.js' type='text/javascript'></script>
-      <script src='js/propose_annotation.js' type='text/javascript'></script>
+      <script src='js/upload.js' type='text/javascript'></script>
       <title>CGAT Upload Contig</title>
    </head>
    <body>

@@ -96,4 +96,29 @@ function removeNotification($userId, $taskId) {
    $users->update($query, $update);
 }
 
+function createAnnotation($userId, $contigId) {
+   $db = getDB();
+
+   if (!$db->users->findOne(array('_id' => new MongoId($userId))) ||
+       !$db->contigs->findOne(array('_id' => new MongoId($contigId)))) {
+      error_log("Tried to create an annotation for a non-existant user or contig.");
+      return null;
+   }
+
+   $insertAnnotation = array("contig_id" => new MongoId($contigId), 'expert' => false,
+                             'meta' => array('created' => new MongoDate(), 'last_modified' => new MongoDate()),
+                             'partial' => true,
+                             'reverse_complement' => false,
+                             'user_id' => new MongoId($userId));
+   $db->annotations->insert($insertAnnotation);
+   $annotationId = $insertAnnotation['_id'];
+
+   $userQuery = array('_id' => new MongoId($userId));
+   $userUpdate = array('$push' => array('incomplete_annotations' => $annotationId));
+
+   $db ->users->update($userQuery, $userUpdate);
+
+   return $annotationId;
+}
+
 ?>

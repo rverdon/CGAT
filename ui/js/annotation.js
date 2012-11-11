@@ -42,16 +42,18 @@ document.addEventListener('DOMContentLoaded', function () {
          window.cgat.geneEnd = data.annotation.end || window.cgat.dna.length - 1;
 
          // Place the exons.
-         data.annotation.exons.forEach(function(exon) {
-            addExonWithoutPlacing(exon.start, exon.end);
-         });
+         if (data.annotation.exons) {
+            data.annotation.exons.forEach(function(exon) {
+               addExonWithoutPlacing(exon.start, exon.end);
+            });
+         }
 
          // Check for RC
          window.cgat.reverseComplement = data.annotation.reverse_complement;
          document.getElementById('annotation-rc').checked = data.annotation.reverse_complement;
 
          // Fill in the gene name
-         window.cgat.geneName = data.annotation.isoform_name;
+         window.cgat.geneName = data.annotation.isoform_name || '';
          document.title = 'Annotate: ' + window.cgat.geneName;
          setSubtitle(window.cgat.geneName);
          $('#annotation-name').val(window.cgat.geneName);

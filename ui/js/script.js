@@ -95,3 +95,11 @@ function enableErrorModal(errorString, modalPrefix) {
                modalPrefix + '-modal-error');
    console.log(errorString);
 }
+
+// Enable a modal that has a confirmation button that will remove it.
+function enableErrorConfirmModal(errorString, modalPrefix) {
+   enableModal('<div class="error-modal-content"><h1>Error</h1><p>' + errorString + '</p>' + 
+                     '<button class="error-modal-confirm" onclick="disableModal();">OK</button></div>',
+               modalPrefix + '-modal-error');
+   console.log(errorString);
+}

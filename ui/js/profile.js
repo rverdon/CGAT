@@ -38,25 +38,14 @@ document.addEventListener('DOMContentLoaded', function () {
          // Partials
          var partials = '';
          data.incomplete_annotations.forEach(function(partial) {
-            partials += "<div class='partial profile-entry' id='partial-" + partial.id + "' " +
-                           "onclick='annotationClicked(" + partial.id + ");'>" +
-                        "<h3>Name: " + partial.annotation_info.isoform_name + "</h3>" +
-                        "<h3>Contig: " + partial.contig_info.meta.name + "</h3>" +
-                        "<h3>Last Mod: " + formatEpochDate(partial.annotation_info.meta.last_modified) + "</h3>" +
-                        "</div>";
+            partials += makePartial(partial, data['_id']['$id']);
          });
          $('#partials-area').html(partials);
 
          // Recents
          var recents = '';
          data.history.forEach(function(recent) {
-            recents += "<div class='recent profile-entry' id='recent-" + recent.id + "' " +
-                          "onclick='annotationClicked(" + recent.id + ");'>" +
-                        "<h3>Name: " + recent.annotation_info.isoform_name + "</h3>" +
-                        "<h3>Contig: " + recent.contig_info.meta.name + "</h3>" +
-                        "<h3>Submitted At: " + formatEpochDate(recent.meta.date.sec) + "</h3>" +
-                        "<h3>Score: " + recent.meta.experience_gained + "</h3>" +
-                        "</div>";
+            recents += makeRecent(recent, data['_id']['$id']);
          });
          $('#recents-area').html(recents);
 
@@ -65,6 +54,32 @@ document.addEventListener('DOMContentLoaded', function () {
       }
    });
 });
+
+function makeRecent(recent, userId) {
+   var annotationId = recent.annotation_info['_id']['$id'];
+   return "<div class='recent profile-entry' id='recent-" + annotationId + "'>" +
+          "<span>Gene: <a href='gene?id=" + recent.annotation_info.isoform_name + "'>" +
+                recent.annotation_info.isoform_name + "</a></span>" +
+          "<span>Contig: <a href='contig?id=" + recent.contig_info['_id']['$id'] + "'>" +
+                recent.contig_info.meta.name + "</a></span>" +
+          "<span>Score: " + recent.meta.experience_gained + "</span>" +
+          "<span>Submitted At: " + formatEpochDate(recent.meta.date.sec) + "</span>" +
+          "<div class='annotate-button' onclick='viewAnnotation(\"" + annotationId + "\");'></div>" +
+          "</div>";
+}
+
+function makePartial(partial, userId) {
+   var annotationId = partial.annotation_id['$id'];
+   return "<div class='partial profile-entry' id='partial-" + annotationId + "'>" +
+          "<span>Gene: <a href='gene?id=" + partial.annotation_info.isoform_name + "'>" +
+                partial.annotation_info.isoform_name + "</a></span>" +
+          "<span>Contig: <a href='contig?id=" + partial.contig_info['_id']['$id'] + "'>" +
+                partial.contig_info.meta.name + "</a></span>" +
+          "<span>Difficulty: " + partial.contig_info.meta.difficulty + "</span>" +
+          "<span>Last Mod: " + formatEpochDate(partial.annotation_info.meta.last_modified.sec) + "</span>" +
+          "<div class='annotate-button' onclick='beginAnnotation(\"" + annotationId + "\", \"" + userId + "\");'></div>" +
+          "</div>";
+}
 
 function makeNotification(notification, userId) {
    var notificationId = notification['_id']['$id'];
@@ -75,14 +90,42 @@ function makeNotification(notification, userId) {
                 notification.contig_meta.meta.species + "</a></span>" +
           "<span>Difficulty: " + notification.contig_meta.meta.difficulty + "</span>" +
           "<div class='cancel-button' onclick='cancelNotification(\"" + notificationId + "\", \"" + userId + "\");'></div>" +
-          "<div class='annotate-button' onclick='beginAnnotation(\"" + notificationId + "\", \"" + userId + "\");'></div>" +
+          "<div class='annotate-button' onclick='createAnnotation(\"" + notificationId +
+                "\", \"" + notification.contig_meta['_id']['$id'] + "\", \"" + userId + "\");'></div>" +
           "</div>";
 }
 
-//TODO(eriq)
-function beginAnnotation(notificationId, userId) {
-   console.log("Begin Annotation: " + notificationId);
-   //window.location.href = 'annotation?id=' + id;
+function viewAnnotation(annotationId) {
+   window.location.href = 'view-annotation?id=' + annotationId;
+}
+
+//TODO(eriq): Remove notification if it is submitted.
+function createAnnotation(notificationId, contigId, userId) {
+   enableLoadingModal('profile');
+   $.ajax({
+      url: 'fetch/create_annotation',
+      type: 'POST',
+      dataType: 'json',
+      data: {user: userId, contig: contigId},
+      error: function(jqXHR, textStatus, errorThrown) {
+         enableErrorConfirmModal('Creating Annotation', 'profile');
+         return;
+      },
+      success: function(data, textStatus, jqXHR) {
+         if (!data.valid) {
+            enableErrorConfirmModal('Creating Annotation', 'profile');
+            return;
+         }
+
+         beginAnnotation(data.annotationId['$id'], userId);
+      }
+   });
+}
+
+// TODO(eriq)
+// Work on an annotation.
+function beginAnnotation(annotationId, userId) {
+   window.location.href = 'annotation?id=' + annotationId;
 }
 
 function cancelNotification(id, userId) {

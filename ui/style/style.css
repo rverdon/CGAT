@@ -168,6 +168,10 @@ h2 {
    text-shadow: 1px 1px black;
 }
 
+.second-level-area h2 {
+   cursor: pointer;
+}
+
 .collapse-button {
    display: inline-block;
    width: 0;
