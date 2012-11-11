@@ -15,7 +15,7 @@
          <div id='content' class='top-level-area'>
             <a href='annotation?id=509c87d4a74c1a24f4010d49'>Sample Annotation</a>
             <br />
-            <a href='profile'>Sample Profile Home</a>
+            <a href='profile?user=Bob'>Sample Profile Home</a>
             <br />
             <a href='propose_annotation'>Sample Propose Annotation</a>
          </div>

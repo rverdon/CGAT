@@ -6,6 +6,11 @@
       <script src='js/script.js' type='text/javascript'></script>
       <script src='js/profile.js' type='text/javascript'></script>
       <title>Profile Home</title>
+      <script>
+         // TODO(eriq): Should this be here, or in js
+         window.params = {};
+         window.params.user = '<?php echo $_GET['user']; ?>';
+      </script>
    </head>
    <body>
       <div id='page'>
@@ -23,8 +28,10 @@
                <div id='profile-user-stats'>
                </div>
                <div id='profile-user-info-area'>
+                  <h2 id='profile-user-full-name'></h2>
                   <h2 id='profile-user-name'></h2>
                   <h2 id='profile-user-email'></h2>
+                  <h2 id='profile-user-last-login'></h2>
                </div>
             </div>
 

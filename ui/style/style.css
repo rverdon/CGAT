@@ -62,6 +62,22 @@ h2 {
    padding: 10px;
 }
 
+.loading-modal {
+   text-align: center;
+}
+
+.loading-modal p {
+   font-size: 32px;
+   margin-top: 10px;
+   margin-bottom: 10px;
+}
+
+.loading-modal-image {
+   width: 300px;
+   margin-left: auto;
+   margin-right: auto;
+}
+
 .error-modal-content {
    text-align: center;
 }

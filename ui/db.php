@@ -33,7 +33,7 @@ function getProfile($userName) {
    $users = $db->users;
 
    $query = array("meta.user_name" => $userName);
-   $fields = array('meta.email' => 1, 'meta.first_name' => 1, 'meta.last_name' => 1,
+   $fields = array('meta.user_name' => 1, 'meta.email' => 1, 'meta.first_name' => 1, 'meta.last_name' => 1,
                    'meta.joined' => 1, 'meta.last_login' => 1, 'meta.level' => 1,
                    'groups' => 1, 'history' => 1, 'tasks' => 1, 'incomplete_annotations' => 1);
    return $users->findOne($query, $fields);
@@ -54,11 +54,15 @@ function getExpandedProfile($userName) {
    // Expand all the history
    foreach ($profile['history'] as $key => $annotation) {
       $profile['history'][$key]['annotation_info'] = getAnnotation($annotation['anno_id']);
+      $profile['history'][$key]['contig_info'] =
+         getContigMeta($profile['history'][$key]['annotation_info']['contig_id']);
    }
 
    // Expand all the partials
    foreach ($profile['incomplete_annotations'] as $key => $annotationId) {
       $profile['incomplete_annotations'][$key]['annotation_info'] = getAnnotation($annotationId);
+      $profile['incomplete_annotations'][$key]['contig_info'] =
+         getContigMeta($profile['incomplete_annotations'][$key]['annotation_info']['contig_id']);
    }
 
    return $profile;

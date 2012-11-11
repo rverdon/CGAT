@@ -55,7 +55,7 @@ function formatEpochDate(epochTime) {
           date.getDate() + "/" +
           date.getFullYear() + " -- " +
           date.getHours() + ":" +
-          date.getMinutes();
+          (date.getMinutes() < 10 ? '0' + date.getMinutes() : date.getMinutes());
 }
 
 // |invalidElement| is the element that the validation error will be attached to.
@@ -83,11 +83,11 @@ function disableModal() {
 }
 
 function enableLoadingModal(modalPrefix) {
-   enableModal('<div class="' + modalPrefix + '-loading-image">' +
+   enableModal('<div class="loading-modal-image ' + modalPrefix + '-loading-image">' +
                   '<img src="images/paring-animation.gif" alt="Loading" />' +
                   '<p>Loading...</p>' +
                   '</div>',
-               modalPrefix + '-loading');
+               'loading-modal ' + modalPrefix + '-loading');
 }
 
 function enableErrorModal(errorString, modalPrefix) {
