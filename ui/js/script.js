@@ -91,15 +91,28 @@ function enableLoadingModal(modalPrefix) {
 }
 
 function enableErrorModal(errorString, modalPrefix) {
-   enableModal('<div class="error-modal-content"><h1>Error</h1><p>' + errorString + '</p></div>',
+   enableModal('<div class="modal-content error-modal-content"><h1>Error</h1><p>' + errorString + '</p></div>',
+               modalPrefix + '-modal-error');
+   console.log(errorString);
+}
+
+// Enable an error modal that has a confirmation button that will remove it.
+// The callback will be called before the modal is cleared.
+//  The callback must not be an anonymous function, it must be referenced by name.
+function enableErrorConfirmModal(errorString, modalPrefix, callbackName) {
+   var functionInvoke = callbackName ? callbackName + '()' : '';
+   enableModal('<div class="modal-content error-modal-content"><h1>Error</h1><p>' + errorString + '</p>' +
+                     '<button class="error-modal-confirm" onclick="' + functionInvoke + '; disableModal();">OK</button></div>',
                modalPrefix + '-modal-error');
    console.log(errorString);
 }
 
 // Enable a modal that has a confirmation button that will remove it.
-function enableErrorConfirmModal(errorString, modalPrefix) {
-   enableModal('<div class="error-modal-content"><h1>Error</h1><p>' + errorString + '</p>' + 
-                     '<button class="error-modal-confirm" onclick="disableModal();">OK</button></div>',
-               modalPrefix + '-modal-error');
-   console.log(errorString);
+// The callback will be called before the modal is cleared.
+//  The callback must not be an anonymous function, it must be referenced by name.
+function enableConfirmModal(message, modalPrefix, callbackName) {
+   var functionInvoke = callbackName ? callbackName + '()' : '';
+   enableModal('<div class="modal-content"><p>' + message + '</p>' +
+                     '<button class="modal-confirm" onclick="' + functionInvoke + '; disableModal();">OK</button></div>',
+               modalPrefix + '-modal');
 }

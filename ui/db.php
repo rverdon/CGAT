@@ -1,5 +1,29 @@
 <?php
 
+// TODO(eriq): There are no specs for gene name, so we cannot sanitize it!
+// Sanitize the data that comes in for saving/submitting an annotation.
+function annotationDataSanitize($data) {
+   $cleanData = array();
+
+   $cleanData['annotationId'] = mongoIdSanitize($data['annotationId']);
+   $cleanData['start'] = intval(preg_replace('/\D/', '', $data['start']));
+   $cleanData['end'] = intval(preg_replace('/\D/', '', $data['end']));
+   $cleanData['reverseComplement'] = $data['reverseComplement'] === 'true';
+   // TODO(eriq): Find out the possibilities.
+   $cleanData['geneName'] = $data['geneName'];
+   $cleanData['contigId'] = mongoIdSanitize($data['contigId']);
+   $cleanData['userId'] = mongoIdSanitize($data['userId']);
+
+   $cleanExons = array();
+   foreach ($data['exons'] as $key => $exon) {
+      $cleanExons[] = array('start' => intval(preg_replace('/\D/', '', $exon['start'])),
+                            'end' => intval(preg_replace('/\D/', '', $exon['end'])));
+   }
+   $cleanData['exons'] = $cleanExons;
+
+   return $cleanData;
+}
+
 // Sanitize a value for use as a mongo id.
 function mongoIdSanitize($val) {
    $clean = preg_replace('/[^a-fA-F0-9]/', '', $val);
@@ -114,11 +138,96 @@ function createAnnotation($userId, $contigId) {
    $annotationId = $insertAnnotation['_id'];
 
    $userQuery = array('_id' => new MongoId($userId));
-   $userUpdate = array('$push' => array('incomplete_annotations' => $annotationId));
+   $userUpdate = array('$addToSet' => array('incomplete_annotations' => $annotationId));
 
    $db ->users->update($userQuery, $userUpdate);
 
    return $annotationId;
+}
+
+function updateAnnotation($data, $partialStatus) {
+   $db = getDB();
+
+   $query = array('_id' => new MongoId($data['annotationId']));
+   $update = array('$set' => array('start' => $data['start'],
+                                   'end' => $data['end'],
+                                   'reverse_complement' => $data['reverseComplement'],
+                                   'isoform_name' => $data['geneName'],
+                                   'exons' => $data['exons'],
+                                   'meta.last_modified' => new MongoDate(),
+                                   'partial' => $partialStatus));
+   // If this is not a partial (finished), update the final time.
+   if (!$partialStatus) {
+      $update['$set']['meta.finished'] = new MongoDate();
+   }
+
+   $db->annotations->update($query, $update);
+}
+
+function removeNotificationGivenContig($userId, $contigId) {
+   $db = getDB();
+   $users = $db->users;
+
+   $query = array('_id' => new MongoId($userId));
+   $update = array('$pull' => array('tasks' => array('contig_id' => new MongoId($contigId))));
+   $users->update($query, $update);
+}
+
+//TODO
+function saveAnnotation($data) {
+   $db = getDB();
+
+   // TODO(eriq): Multiple notifications from the same contig is broken.
+   // Possibly remove from a user's notifications
+   removeNotificationGivenContig($data['userId'], $data['contigId']);
+
+   // Place it in the users imcomplete
+   $userQuery = array('_id' => new MongoId($data['userId']));
+   $userUpdate = array('$addToSet' => array('incomplete_annotations' => new MongoId($data['annotationId'])));
+   $db->users->update($userQuery, $userUpdate);
+
+   // Update annotation
+   updateAnnotation($data, true);
+}
+
+function submitAnnotation($data) {
+   $db = getDB();
+
+   // Possibly remove from a user's notifications
+   removeNotificationGivenContig($data['userId'], $data['contigId']);
+
+   // Update the contig first
+   $contigQuery = array('_id' => new MongoId($data['contigId']));
+   $contigUpdate = array('$push' => array("isoform_name." . $data['geneName'] => new MongoId($data['annotationId'])));
+   $db->contigs->update($contigQuery, $contigUpdate);
+
+   // Get the difficulty
+   $exp = $db->contigs->findOne($contigQuery, array('meta.difficulty' => 1))['meta']['difficulty'];
+
+   // remove is from the users incomplete, and add it to the users history
+   // Update users' exp
+   $userQuery = array('_id' => new MongoId($data['userId']));
+   $userPull = array('$pull' => array('incomplete_annotations' => new MongoId($data['annotationId'])));
+   $userInc = array('$inc' => array('meta.exp' => $exp));
+   $userPush = array('$push' => array('history' => array('anno_id' => new MongoId($data['annotationId']),
+                                                         'meta' => array('date' => new MongoDate(),
+                                                                         'experience_gained' => $exp))));
+   $db->users->update($userQuery, $userPull);
+   $db->users->update($userQuery, $userInc);
+   $db->users->update($userQuery, $userPush);
+
+   // Update annotation
+   updateAnnotation($data, false);
+}
+
+// Remove |oldName| and add |newName| to the contigs isoform list.
+function updateContigIsoformList($contigId, $annotationId, $oldName, $newName) {
+   $db = getDB();
+
+   $query = array('_id' => new MongoId($contigId));
+   $update = array('$pull' => array("isoform_name.${oldName}" => new MongoId($annotationId)),
+                   '$push' => array("isoform_name.${newName}" => new MongoId($annotationId)));
+   $db->contigs->update($query, $update);
 }
 
 ?>

@@ -78,16 +78,19 @@ h2 {
    margin-right: auto;
 }
 
-.error-modal-content {
+.modal-content {
    text-align: center;
+}
+
+.modal-content h1 {
+   font-size: 36px;
 }
 
 .error-modal-content h1 {
    color: red;
-   font-size: 36px;
 }
 
-.error-modal-content p {
+.modal-content p {
    font-size: 24px;
    color: black;
 }

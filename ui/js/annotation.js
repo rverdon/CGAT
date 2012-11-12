@@ -20,6 +20,8 @@ document.addEventListener('DOMContentLoaded', function () {
    window.cgat.nucleoditesPerWindow = 200;
    window.cgat.geneStart = 0;
    window.cgat.geneEnd = 0;
+   window.cgat.contigId = null;
+   window.cgat.userId = null;
 
    // Block interation until the info is loaded.
    enableLoadingModal('annotation');
@@ -37,9 +39,12 @@ document.addEventListener('DOMContentLoaded', function () {
             return;
          }
 
+         window.cgat.annotationId = data.annotation['_id']['$id'];
          window.cgat.dna = data.contig.sequence;
          window.cgat.geneStart = data.annotation.start || 0;
          window.cgat.geneEnd = data.annotation.end || window.cgat.dna.length - 1;
+         window.cgat.contigId = data.contig['_id']['$id'];
+         window.cgat.userId = data.annotation.user_id['$id'];
 
          // Place the exons.
          if (data.annotation.exons) {
@@ -416,4 +421,80 @@ function updateDnaSelection(leftEdge) {
    document.getElementById('standard-sequence').innerHTML = sequenceDivs.join('');
 
    placeExons();
+}
+
+function collectAnnotationData() {
+   var data = {};
+   data.annotationId = window.cgat.annotationId;
+   data.start = window.cgat.geneStart;
+   data.end = window.cgat.geneEnd;
+   data.reverseComplement = window.cgat.reverseComplement;
+   data.geneName = window.cgat.geneName;
+   data.contigId = window.cgat.contigId;
+   data.userId = window.cgat.userId;
+
+   data.exons = [];
+   for (var key in window.cgat.exons) {
+      if (window.cgat.exons[key]) {
+         data.exons.push(window.cgat.exons[key]);
+      }
+   }
+
+   return data;
+}
+
+// Return false on calidation error
+// Validate any required information before a submit.
+function validateBeforeSubmit() {
+   // The only thing I can think of here is the gene name.
+   console.log($('#annotation-name').val());
+   if ($('#annotation-name').val().length === 0) {
+      validationError('Must have a Gene Name', 'gene-name-area');
+      return false;
+   }
+
+   return true;
+}
+
+function saveAnnotation() {
+   enableLoadingModal('annotation');
+   $.ajax({
+      url: 'fetch/save_annotation',
+      type: 'POST',
+      dataType: 'json',
+      data: collectAnnotationData(),
+      error: function(jqXHR, textStatus, errorThrown) {
+         enableErrorConfirmModal('Saving Annotation', 'annotaion');
+         return;
+      },
+      success: function(data, textStatus, jqXHR) {
+         enableConfirmModal('Annotation Saved', 'annotation');
+      }
+   });
+}
+
+//TODO(eriq): Go To view
+function submitAnnotation() {
+   if (!validateBeforeSubmit()) {
+      return;
+   }
+
+   enableLoadingModal('annotation');
+   $.ajax({
+      url: 'fetch/submit_annotation',
+      type: 'POST',
+      dataType: 'json',
+      data: collectAnnotationData(),
+      error: function(jqXHR, textStatus, errorThrown) {
+         enableErrorConfirmModal('Submitting Annotation', 'annotaion');
+         return;
+      },
+      success: function(data, textStatus, jqXHR) {
+         enableConfirmModal('Annotation Submitted', 'annotation', 'goToView');
+      }
+   });
+}
+
+function goToView() {
+   window.location.href = 'view-annotation?id=' + window.cgat.annotationId;
 }

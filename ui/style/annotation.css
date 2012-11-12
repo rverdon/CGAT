@@ -66,7 +66,7 @@
 }
 
 .annotation-data {
-   margin-bottom: 20px;
+   margin-bottom: 25px;
    width: 450px;
    display: inline-block;
 }
@@ -75,6 +75,17 @@
 }
 
 .annotation-data-right {
+}
+
+.annotation-data-button-area {
+}
+
+.annotation-data-button-area button {
+   font-size: 24px;
+   height: 36px;
+   width: 200px;
+   margin-left: 75px;
+   margin-right: 75px;
 }
 
 .dna-closeup h2 {

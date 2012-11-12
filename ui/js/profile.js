@@ -122,7 +122,6 @@ function createAnnotation(notificationId, contigId, userId) {
    });
 }
 
-// TODO(eriq)
 // Work on an annotation.
 function beginAnnotation(annotationId, userId) {
    window.location.href = 'annotation?id=' + annotationId;
@@ -135,7 +134,7 @@ function cancelNotification(id, userId) {
       type: 'POST',
       data: {id: id, user: userId},
       error: function(jqXHR, textStatus, errorThrown) {
-         // TODO(eriq): Do more.
+         enableErrorConfirmModal('Removing Notification', 'profile');
          console.log("Error canceling an annotation: " + textStatus);
       }
    });

@@ -49,7 +49,6 @@ db.annotations.insert({
    "meta" : {
       "created" : ISODate("2012-11-09T04:34:12.758Z"),
       "expert_incorrect" : false,
-      "finished" : ISODate("2012-11-09T04:34:12.758Z"),
       "incorrect" : false,
       "last_modified" : ISODate("2012-11-09T04:34:12.758Z")
    },
@@ -120,7 +119,8 @@ db.users.insert({
       "pass_hash" : "b109f3bbbc244eb82441917ed06d618b9008dd09b3befd1b5e07394c706a8bb980b1d7785e5976ec049b46df5f1326af5a2ea6d103fd07c95385ffab0cacbc86",
       "role" : "User",
       "salt" : "123948612348791236441239876",
-      "user_name" : "Bob"
+      "user_name" : "Bob",
+      "exp": 100
    },
    "tasks" : [
       {

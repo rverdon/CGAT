@@ -44,7 +44,7 @@
                   Annotation Data
                </h2>
                <div id='annotation-data-area' class='collapsing-area'>
-                  <div class='annotation-data annotation-data-left'>
+                  <div id='gene-name-area' class='annotation-data annotation-data-left'>
                      <span>Gene Name: </span>
                      <input type='text' id='annotation-name' />
                   </div>
@@ -63,6 +63,14 @@
                   <div class='annotation-data annotation-data-left'>
                      <span id='nucleotides-per-window-span'>Nucleotides Per Window: </span>
                      <input type='number' id='nucleotides-per-window' />
+                  </div>
+                  <div class='annotation-data annotation-data-right'>
+                  </div>
+                  <div class='annotation-data annotation-data-left annotation-data-button-area'>
+                     <button onclick='saveAnnotation();'>Save</button>
+                  </div>
+                  <div class='annotation-data annotation-data-right annotation-data-button-area'>
+                     <button onclick='submitAnnotation();'>Submit</button>
                   </div>
                </div>
             </div>
