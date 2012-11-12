@@ -27,6 +27,10 @@ document.addEventListener('DOMContentLoaded', function () {
          $('#profile-user-pic').attr('src', data.profilePic);
          $('#profile-user-last-login').text('Last Login: ' + formatEpochDate(data.meta.last_login.sec));
 
+         // Rank info
+         $('#stats-level').text('Level ' + data.meta.level);
+         $('#stats-exp').text(data.meta.exp + 'XP');
+
          // Notifications
          var notifications = '';
          data.tasks.forEach(function(notification) {

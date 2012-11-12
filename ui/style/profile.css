@@ -25,7 +25,8 @@
    box-shadow: 2px 2px 2px #888;
 }
 
-#profile-user-info-area {
+#profile-user-info-area,
+#profile-user-stats {
    color: #E2E2E2;
    text-shadow: 1px 1px black;
    font-size: 24px;

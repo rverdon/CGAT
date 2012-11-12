@@ -75,7 +75,7 @@ function getProfile($userName) {
 
    $query = array("meta.user_name" => $userName);
    $fields = array('meta.user_name' => 1, 'meta.email' => 1, 'meta.first_name' => 1, 'meta.last_name' => 1,
-                   'meta.joined' => 1, 'meta.last_login' => 1, 'meta.level' => 1,
+                   'meta.joined' => 1, 'meta.last_login' => 1, 'meta.level' => 1, 'meta.exp' => 1,
                    'groups' => 1, 'history' => 1, 'tasks' => 1, 'incomplete_annotations' => 1);
    return $users->findOne($query, $fields);
 }

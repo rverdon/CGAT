@@ -26,6 +26,8 @@
                   <img id='profile-user-pic' src='images/defaultProfile.png'></img>
                </div>
                <div id='profile-user-stats'>
+                  <h2 id='stats-level'></h2>
+                  <h2 id='stats-exp'></h2>
                </div>
                <div id='profile-user-info-area'>
                   <h2 id='profile-user-full-name'></h2>
