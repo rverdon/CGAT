@@ -51,6 +51,16 @@
                <div id='partials-area' class='collapsing-area'></div>
             </div>
 
+            <div id='groups' class='second-level-area'>
+               <h2 onclick='toggleCollapse("groups-collapse-button", "groups-area");'>
+                  <div class='collapse-button' id='groups-collapse-button'></div>
+                  Groups
+                  </h2>
+               <div id='groups-area' class='collapsing-area'>
+                  <div id='groups-inset' class='second-level-inset'></div>
+               </div>
+            </div>
+
             <div id='recents' class='second-level-area'>
                <h2 onclick='toggleCollapse("recents-collapse-button", "recents-area");'>
                   <div class='collapse-button' id='recents-collapse-button'></div>

@@ -80,11 +80,24 @@ function getProfile($userName) {
    return $users->findOne($query, $fields);
 }
 
+// Not the users in the group.
+function getGroupInfo($groupId) {
+   $db = getDB();
+   return $db->groups->findOne(array('_id' => new MongoId($groupId)),
+                               array('created' => 1, 'description' => 1, 'name' => 1));
+}
+
 function getExpandedProfile($userName) {
    $profile = getProfile($userName);
 
    if (!$profile) {
       return null;
+   }
+
+   // Expand all the groups to just include the names
+   foreach ($profile['groups'] as $key => $groupId) {
+      $profile['groups'][$key] = array();
+      $profile['groups'][$key]['info'] = getGroupInfo($groupId);
    }
 
    // Expand all the tasks
@@ -228,6 +241,18 @@ function updateContigIsoformList($contigId, $annotationId, $oldName, $newName) {
    $update = array('$pull' => array("isoform_name.${oldName}" => new MongoId($annotationId)),
                    '$push' => array("isoform_name.${newName}" => new MongoId($annotationId)));
    $db->contigs->update($query, $update);
+}
+
+function leaveGroup($userId, $groupId) {
+   $db = getDB();
+
+   $groupQuery = array('_id' => new MongoId($groupId));
+   $groupUpdate = array('$pull' => array('users' => new MongoId($userId)));
+   $db->groups->update($groupQuery, $groupUpdate);
+
+   $userQuery = array('_id' => new MongoId($userId));
+   $userUpdate = array('$pull' => array('groups' => new MongoId($groupId)));
+   $db->users->update($userQuery, $userUpdate);
 }
 
 ?>

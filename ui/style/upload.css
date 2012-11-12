@@ -2,18 +2,6 @@
    text-align: center;
 }
 
-#method-area {
-   width: 940px;
-   background: lightSteelBlue;
-   border-radius: 10px;
-   box-shadow: -2px -2px 5px #888;
-   margin: 10px;
-   padding: 10px;
-   color: black;
-   text-shadow: 1px 1px #888;
-   overflow: hidden;
-}
-
 .method {
    -webkit-transition: opacity 0.25s;
    transition: opacity 0.25s;

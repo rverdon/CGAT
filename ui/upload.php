@@ -40,7 +40,7 @@
                      <input type="radio" name="method" value="manual"><span>Manual</span>
                      <input type="radio" name="method" value="previous"><span>Previously Uploaded</span>
 
-                     <div id='method-area'>
+                     <div id='method-area' class='second-level-inset'>
                         <div id='fasta-method-area' class='method selected-method'>
                            FASTA
                         </div>

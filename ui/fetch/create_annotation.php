@@ -4,7 +4,6 @@
    require_once '../db.php';
 
    if (!isset($_POST['user']) || !isset($_POST['contig'])) {
-      error_log('TESTEST');
       die('user and contig must be present');
    }
    $annotationId = createAnnotation(mongoIdSanitize($_POST['user']),

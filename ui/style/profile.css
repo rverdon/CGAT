@@ -92,3 +92,16 @@
    display: inline;
    float: right;
 }
+
+.group-tag {
+   background: #DEB3E4;
+   padding: 10px;
+   border-radius: 10px;
+   box-shadow: 2px 2px 2px #888;
+   display: inline-block;
+}
+
+.group-tag a {
+   text-decoration: none;
+   color: #382D18;
+}

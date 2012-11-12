@@ -175,6 +175,18 @@ h2 {
    cursor: pointer;
 }
 
+.second-level-inset {
+   width: 940px;
+   background: lightSteelBlue;
+   border-radius: 10px;
+   box-shadow: -2px -2px 5px #888;
+   margin: 10px;
+   padding: 10px;
+   color: black;
+   text-shadow: 1px 1px #888;
+   overflow: hidden;
+}
+
 .collapse-button {
    display: inline-block;
    width: 0;
