@@ -93,7 +93,7 @@ function enableLoadingModal(modalPrefix) {
 function enableErrorModal(errorString, modalPrefix) {
    enableModal('<div class="modal-content error-modal-content"><h1>Error</h1><p>' + errorString + '</p></div>',
                modalPrefix + '-modal-error');
-   console.log(errorString);
+   console.log('Error: ' + errorString);
 }
 
 // Enable an error modal that has a confirmation button that will remove it.
@@ -104,7 +104,7 @@ function enableErrorConfirmModal(errorString, modalPrefix, callbackName) {
    enableModal('<div class="modal-content error-modal-content"><h1>Error</h1><p>' + errorString + '</p>' +
                      '<button class="error-modal-confirm" onclick="' + functionInvoke + '; disableModal();">OK</button></div>',
                modalPrefix + '-modal-error');
-   console.log(errorString);
+   console.log('Error: ' + errorString);
 }
 
 // Enable a modal that has a confirmation button that will remove it.

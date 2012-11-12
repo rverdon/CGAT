@@ -146,9 +146,7 @@ h2 {
 .top-level-area {
    position: relative;
    width: 1000px;
-   /*background: #B0C4DE;*/
    background: #B0C4DE;
-   /*background: #ffffff;*/
    margin-left: auto;
    margin-right: auto;
    margin-top: 10px;
@@ -160,7 +158,6 @@ h2 {
 
 .second-level-area {
    position: relative;
-   /*background: #C0C0C0;*/
    background: #395668;
    margin-top: 10px;
    margin-bottom: 10px;
@@ -289,4 +286,24 @@ h2 {
    background: #2B2B2B;
    color: white;
    text-shadow: 1px 1px black;
+}
+
+/** These are buttons that live in the top level area and have the same color
+    scheme as the second level */
+.second-level-button {
+   font-size: 24px;
+}
+
+.second-level-button:hover {
+   background: #133044;
+}
+
+.second-level-button:active {
+   background: #34444E;
+}
+
+
+/* These buttons span the whole top-level. */
+.full-second-level-button {
+   width: 1000px;
 }

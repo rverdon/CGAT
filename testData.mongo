@@ -87,7 +87,10 @@ db.groups.insert({
    "description" : "Group for members of BIO 123 during Fall 2012.",
    "name" : "BIO 123 Fall 2012",
    "users" : [
-      ObjectId("000000000000000000000003")
+      {
+         "user_id": ObjectId("000000000000000000000003"),
+         "name": "Bob"
+      }
    ]
 });
 

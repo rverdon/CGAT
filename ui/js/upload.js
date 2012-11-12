@@ -1,3 +1,5 @@
+"use strict";
+
 document.addEventListener('DOMContentLoaded', function() {
    // Attach listeners to the radio buttons.
    $('input[name=method]:radio').change(updateSelectedMethod);

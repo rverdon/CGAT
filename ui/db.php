@@ -15,9 +15,11 @@ function annotationDataSanitize($data) {
    $cleanData['userId'] = mongoIdSanitize($data['userId']);
 
    $cleanExons = array();
-   foreach ($data['exons'] as $key => $exon) {
-      $cleanExons[] = array('start' => intval(preg_replace('/\D/', '', $exon['start'])),
-                            'end' => intval(preg_replace('/\D/', '', $exon['end'])));
+   if (isset($data['exons'])) {
+      foreach ($data['exons'] as $key => $exon) {
+         $cleanExons[] = array('start' => intval(preg_replace('/\D/', '', $exon['start'])),
+                              'end' => intval(preg_replace('/\D/', '', $exon['end'])));
+      }
    }
    $cleanData['exons'] = $cleanExons;
 
@@ -85,6 +87,11 @@ function getGroupInfo($groupId) {
    $db = getDB();
    return $db->groups->findOne(array('_id' => new MongoId($groupId)),
                                array('created' => 1, 'description' => 1, 'name' => 1));
+}
+
+function getFullGroupInfo($groupId) {
+   $db = getDB();
+   return $db->groups->findOne(array('_id' => new MongoId($groupId)));
 }
 
 function getExpandedProfile($userName) {
@@ -243,11 +250,24 @@ function updateContigIsoformList($contigId, $annotationId, $oldName, $newName) {
    $db->contigs->update($query, $update);
 }
 
+function joinGroup($userId, $userName, $groupId) {
+   $db = getDB();
+
+   $groupQuery = array('_id' => new MongoId($groupId));
+   $groupUpdate = array('$push' => array('users' => array('user_id' => new MongoId($userId),
+                                                          'name' => $userName)));
+   $db->groups->update($groupQuery, $groupUpdate);
+
+   $userQuery = array('_id' => new MongoId($userId));
+   $userUpdate = array('$push' => array('groups' => new MongoId($groupId)));
+   $db->users->update($userQuery, $userUpdate);
+}
+
 function leaveGroup($userId, $groupId) {
    $db = getDB();
 
    $groupQuery = array('_id' => new MongoId($groupId));
-   $groupUpdate = array('$pull' => array('users' => new MongoId($userId)));
+   $groupUpdate = array('$pull' => array('users' => array('user_id' => new MongoId($userId))));
    $db->groups->update($groupQuery, $groupUpdate);
 
    $userQuery = array('_id' => new MongoId($userId));
