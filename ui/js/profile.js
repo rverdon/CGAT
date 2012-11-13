@@ -41,18 +41,26 @@ document.addEventListener('DOMContentLoaded', function () {
          $('#stats-exp').text(data.meta.exp + 'XP');
 
          // Notifications
-         var notifications = '';
-         data.tasks.forEach(function(notification) {
-            notifications += makeNotification(notification, data['_id']['$id']);
-         });
-         $('#notifications-area').html(notifications);
+         if (window.cgatSession && window.cgatSession.userId === data['_id']['$id']) {
+            var notifications = '';
+            data.tasks.forEach(function(notification) {
+               notifications += makeNotification(notification, data['_id']['$id']);
+            });
+            $('#notifications-area').html(notifications);
+         } else {
+            $('#notifications').remove();
+         }
 
          // Partials
-         var partials = '';
-         data.incomplete_annotations.forEach(function(partial) {
-            partials += makePartial(partial, data['_id']['$id']);
-         });
-         $('#partials-area').html(partials);
+         if (window.cgatSession && window.cgatSession.userId === data['_id']['$id']) {
+            var partials = '';
+            data.incomplete_annotations.forEach(function(partial) {
+               partials += makePartial(partial, data['_id']['$id']);
+            });
+            $('#partials-area').html(partials);
+         } else {
+            $('#partials').remove();
+         }
 
          // Recents
          var recents = '';
@@ -76,11 +84,18 @@ document.addEventListener('DOMContentLoaded', function () {
 
 // TODO(eriq): Make nice on-hover
 function makeGroup(group, userId) {
+   var cancelButton = '';
    var groupId = group.info['_id']['$id'];
+
+   if (window.cgatSession && window.cgatSession.userId === userId) {
+      cancelButton = "<div class='cancel-button' onclick='leaveGroup(\"" +
+                     groupId + "\");'></div>";
+   }
+
    return "<div class='group-tag' id='group-" + groupId + "'>" +
           "<span><a href='group?id=" + groupId + "'>" +
                 group.info.name + "</a></span>" +
-          "<div class='cancel-button' onclick='leaveGroup(\"" + groupId + "\", \"" + userId + "\");'></div>" +
+          cancelButton +
           "</div>";
 }
 
@@ -108,7 +123,7 @@ function makePartial(partial, userId) {
                 partial.contig_info.meta.name + "</a></span>" +
           "<span>Difficulty: " + partial.contig_info.meta.difficulty + "</span>" +
           "<span>Last Mod: " + formatEpochDate(partial.annotation_info.meta.last_modified.sec) + "</span>" +
-          "<div class='annotate-button' onclick='beginAnnotation(\"" + annotationId + "\", \"" + userId + "\");'></div>" +
+          "<div class='annotate-button' onclick='beginAnnotation(\"" + annotationId + "\");'></div>" +
           "</div>";
 }
 
@@ -121,18 +136,18 @@ function makeNotification(notification, userId) {
           "<span>Species: <a href='search?species=" + notification.contig_meta.meta.species + "'>" +
                 notification.contig_meta.meta.species + "</a></span>" +
           "<span>Difficulty: " + notification.contig_meta.meta.difficulty + "</span>" +
-          "<div class='cancel-button' onclick='cancelNotification(\"" + notificationId + "\", \"" + userId + "\");'></div>" +
+          "<div class='cancel-button' onclick='cancelNotification(\"" + notificationId + "\");'></div>" +
           "<div class='annotate-button' onclick='createAnnotation(\"" + notificationId +
-                "\", \"" + notification.contig_meta['_id']['$id'] + "\", \"" + userId + "\");'></div>" +
+                "\", \"" + notification.contig_meta['_id']['$id'] + "\");'></div>" +
           "</div>";
 }
 
-function leaveGroup(groupId, userId) {
+function leaveGroup(groupId) {
    $('#group-' + groupId).remove();
    $.ajax({
       url: 'fetch/leave_group',
       type: 'POST',
-      data: {user: userId, group: groupId},
+      data: {group: groupId},
       error: function(jqXHR, textStatus, errorThrown) {
          enableErrorConfirmModal('Leaving Group', 'profile');
       }
@@ -143,14 +158,13 @@ function viewAnnotation(annotationId) {
    window.location.href = 'view-annotation?id=' + annotationId;
 }
 
-//TODO(eriq): Remove notification if it is submitted.
-function createAnnotation(notificationId, contigId, userId) {
+function createAnnotation(notificationId, contigId) {
    enableLoadingModal('profile');
    $.ajax({
       url: 'fetch/create_annotation',
       type: 'POST',
       dataType: 'json',
-      data: {user: userId, contig: contigId},
+      data: {contig: contigId},
       error: function(jqXHR, textStatus, errorThrown) {
          enableErrorConfirmModal('Creating Annotation', 'profile');
          return;
@@ -161,22 +175,22 @@ function createAnnotation(notificationId, contigId, userId) {
             return;
          }
 
-         beginAnnotation(data.annotationId['$id'], userId);
+         beginAnnotation(data.annotationId['$id']);
       }
    });
 }
 
 // Work on an annotation.
-function beginAnnotation(annotationId, userId) {
+function beginAnnotation(annotationId) {
    window.location.href = 'annotation?id=' + annotationId;
 }
 
-function cancelNotification(id, userId) {
+function cancelNotification(id) {
    $('#notification-' + id).remove();
    $.ajax({
       url: 'fetch/cancel_notification',
       type: 'POST',
-      data: {id: id, user: userId},
+      data: {id: id},
       error: function(jqXHR, textStatus, errorThrown) {
          enableErrorConfirmModal('Removing Notification', 'profile');
       }

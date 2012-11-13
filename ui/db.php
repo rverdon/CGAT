@@ -166,11 +166,6 @@ function createAnnotation($userId, $contigId) {
    $db->annotations->insert($insertAnnotation);
    $annotationId = $insertAnnotation['_id'];
 
-   $userQuery = array('_id' => new MongoId($userId));
-   $userUpdate = array('$addToSet' => array('incomplete_annotations' => $annotationId));
-
-   $db ->users->update($userQuery, $userUpdate);
-
    return $annotationId;
 }
 
@@ -202,7 +197,6 @@ function removeNotificationGivenContig($userId, $contigId) {
    $users->update($query, $update);
 }
 
-//TODO
 function saveAnnotation($data) {
    $db = getDB();
 

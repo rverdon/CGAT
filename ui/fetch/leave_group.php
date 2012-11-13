@@ -1,12 +1,18 @@
 <?php
-   header('Content-type: application/json');
+   session_start(); 
 
    require_once '../db.php';
 
-   if (!isset($_POST['user']) || !isset($_POST['group'])) {
-      die('user and group must be present');
+   if (!isset($_POST['group'])) {
+      die('group must be present');
+      return;
    }
 
-   leaveGroup(mongoIdSanitize($_POST['user']),
+   if (!isset($_SESSION['userId'])) {
+      die('Not logged in');
+      return;
+   }
+
+   leaveGroup(mongoIdSanitize($_SESSION['userId']),
               mongoIdSanitize($_POST['group']));
 ?>

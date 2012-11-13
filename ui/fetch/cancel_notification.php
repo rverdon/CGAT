@@ -1,10 +1,17 @@
 <?php
+   session_start(); 
+
    require_once('../db.php');
 
-   // TODO(eriq): Verify that the is in fact logged in.
-   if (!isset($_POST['id']) || !isset($_POST['user'])) {
-      die('Notification ID and User ID were not specified');
+   if (!isset($_POST['id'])) {
+      die('Notification ID not specified');
+      return;
    }
 
-   removeNotification(mongoIdSanitize($_POST['user']), mongoIdSanitize($_POST['id']));
+   if (!isset($_SESSION['userId'])) {
+      die('Not logged in');
+      return;
+   }
+
+   removeNotification(mongoIdSanitize($_SESSION['userId']), mongoIdSanitize($_POST['id']));
 ?>
