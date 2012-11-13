@@ -1,50 +1,83 @@
 <?php
    /**
-    * This is the header for the page (the top area with the logo and nav.
-    * If you want a title to be displayed, you will need to sed the $title
-    *  varible prior to require'ing this.
+    * require this at he beginning of you file and call makeHeader() to
+    * gen a proper header.
+    * This will take care of the <head> and the top bar.
+    * This will also session_start().
+    *
+    * The complement for this for the footer is just doing require_once('footer.php');
+    * The footer is more simple because it does not need to do any extra css/js includes.
+    *
+    * To get extra js/css included, use the two optional parameters to makeHeader().
+    *
+    * makeHeader() will also take all of the GET paraeters and store them inside window.params.
+    *
+    * makeHeader() will also put session information (userName and userId) into window.cgatSession.
+    *
+    * makeHeader() will leave <html>, <body>, and <#page> open.
     */
+
+/**
+ * All js is relative to the /js dir and css is relative to the /style dir.
+ */
+session_start();
+
+function makeHeader($title = 'CGAT', $subtitle = '', $extraCSS = array(), $extraJS = array()) {
+   $allJS = array_merge(array('jquery-1.8.2.js', 'script.js'), $extraJS);
+   $allCSS = array_merge(array('style.css'), $extraCSS);
+
+   echo "<html><head>";
+
+   foreach ($allCSS as $key => $file) {
+      echo "<link rel='stylesheet' type='text/css' media='screen' href='/style/" . $file . "' />";
+   }
+
+   foreach ($allJS as $key => $file) {
+      echo "<script src='js/" . $file . "'></script>";
+   }
+
+   echo "<title>" . $title . " | " . $subtitle . "</title>";
+
+   // Load all the params.
+   echo "<script> window.params = JSON.parse('" . json_encode($_GET) . "'); </script>";
+
+   // Store session info.
+   if (isset($_SESSION['userId'])) {
+      echo "<script> window.cgatSession = {};
+                     window.cgatSession.userName = '" . $_SESSION['userName'] . "';
+                     window.cgatSession.userId = '" . $_SESSION['userId'] . "';
+            </script>";
+   }
+
+   echo "</head><body>";
+   echo "<div id='header' class='top-level-area'>
+            <a class='logo-link' href='/'>
+               <img src='images/logo.png' alt='GCAT'></img>
+            </a>
+            <div id='top-title'>";
+
+   echo "<h1 id='top-title-text'>" . $title . "</h1>";
+   echo "<h3 id='top-subtitle-text'>" . $subtitle . "</h3>";
+
+   echo "</div>
+         <div id='top-nav' class='nav'>
+            <ul>";
+   if (isset($_SESSION['userId'])) {
+      echo("<li><a href='/profile'>" . $_SESSION['userName'] . "'s Profile</a></li>");
+   } else {
+      echo("<li><a href='/login'>Login / Register</a></li>");
+   }
+
+   echo "<li><a href='/upload'>Upload A Contig</a></li>
+         <li><a href='/assign'>Assign A Task</a></li>
+         <li><a href='/search'>Search</a></li>";
+
+   if (isset($_SESSION['userId'])) {
+      echo("<li><a class='logout-link' onclick='logout();'>Logout</a></li>");
+   }
+
+   echo "      </ul>
+            </div>
+         </div>";
+}
 ?>
-
-<div id='header' class='top-level-area'>
-   <a class='logo-link' href='/'>
-      <img src='images/logo.png' alt='GCAT'>
-      </img>
-   </a>
-   <div id='top-title'>
-      <?php
-         if (isset($title)) {
-            echo "<h1 id='top-title-text'>" . $title . "</h1>";
-         } else {
-            echo "<h1 id='top-title-text'>CGAT</h1>";
-         }
-
-         if (isset($subTitle)) {
-            echo "<h3 id='top-subtitle-text'>" . $subTitle . "</h3>";
-         } else {
-            echo "<h3 id='top-subtitle-text'>CGAT</h3>";
-         }
-      ?>
-   </div>
-   <div id='top-nav' class='nav'>
-      <ul>
-         <?php
-            // TODO(eriq): Reference root in these link will break while on test vhosts.
-            if (isset($_SESSION['userId'])) {
-               echo("<li><a href='profile'>" . $_SESSION['userName'] . "'s Profile</a></li>");
-            } else {
-               echo("<li><a href='login'>Login / Register</a></li>");
-            }
-         ?>
-         <li><a href='upload'>Upload A Contig</a></li>
-         <li><a href='assign'>Assign A Task</a></li>
-         <li><a href='search'>Search</a></li>
-
-         <?php
-            if (isset($_SESSION['userId'])) {
-               echo("<li><a class='logout-link' onclick='logout();'>Logout</a></li>");
-            }
-         ?>
-      </ul>
-   </div>
-</div>

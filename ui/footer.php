@@ -1,3 +1,9 @@
+<?php
+   /**
+    * This will close <#page>, <body>, and <html>
+    */
+?>
+
 <div id='footer' class='top-level-area'>
    <div id='bottom-nav' class='nav'>
       <ul>
@@ -12,3 +18,7 @@
       <p>Copyright 2012 Cal Poly</p>
    </div>
 </div>
+
+</div><!-- #page -->
+</body>
+</html>
