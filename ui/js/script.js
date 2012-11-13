@@ -131,7 +131,7 @@ function goToRoot() {
 function logout() {
    enableLoadingModal('logout');
    $.ajax({
-      url: 'fetch/logout',
+      url: 'api/logout',
       type: 'POST',
       error: function(jqXHR, textStatus, errorThrown) {
          enableErrorConfirmModal('Logging Out', 'profile');

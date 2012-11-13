@@ -24,7 +24,7 @@ function joinGroup() {
    window.cgat.disableGroupButton = true;
 
    $.ajax({
-      url: 'fetch/leave_notification',
+      url: 'api/leave_notification',
       type: 'POST',
       data: {user: window.cgat.userId, group: window.cgat.groupId},
       error: function(jqXHR, textStatus, errorThrown) {
@@ -48,7 +48,7 @@ function leaveGroup() {
    window.cgat.disableGroupButton = true;
 
    $.ajax({
-      url: 'fetch/leave_notification',
+      url: 'api/leave_notification',
       type: 'POST',
       data: {user: window.cgat.userId, group: window.cgat.groupId},
       error: function(jqXHR, textStatus, errorThrown) {

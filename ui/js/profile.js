@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', function () {
    enableLoadingModal('profile');
 
    $.ajax({
-      url: 'fetch/user_profile',
+      url: 'api/user_profile',
       dataType: 'json',
       data: {user: window.params.user},
       error: function(jqXHR, textStatus, errorThrown) {
@@ -145,7 +145,7 @@ function makeNotification(notification, userId) {
 function leaveGroup(groupId) {
    $('#group-' + groupId).remove();
    $.ajax({
-      url: 'fetch/leave_group',
+      url: 'api/leave_group',
       type: 'POST',
       data: {group: groupId},
       error: function(jqXHR, textStatus, errorThrown) {
@@ -161,7 +161,7 @@ function viewAnnotation(annotationId) {
 function createAnnotation(notificationId, contigId) {
    enableLoadingModal('profile');
    $.ajax({
-      url: 'fetch/create_annotation',
+      url: 'api/create_annotation',
       type: 'POST',
       dataType: 'json',
       data: {contig: contigId},
@@ -188,7 +188,7 @@ function beginAnnotation(annotationId) {
 function cancelNotification(id) {
    $('#notification-' + id).remove();
    $.ajax({
-      url: 'fetch/cancel_notification',
+      url: 'api/cancel_notification',
       type: 'POST',
       data: {id: id},
       error: function(jqXHR, textStatus, errorThrown) {

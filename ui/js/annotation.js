@@ -27,7 +27,7 @@ document.addEventListener('DOMContentLoaded', function () {
    enableLoadingModal('annotation');
 
    $.ajax({
-      url: 'fetch/annotation',
+      url: 'api/annotation',
       dataType: 'json',
       data: {'id': window.params.id},
       error: function(jqXHR, textStatus, errorThrown) {
@@ -36,6 +36,13 @@ document.addEventListener('DOMContentLoaded', function () {
       success: function(data, textStatus, jqXHR) {
          if (!data.valid) {
             enableErrorModal('Invalid Annotation', 'annotation');
+            return;
+         }
+
+         // Users must be logged in to visit an annotation page. They must also own the annotation.
+         // If they are not, forward them to the view-annotation page for this annotation.
+         if (!window.cgatSession || window.cgatSession.userId != data.annotation.user_id['$id']) {
+            window.location.href = 'view-annotation?id=' + data.annotation['_id']['$id'];
             return;
          }
 
@@ -459,7 +466,7 @@ function validateBeforeSubmit() {
 function saveAnnotation() {
    enableLoadingModal('annotation');
    $.ajax({
-      url: 'fetch/save_annotation',
+      url: 'api/save_annotation',
       type: 'POST',
       dataType: 'json',
       data: collectAnnotationData(),
@@ -481,7 +488,7 @@ function submitAnnotation() {
 
    enableLoadingModal('annotation');
    $.ajax({
-      url: 'fetch/submit_annotation',
+      url: 'api/submit_annotation',
       type: 'POST',
       dataType: 'json',
       data: collectAnnotationData(),

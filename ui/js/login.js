@@ -48,7 +48,7 @@ function login() {
    var hash = genHash($('#login-username').val(), $('#login-password').val());
 
    $.ajax({
-      url: 'fetch/login',
+      url: 'api/login',
       type: 'POST',
       dataType: 'json',
       data: {user: $('#login-username').val(), hash: hash},
@@ -103,7 +103,7 @@ function register() {
    var hash = genHash($('#register-username').val(), $('#register-password').val());
 
    $.ajax({
-      url: 'fetch/register',
+      url: 'api/register',
       type: 'POST',
       dataType: 'json',
       data: {user: $('#register-username').val(), hash: hash,
