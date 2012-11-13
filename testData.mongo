@@ -119,9 +119,10 @@ db.users.insert({
       "last_login" : ISODate("2012-11-09T04:23:07.986Z"),
       "last_name" : "Mom",
       "level" : 1,
-      "pass_hash" : "b109f3bbbc244eb82441917ed06d618b9008dd09b3befd1b5e07394c706a8bb980b1d7785e5976ec049b46df5f1326af5a2ea6d103fd07c95385ffab0cacbc86",
+      "pass_hash" : "f0fa51352761dfeac1d146a3cdda558b9027b32f8d97f6ca2482e06302217d3eeebe56d11d1e9be6e1b476e8d1b186ff8b735594543bd3052ac1a36a13c9c1c1",
+      "_plain_text_password_for_testing_only_": 'password',
       "role" : "User",
-      "salt" : "123948612348791236441239876",
+      "salt" : "056463a71fffcc11f7202d76735a7c0cf7989e3bf703a4c975aff1599910725d",
       "user_name" : "Bob",
       "exp": 100
    },

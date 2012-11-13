@@ -32,10 +32,19 @@ function mongoIdSanitize($val) {
    return substr($clean, 0, 24);
 }
 
+// TODO(eriq): implement
+function mongoEmailSanitize($val) {
+   return $val;
+}
+
 // Sanitize a value for use as a user name.
 // TODO(eriq): Enforce size restrictions.
 function mongoUserSanitize($val) {
    return preg_replace('/\W/', '', $val);
+}
+
+function mongoHexSanitize($val) {
+   return preg_replace('/[^a-fA-F0-9]/', '', $val);
 }
 
 function getDB() {
@@ -273,6 +282,75 @@ function leaveGroup($userId, $groupId) {
    $userQuery = array('_id' => new MongoId($userId));
    $userUpdate = array('$pull' => array('groups' => new MongoId($groupId)));
    $db->users->update($userQuery, $userUpdate);
+}
+
+// True on login.
+// If false (error), $error will be set.
+// If login is successfull, then session information will be set.
+function attemptLogin($user, $hash, &$error) {
+   $db = getDB();
+
+   $userExists = $db->users->findOne(array('meta.user_name' => $user), array('_id' => 1, 'meta' => 1));
+   if (!$userExists) {
+      $error = 'nouser';
+      return false;
+   }
+
+   $salt = $userExists['meta']['salt'];
+   $fullHash = $userExists['meta']['pass_hash'];
+   if (hash('sha512', $salt . $hash) === $fullHash) {
+      $db->users->update(array('meta.user_name' => $user),
+                         array('$set' => array('meta.last_login' => new MongoDate())));
+
+      // Set session info
+      $_SESSION['userId'] = $userExists['_id']->{'$id'};
+      $_SESSION['userName'] = $user;
+
+      return true;
+   } else {
+      $error = 'badpass';
+      return false;
+   }
+}
+
+// TODO(eriq): LOCK this.
+// Same semantics as attemptLogin()
+function attemptRegistration($user, $hash, $firstName, $lastName, $email, &$error) {
+   $db = getDB();
+
+   $nameCheck = $db->users->findOne(array('meta.user_name' => $user));
+   if ($nameCheck) {
+      $error = 'namenotavailable';
+      return false;
+   }
+   
+   $emailCheck = $db->users->findOne(array('meta.email' => $email));
+   if ($emailCheck) {
+      $error = 'emailnotavailable';
+      return false;
+   }
+
+   $salt = bin2hex(openssl_random_pseudo_bytes(32, $strong));
+   $finalHash = hash('sha512', $salt . $hash);
+
+   $insert = array('meta' => array('email' => $email,
+                                   'user_name' => $user,
+                                   'first_name' => $firstName,
+                                   'last_name' => $lastName,
+                                   'joined' => new MongoDate(),
+                                   'last_login' => new MongoDate(),
+                                   'role' => 'User',
+                                   'exp' => 0,
+                                   'level' => 1,
+                                   'salt' => $salt,
+                                   'pass_hash' => $finalHash));
+   $db->users->insert($insert);
+
+   // Set session data
+   $_SESSION['userId'] = $insert['_id']->{'$id'};
+   $_SESSION['userName'] = $user;
+
+   return true;
 }
 
 ?>

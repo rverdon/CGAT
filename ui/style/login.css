@@ -1,0 +1,14 @@
+.login-register-field {
+   margin-bottom: 25px;
+   width: 275px;
+   height: 20px;
+   display: block;
+}
+
+.login-register-field span {
+   float: left;
+}
+
+.login-register-field input {
+   float: right;
+}

@@ -42,6 +42,11 @@ h2 {
    display: none;
 }
 
+.logout-link {
+   color: blue;
+   cursor: pointer;
+}
+
 #overlay {
    position: fixed;
    height: 100%;
@@ -241,7 +246,7 @@ h2 {
 .validation-error:after {
    content: attr(data-validation-error);
    position: absolute;
-   top: 25px;
+   top: 20px;
    left: 0;
    z-index: 20;
    opacity: 0.75;

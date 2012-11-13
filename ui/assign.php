@@ -1,3 +1,5 @@
+<?php session_start() ?>
+
 <html>
    <head>
       <link rel='stylesheet' type='text/css' media='screen' href='style/style.css' />

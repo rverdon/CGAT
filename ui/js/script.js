@@ -91,7 +91,10 @@ function enableLoadingModal(modalPrefix) {
 }
 
 function enableErrorModal(errorString, modalPrefix) {
-   enableModal('<div class="modal-content error-modal-content"><h1>Error</h1><p>' + errorString + '</p></div>',
+   enableModal('<div class="modal-content error-modal-content"><h1>Error</h1><p>' + errorString + '</p>' +
+                     '<button onclick="goToRoot();">Home</button>' +
+                     '<button onclick="goToLogin();">Login</button>' +
+                     '</div>',
                modalPrefix + '-modal-error');
    console.log('Error: ' + errorString);
 }
@@ -115,4 +118,26 @@ function enableConfirmModal(message, modalPrefix, callbackName) {
    enableModal('<div class="modal-content"><p>' + message + '</p>' +
                      '<button class="modal-confirm" onclick="' + functionInvoke + '; disableModal();">OK</button></div>',
                modalPrefix + '-modal');
+}
+
+function goToLogin() {
+   window.location.href = '/login';
+}
+
+function goToRoot() {
+   window.location.href = '/';
+}
+
+function logout() {
+   enableLoadingModal('logout');
+   $.ajax({
+      url: 'fetch/logout',
+      type: 'POST',
+      error: function(jqXHR, textStatus, errorThrown) {
+         enableErrorConfirmModal('Logging Out', 'profile');
+      },
+      success: function(data, textStatus, jqXHR) {
+         enableConfirmModal('Logged Out', 'logout', 'goToRoot');
+      }
+   });
 }

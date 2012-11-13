@@ -1,3 +1,5 @@
 Mongo driver will need to be installed.
    Get pear (pecl)
    sudo pecl install mongo
+
+Make sure openssl is enabled on the php install

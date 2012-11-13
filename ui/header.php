@@ -28,11 +28,23 @@
    </div>
    <div id='top-nav' class='nav'>
       <ul>
-         <?php /* TODO(eriq): Referencing root in these link will break while on test vhosts. */ ?>
-         <li><a href='login'>Login / Register</a></li>
+         <?php
+            // TODO(eriq): Reference root in these link will break while on test vhosts.
+            if (isset($_SESSION['userId'])) {
+               echo("<li><a href='profile'>" . $_SESSION['userName'] . "'s Profile</a></li>");
+            } else {
+               echo("<li><a href='login'>Login / Register</a></li>");
+            }
+         ?>
          <li><a href='upload'>Upload A Contig</a></li>
          <li><a href='assign'>Assign A Task</a></li>
          <li><a href='search'>Search</a></li>
+
+         <?php
+            if (isset($_SESSION['userId'])) {
+               echo("<li><a class='logout-link' onclick='logout();'>Logout</a></li>");
+            }
+         ?>
       </ul>
    </div>
 </div>

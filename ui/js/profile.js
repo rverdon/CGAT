@@ -1,5 +1,8 @@
 "use strict";
 
+// TODO(eriq): If there is no user, but one is logged in, use theior profile
+// TODO(eriq): Public profiles for users (don't show partials or notifications).
+
 document.addEventListener('DOMContentLoaded', function () {
    // Block interation until the info is loaded.
    enableLoadingModal('profile');
@@ -14,7 +17,13 @@ document.addEventListener('DOMContentLoaded', function () {
       },
       success: function(data, textStatus, jqXHR) {
          if (!data.valid) {
-            enableErrorModal('Invalid Profile', 'profile');
+            if (data.error && data.error === 'nouser') {
+               enableErrorModal('Login To See Your Profile', 'profile');
+            } else if (data.error && data.error === 'cantfind') {
+               enableErrorModal('Cannot Find User', 'profile');
+            } else {
+               enableErrorModal('Invalid Profile', 'profile');
+            }
             return;
          }
 
