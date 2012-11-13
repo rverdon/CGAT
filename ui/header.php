@@ -26,6 +26,11 @@ function makeHeader($title = 'CGAT', $subtitle = '', $extraCSS = array(), $extra
    $allJS = array_merge(array('jquery-1.8.2.js', 'script.js'), $extraJS);
    $allCSS = array_merge(array('style.css'), $extraCSS);
 
+   $fullTitle = $title;
+   if ($subtitle != '') {
+      $fullTitle .= ' | ' + $subtitle;
+   }
+
    echo "<html><head>";
 
    foreach ($allCSS as $key => $file) {
@@ -36,7 +41,7 @@ function makeHeader($title = 'CGAT', $subtitle = '', $extraCSS = array(), $extra
       echo "<script src='js/" . $file . "'></script>";
    }
 
-   echo "<title>" . $title . " | " . $subtitle . "</title>";
+   echo "<title>" . $fullTitle . "</title>";
 
    // Load all the params.
    echo "<script> window.params = JSON.parse('" . json_encode($_GET) . "'); </script>";

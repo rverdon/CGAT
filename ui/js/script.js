@@ -91,9 +91,10 @@ function enableLoadingModal(modalPrefix) {
 }
 
 function enableErrorModal(errorString, modalPrefix) {
+   var loginButton = window.cgatSession ? '' : '<button onclick="goToLogin();">Login</button>';
    enableModal('<div class="modal-content error-modal-content"><h1>Error</h1><p>' + errorString + '</p>' +
                      '<button onclick="goToRoot();">Home</button>' +
-                     '<button onclick="goToLogin();">Login</button>' +
+                     loginButton +
                      '</div>',
                modalPrefix + '-modal-error');
    console.log('Error: ' + errorString);

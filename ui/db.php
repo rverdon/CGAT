@@ -257,12 +257,12 @@ function joinGroup($userId, $userName, $groupId) {
    $db = getDB();
 
    $groupQuery = array('_id' => new MongoId($groupId));
-   $groupUpdate = array('$push' => array('users' => array('user_id' => new MongoId($userId),
+   $groupUpdate = array('$addToSet' => array('users' => array('user_id' => new MongoId($userId),
                                                           'name' => $userName)));
    $db->groups->update($groupQuery, $groupUpdate);
 
    $userQuery = array('_id' => new MongoId($userId));
-   $userUpdate = array('$push' => array('groups' => new MongoId($groupId)));
+   $userUpdate = array('$addToSet' => array('groups' => new MongoId($groupId)));
    $db->users->update($userQuery, $userUpdate);
 }
 

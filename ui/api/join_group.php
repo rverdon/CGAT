@@ -1,13 +1,19 @@
 <?php
-   header('Content-type: application/json');
+   session_start();
 
    require_once '../db.php';
 
-   if (!isset($_POST['user']) || !isset($_POST['group'])) {
-      die('user and group must be present');
+   if (!isset($_POST['group'])) {
+      die('group must be present');
+      return;
    }
 
-   // TODO(eriq): Verify that the user is logged in and get their name from the session.
-   joinGroup(mongoIdSanitize($_POST['user']), ""
+   if (!isset($_SESSION['userId'])) {
+      die('Not logged in');
+      return;
+   }
+
+   joinGroup(mongoIdSanitize($_SESSION['userId']),
+             mongoUserSanitize($_SESSION['userName']),
              mongoIdSanitize($_POST['group']));
 ?>
