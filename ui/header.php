@@ -28,7 +28,7 @@ function makeHeader($title = 'CGAT', $subtitle = '', $extraCSS = array(), $extra
 
    $fullTitle = $title;
    if ($subtitle != '') {
-      $fullTitle .= ' | ' + $subtitle;
+      $fullTitle .= ' | ' . $subtitle;
    }
 
    echo "<html><head>";

@@ -101,6 +101,7 @@ h2 {
 }
 
 #header {
+   overflow: none;
 }
 
 .logo-link {
@@ -291,6 +292,11 @@ h2 {
    background: #2B2B2B;
    color: white;
    text-shadow: 1px 1px black;
+}
+
+.second-level-area button:disabled {
+   background: lightSteelBlue;
+   opacity: 0.25;
 }
 
 /** These are buttons that live in the top level area and have the same color

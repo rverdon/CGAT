@@ -27,6 +27,16 @@ function reverseComplement(sequence) {
    return rc.join('');
 }
 
+function collapse(buttonId, collapseAreaId) {
+   $('#' + buttonId).addClass('collapse-on');
+   $('#' + collapseAreaId).addClass('collapse');
+}
+
+function uncollapse(buttonId, collapseAreaId) {
+   $('#' + buttonId).removeClass('collapse-on');
+   $('#' + collapseAreaId).removeClass('collapse');
+}
+
 function toggleCollapse(buttonId, collapseAreaId) {
    var collapseButton = document.getElementById(buttonId);
    var collapseArea = document.getElementById(collapseAreaId);
@@ -109,6 +119,7 @@ function enableErrorConfirmModal(errorString, modalPrefix, callbackName) {
                      '<button class="error-modal-confirm" onclick="' + functionInvoke + '; disableModal();">OK</button></div>',
                modalPrefix + '-modal-error');
    console.log('Error: ' + errorString);
+   $('.error-modal-confirm').focus();
 }
 
 // Enable a modal that has a confirmation button that will remove it.
@@ -119,6 +130,7 @@ function enableConfirmModal(message, modalPrefix, callbackName) {
    enableModal('<div class="modal-content"><p>' + message + '</p>' +
                      '<button class="modal-confirm" onclick="' + functionInvoke + '; disableModal();">OK</button></div>',
                modalPrefix + '-modal');
+   $('.modal-confirm').focus();
 }
 
 function goToLogin() {

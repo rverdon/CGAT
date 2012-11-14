@@ -15,7 +15,7 @@
       <div id='login-area' class='collapsing-area'>
          <div id='login-username-area' class='login-register-field'>
             <span id='login-username-span'>Username: </span>
-            <input type='text' id='login-username' class='login-field' />
+            <input type='text' id='login-username' class='login-field' autofocus />
          </div>
 
          <div id='login-password-area' class='login-register-field'>

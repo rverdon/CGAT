@@ -42,39 +42,47 @@ document.addEventListener('DOMContentLoaded', function () {
 
          // Notifications
          if (window.cgatSession && window.cgatSession.userId === data['_id']['$id']) {
-            var notifications = '';
-            data.tasks.forEach(function(notification) {
-               notifications += makeNotification(notification, data['_id']['$id']);
-            });
-            $('#notifications-area').html(notifications);
+            if (data.tasks) {
+               var notifications = '';
+               data.tasks.forEach(function(notification) {
+                  notifications += makeNotification(notification, data['_id']['$id']);
+               });
+               $('#notifications-area').html(notifications);
+            }
          } else {
             $('#notifications').remove();
          }
 
          // Partials
          if (window.cgatSession && window.cgatSession.userId === data['_id']['$id']) {
-            var partials = '';
-            data.incomplete_annotations.forEach(function(partial) {
-               partials += makePartial(partial, data['_id']['$id']);
-            });
-            $('#partials-area').html(partials);
+            if (data.incomplete_annotations) {
+               var partials = '';
+               data.incomplete_annotations.forEach(function(partial) {
+                  partials += makePartial(partial, data['_id']['$id']);
+               });
+               $('#partials-area').html(partials);
+            }
          } else {
             $('#partials').remove();
          }
 
          // Recents
-         var recents = '';
-         data.history.forEach(function(recent) {
-            recents += makeRecent(recent, data['_id']['$id']);
-         });
-         $('#recents-area').html(recents);
+         if (data.history) {
+            var recents = '';
+            data.history.forEach(function(recent) {
+               recents += makeRecent(recent, data['_id']['$id']);
+            });
+            $('#recents-area').html(recents);
+         }
 
          // Groups
-         var groups = '';
-         data.groups.forEach(function(group) {
-            groups += makeGroup(group, data['_id']['$id']);
-         });
-         $('#groups-inset').html(groups);
+         if (data.groups) {
+            var groups = '';
+            data.groups.forEach(function(group) {
+               groups += makeGroup(group, data['_id']['$id']);
+            });
+            $('#groups-inset').html(groups);
+         }
 
          // Interation enabled.
          disableModal();
@@ -85,6 +93,8 @@ document.addEventListener('DOMContentLoaded', function () {
 // TODO(eriq): Make nice on-hover
 function makeGroup(group, userId) {
    var cancelButton = '';
+   // TODO(eriq): Problem with joining groups from admin page.
+   console.log(group);
    var groupId = group.info['_id']['$id'];
 
    if (window.cgatSession && window.cgatSession.userId === userId) {

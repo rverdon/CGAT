@@ -93,6 +93,13 @@ db.groups.insert({
       }
    ]
 });
+db.groups.insert({
+   "_id" : ObjectId("000000000000000000000006"),
+   "created" : ISODate("2012-11-09T04:04:39.746Z"),
+   "description" : "Another group.",
+   "name" : "Some other Group",
+   "users" : []
+});
 
 db.users.remove();
 db.users.insert({

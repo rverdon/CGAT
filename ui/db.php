@@ -347,4 +347,37 @@ function attemptRegistration($user, $hash, $firstName, $lastName, $email, &$erro
    return true;
 }
 
+function getAdministrationInfo($userId) {
+   $db = getDB();
+
+   $rtn = array();
+   $rtn['in-groups'] = array();
+   $rtn['out-groups'] = array();
+
+   $inGroupIds = $db->users->findOne(array('_id' => new MongoId($userId)), array('groups' => 1))['groups'];
+   // Reverse the hash for quick id lookup and when the name is found, hash the name to the id.
+   $inGroupNames = array();
+   foreach ($inGroupIds as $inGroupId) {
+      $inGroupNames[$inGroupId->{'$id'}] = '';
+   }
+
+   $cursor = $db->groups->find(array(),
+                               array('created' => 1, 'description' => 1, 'name' => 1));
+   foreach ($cursor as $group) {
+      if (array_key_exists($group['_id']->{'$id'}, $inGroupNames)) {
+         $rtn['in-groups'][] = $group;
+      } else {
+         $rtn['out-groups'][] = $group;
+      }
+   }
+
+   $rtn['contigs'] = array();
+   $cursor = $db->contigs->find(array(), array('meta' => 1));
+   foreach ($cursor as $doc) {
+      $rtn['contigs'][] = $doc;
+   }
+
+   return $rtn;
+}
+
 ?>

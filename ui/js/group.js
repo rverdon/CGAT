@@ -80,7 +80,7 @@ function joinGroup() {
       type: 'POST',
       data: {group: window.cgat.groupId},
       error: function(jqXHR, textStatus, errorThrown) {
-         enableErrorConfirmModal('Leaving Group', 'group');
+         enableErrorConfirmModal('Joining Group', 'group');
          window.cgat.disableGroupButton = false;
       },
       success: function(data, textStatus, jqXHR) {
