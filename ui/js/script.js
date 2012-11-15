@@ -57,6 +57,13 @@ function setSubtitle(subtitle) {
    document.getElementById('top-subtitle-text').innerHTML = subtitle;
 }
 
+// This accpets time string from an input[type=date] field ('yyyy-mm-dd').
+// Will return epoch time in seconds.
+function fromInputDateToEpoch(dateStr) {
+   var splitDate = dateStr.split('-');
+   return Math.floor((new Date(splitDate[0], parseInt(splitDate[1]) - 1, splitDate[2])).getTime() / 1000);
+}
+
 // Note that this accepts SECONDS, but JS defaults to miliseconds.
 function formatEpochDate(epochTime) {
    var date = new Date(epochTime * 1000);

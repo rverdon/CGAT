@@ -63,6 +63,32 @@
       </h2>
       <div id='assign-task-area' class='collapsing-area'>
          <a name='assign-task'></a>
+
+         <div class='input-align-kids-field'>
+            <span id='assign-task-description-span'>Task Description</span>
+            <textarea class='assign-task-field' id='assign-task-description' /></textarea>
+         </div>
+
+         <div class='input-align-kids-field'>
+            <span id='assign-task-contig-select-span'>Contig: </span>
+            <select class='assign-task-field' id='assign-task-contig-select'>
+               <option value=''>Available Contigs</option>
+            </select>
+         </div>
+
+         <div class='input-align-kids-field'>
+            <span id='assign-task-groups-span'>Groups</span>
+            <select class='assign-task-field' id='assign-task-group-select' multiple="multiple">
+               <option value=''>Available Groups</option>
+            </select>
+         </div>
+
+         <div class='input-align-kids-field'>
+            <span id='assign-task-end-date-span'>Date To Stop Notifying</span>
+            <input type='date' class='assign-task-field' id='assign-task-end-date' />
+         </div>
+
+         <button id='assign-task-button' onclick='assignTask();'>Assign Task</button>
       </div>
    </div>
 
@@ -73,6 +99,7 @@
       </h2>
       <div id='upload-contig-area' class='collapsing-area'>
          <a name='upload-contig'></a>
+         <h2>TODO</h2>
       </div>
    </div>
 

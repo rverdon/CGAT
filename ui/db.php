@@ -58,6 +58,10 @@ function mongoTextSanitize($val) {
    return $val;
 }
 
+function mongoNumberSanitize($val) {
+   return intval(preg_replace('/\D/', '', $val));
+}
+
 function mongoHexSanitize($val) {
    return preg_replace('/[^a-fA-F0-9]/', '', $val);
 }
@@ -118,6 +122,7 @@ function getFullGroupInfo($groupId) {
    return $db->groups->findOne(array('_id' => new MongoId($groupId)));
 }
 
+// TODO(eriq): Abandon old notifications.
 function getExpandedProfile($userName) {
    $profile = getProfile($userName);
 
@@ -403,6 +408,19 @@ function createGroup($userId, $userName, $groupName, $description) {
                    'name' => $groupName);
    $db->groups->insert($insert);
    joinGroup($userId, $userName, $insert['_id']->{'$id'});
+}
+
+// Groups should already be an array of MongoIds
+function assignTask($userId, $userName, $groups, $description, $contigId, $endDateEpoch) {
+   $db = getDB();
+
+   $query = array('groups' => array('$in' => $groups));
+   $update = array('$push' => array('tasks' => array('_id' => new MongoId(),
+                                                     'desc' => $description,
+                                                     'contig_id' => new MongoId($contigId),
+                                                     'end_date' => new MongoDate($endDateEpoch))));
+
+   $db->users->update($query, $update, false /* upsert */, true /* multiple updates */);
 }
 
 ?>

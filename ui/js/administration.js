@@ -2,6 +2,7 @@
 
 // TODO(eriq): COMBOBOXES!
 // TODO(eriq): Validate group name.
+// TODO(eriq): Date selector for end date.
 
 document.addEventListener('DOMContentLoaded', function() {
    if (!window.cgatSession) {
@@ -37,10 +38,15 @@ document.addEventListener('DOMContentLoaded', function() {
             window.cgat.outGroups[group['_id']['$id']] = group;
          });
 
+         // Need all the groups for the assign task.
+         var allGroupOptions = "<option value=''>Available Groups</option>";
+
          // Add the groups to the join group select.
          var joinOptions = "<option value=''>Existing Groups</option>";
          for (var groupId in window.cgat.outGroups) {
             joinOptions += "<option value='" + groupId + "'>" +
+                       window.cgat.outGroups[groupId].name + "</option>";
+            allGroupOptions += "<option value='" + groupId + "'>" +
                        window.cgat.outGroups[groupId].name + "</option>";
          }
          $('#join-group-select').html(joinOptions);
@@ -50,8 +56,21 @@ document.addEventListener('DOMContentLoaded', function() {
          for (var groupId in window.cgat.inGroups) {
             leaveOptions += "<option value='" + groupId + "'>" +
                        window.cgat.inGroups[groupId].name + "</option>";
+            allGroupOptions += "<option value='" + groupId + "'>" +
+                       window.cgat.inGroups[groupId].name + "</option>";
          }
          $('#leave-group-select').html(leaveOptions);
+
+         // Fill in the assign task groups.
+         $('#assign-task-group-select').html(allGroupOptions);
+
+         // Fill the assign task contigs select.
+         var contigOptions = "<option value=''>Available Contigs</option>";
+         data.info.contigs.forEach(function(contig) {
+            contigOptions += "<option value='" + contig['_id']['$id'] + "'>" +
+                             contig.meta.name + "</option>";
+         });
+         $('#assign-task-contig-select').html(contigOptions);
       }
    });
 
@@ -83,8 +102,59 @@ document.addEventListener('DOMContentLoaded', function() {
    $('#create-group-description').change(function() {
       validateCreateGroup();
    });
+
+   // Validate assign task.
+   $('#assign-task-button').attr('disabled', 'disabled');
+   $('.assign-task-field').change(function() {
+      validateAssignTask();
+   });
 });
 
+// TODO(eriq): Don't yell about all fields if they have never gotten any input.
+function validateAssignTask() {
+   var error = false;
+
+   if (!$('#assign-task-description').val()) {
+      validationError('Need Description', 'assign-task-description-span');
+      error = true;
+   } else {
+      clearValidationError('assign-task-description-span');
+   }
+
+   if (!$('#assign-task-contig-select').val()) {
+      validationError('Need Contig', 'assign-task-contig-select-span');
+      error = true;
+   } else {
+      clearValidationError('assign-task-contig-select-span');
+   }
+
+   if (!$('#assign-task-group-select').val()) {
+      validationError('Need Group', 'assign-task-groups-span');
+      error = true;
+   } else {
+      clearValidationError('assign-task-groups-span');
+   }
+
+   if (!$('#assign-task-end-date').val()) {
+      validationError('Need End Date', 'assign-task-end-date-span');
+      error = true;
+   } else if (fromInputDateToEpoch($('#assign-task-end-date').val()) < Math.floor((new Date()).getTime() / 1000)) {
+      validationError('Need Future Date', 'assign-task-end-date-span');
+      error = true;
+   } else {
+      clearValidationError('assign-task-end-date-span');
+   }
+
+   if (error) {
+      $('#assign-task-button').attr('disabled', 'disabled');
+   } else {
+      $('#assign-task-button').removeAttr('disabled');
+   }
+
+   return !error;
+}
+
+// TODO(eriq): Validate that group does not yet exist.
 function validateCreateGroup() {
    var error = false;
 
@@ -108,6 +178,8 @@ function validateCreateGroup() {
    } else {
       $('#create-group-button').removeAttr('disabled');
    }
+
+   return !error;
 }
 
 // Collapse other areas
@@ -132,6 +204,10 @@ function collapseAllButHash() {
 }
 
 function createGroup() {
+   if (!validateCreateGroup()) {
+      return;
+   }
+
    enableLoadingModal('administration');
    $('#craete-group-button').attr('disabled', 'disabled');
    $.ajax({
@@ -190,6 +266,32 @@ function leaveGroup() {
    });
 }
 
+function assignTask() {
+   if (!validateAssignTask()) {
+      return;
+   }
+
+   enableLoadingModal('administration');
+   $('#assign-task-button').attr('disabled', 'disabled');
+   $.ajax({
+      url: 'api/assign_task',
+      type: 'POST',
+      data: {groups: $('#assign-task-group-select').val(),
+             taskDescription: $('#assign-task-description').val(),
+             contig: $('#assign-task-contig-select').val(),
+             endDate: fromInputDateToEpoch($('#assign-task-end-date').val())},
+      error: function(jqXHR, textStatus, errorThrown) {
+         enableErrorConfirmModal('Assigning Task', 'administration');
+         $('#assign-task-button').removeAttr('disabled');
+      },
+      success: function(data, textStatus, jqXHR) {
+         enableConfirmModal('Successfully Assigned Task', 'administration',
+                            'goToAssignTask');
+         $('#assign-task-button').removeAttr('disabled');
+      }
+   });
+}
+
 function goToJoinGroup() {
    window.location.href = '/administration#join-group';
    window.location.reload(true);
@@ -202,5 +304,10 @@ function goToLeaveGroup() {
 
 function goToCreateGroup() {
    window.location.href = '/administration#create-group';
+   window.location.reload(true);
+}
+
+function goToAssignTask() {
+   window.location.href = '/administration#assign-task';
    window.location.reload(true);
 }
