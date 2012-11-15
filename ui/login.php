@@ -13,12 +13,12 @@
          Login
       </h2>
       <div id='login-area' class='collapsing-area'>
-         <div id='login-username-area' class='login-register-field'>
+         <div id='login-username-area' class='login-register-field input-align-kids-field'>
             <span id='login-username-span'>Username: </span>
             <input type='text' id='login-username' class='login-field' autofocus />
          </div>
 
-         <div id='login-password-area' class='login-register-field'>
+         <div id='login-password-area' class='login-register-field input-align-kids-field'>
             <span>Password: </span>
             <input type='password' class='login-field' id='login-password' />
          </div>
@@ -33,27 +33,27 @@
          Register A New Account
       </h2>
       <div id='register-area' class='collapsing-area collapse'>
-         <div class='login-register-field'>
+         <div class='login-register-field input-align-kids-field'>
             <span>Username: </span>
             <input type='text' id='register-username' class='register-field' />
          </div>
 
-         <div class='login-register-field'>
+         <div class='login-register-field input-align-kids-field'>
             <span>First Name: </span>
             <input type='text' id='register-firstname' class='register-field' />
          </div>
 
-         <div class='login-register-field'>
+         <div class='login-register-field input-align-kids-field'>
             <span>Last Name: </span>
             <input type='text' id='register-lastname' class='register-field' />
          </div>
 
-         <div class='login-register-field'>
+         <div class='login-register-field input-align-kids-field'>
             <span>Email: </span>
             <input type='text' id='register-email' class='register-field' />
          </div>
 
-         <div class='login-register-field'>
+         <div class='login-register-field input-align-kids-field'>
             <span>Password: </span>
             <input type='password' class='register-field' id='register-password' />
          </div>

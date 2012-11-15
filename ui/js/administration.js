@@ -1,8 +1,7 @@
 "use strict";
 
 // TODO(eriq): COMBOBOXES!
-
-// TODO(eriq): Style disabled buttons.
+// TODO(eriq): Validate group name.
 
 document.addEventListener('DOMContentLoaded', function() {
    if (!window.cgatSession) {
@@ -39,17 +38,25 @@ document.addEventListener('DOMContentLoaded', function() {
          });
 
          // Add the groups to the join group select.
-         var options = "<option value=''>Existing Groups</option>";
+         var joinOptions = "<option value=''>Existing Groups</option>";
          for (var groupId in window.cgat.outGroups) {
-            options += "<option value='" + groupId + "'>" +
+            joinOptions += "<option value='" + groupId + "'>" +
                        window.cgat.outGroups[groupId].name + "</option>";
          }
-         $('#join-group-select').html(options);
+         $('#join-group-select').html(joinOptions);
+
+         // Add the groups to the leave group select.
+         var leaveOptions = "<option value=''>Joined Groups</option>";
+         for (var groupId in window.cgat.inGroups) {
+            leaveOptions += "<option value='" + groupId + "'>" +
+                       window.cgat.inGroups[groupId].name + "</option>";
+         }
+         $('#leave-group-select').html(leaveOptions);
       }
    });
 
-   $('#join-group-button').attr('disabled', 'disabled');
    // Add an onchange to the join group select to enable/disable the button.
+   $('#join-group-button').attr('disabled', 'disabled');
    $('#join-group-select').change(function() {
       if ($('#join-group-select').val() != '') {
          $('#join-group-button').removeAttr('disabled');
@@ -58,7 +65,50 @@ document.addEventListener('DOMContentLoaded', function() {
       }
    });
 
+   // Add an onchange to the leave group select to enable/disable the button.
+   $('#leave-group-button').attr('disabled', 'disabled');
+   $('#leave-group-select').change(function() {
+      if ($('#leave-group-select').val() != '') {
+         $('#leave-group-button').removeAttr('disabled');
+      } else {
+         $('#leave-group-button').attr('disabled', 'disabled');
+      }
+   });
+
+   // Add an onchange to the create group input and validate it.
+   $('#create-group-button').attr('disabled', 'disabled');
+   $('#create-group-name').change(function() {
+      validateCreateGroup();
+   });
+   $('#create-group-description').change(function() {
+      validateCreateGroup();
+   });
 });
+
+function validateCreateGroup() {
+   var error = false;
+
+   // TODO(eriq): Real validation generalized to script.js
+   if (!$('#create-group-name').val()) {
+      validationError('Bad Group Name', 'create-group-name-span');
+      error = true;
+   } else {
+      clearValidationError('create-group-name-span');
+   }
+
+   if (!$('#create-group-description').val()) {
+      validationError('Bad Group Description', 'create-group-description-span');
+      error = true;
+   } else {
+      clearValidationError('create-group-description-span');
+   }
+
+   if (error) {
+      $('#create-group-button').attr('disabled', 'disabled');
+   } else {
+      $('#create-group-button').removeAttr('disabled');
+   }
+}
 
 // Collapse other areas
 $(window).bind('hashchange', function() {
@@ -81,6 +131,26 @@ function collapseAllButHash() {
    });
 }
 
+function createGroup() {
+   enableLoadingModal('administration');
+   $('#craete-group-button').attr('disabled', 'disabled');
+   $.ajax({
+      url: 'api/create_group',
+      type: 'POST',
+      data: {groupName: $('#create-group-name').val(),
+             groupDescription: $('#create-group-description').val()},
+      error: function(jqXHR, textStatus, errorThrown) {
+         enableErrorConfirmModal('Creating Group', 'administration');
+         $('#create-group-button').removeAttr('disabled');
+      },
+      success: function(data, textStatus, jqXHR) {
+         enableConfirmModal('Successfully Created and Joined Group', 'administration',
+                            'goToCreateGroup');
+         $('#create-group-button').removeAttr('disabled');
+      }
+   });
+}
+
 // TODO(eriq): Mod the group lists on this side so a reload is not necessary.
 function joinGroup() {
    enableLoadingModal('administration');
@@ -94,7 +164,8 @@ function joinGroup() {
          $('#join-group-button').removeAttr('disabled');
       },
       success: function(data, textStatus, jqXHR) {
-         enableConfirmModal('Successfully Joined Group', 'administration');
+         enableConfirmModal('Successfully Joined Group', 'administration',
+                            'goToJoinGroup');
          $('#join-group-button').removeAttr('disabled');
       }
    });
@@ -106,13 +177,30 @@ function leaveGroup() {
    $.ajax({
       url: 'api/leave_group',
       type: 'POST',
-      data: {group: window.cgat.groupId},
+      data: {group: $('#leave-group-select').val()},
       error: function(jqXHR, textStatus, errorThrown) {
          enableErrorConfirmModal('Leaving Group', 'administration');
          $('#leave-group-button').removeAttr('disabled');
       },
       success: function(data, textStatus, jqXHR) {
+         enableConfirmModal('Successfully Left Group', 'administration',
+                            'goToLeaveGroup');
          $('#leave-group-button').removeAttr('disabled');
       }
    });
+}
+
+function goToJoinGroup() {
+   window.location.href = '/administration#join-group';
+   window.location.reload(true);
+}
+
+function goToLeaveGroup() {
+   window.location.href = '/administration#leave-group';
+   window.location.reload(true);
+}
+
+function goToCreateGroup() {
+   window.location.href = '/administration#create-group';
+   window.location.reload(true);
 }

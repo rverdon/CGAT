@@ -313,8 +313,34 @@ h2 {
    background: #34444E;
 }
 
+.second-level-area textarea {
+   resize: none;
+   overflow: auto;
+   height: 3em;
+   width: 30em;
+   background: lightSteelBlue;
+   border: none;
+   border-radius: 5px;
+}
 
 /* These buttons span the whole top-level. */
 .full-second-level-button {
    width: 1000px;
+}
+
+.input-align-kids-field {
+   margin-bottom: 25px;
+   min-width: 275px;
+   min-height: 20px;
+   display: block;
+   overflow: hidden;
+}
+
+.input-align-kids-field span {
+   float: left;
+}
+
+.input-align-kids-field input,
+.input-align-kids-field textarea {
+   float: right;
 }

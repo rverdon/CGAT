@@ -29,7 +29,11 @@ function annotationDataSanitize($data) {
 // Sanitize a value for use as a mongo id.
 function mongoIdSanitize($val) {
    $clean = preg_replace('/[^a-fA-F0-9]/', '', $val);
-   return substr($clean, 0, 24);
+   if (strlen($clean) != 24) {
+      die('Id is not 24 bits');
+      return null;
+   }
+   return $clean;
 }
 
 // TODO(eriq): implement
@@ -41,6 +45,17 @@ function mongoEmailSanitize($val) {
 // TODO(eriq): Enforce size restrictions.
 function mongoUserSanitize($val) {
    return preg_replace('/\W/', '', $val);
+}
+
+// TOOD(eriq): Figure out convention and sanitize
+function mongoGroupSanitize($val) {
+   return $val;
+}
+
+// TOOD(eriq): Figure out convention and sanitize
+// A general sanitize for text. Things like desctiptions.
+function mongoTextSanitize($val) {
+   return $val;
 }
 
 function mongoHexSanitize($val) {
@@ -378,6 +393,16 @@ function getAdministrationInfo($userId) {
    }
 
    return $rtn;
+}
+
+function createGroup($userId, $userName, $groupName, $description) {
+   $db = getDB();
+
+   $insert = array('created' => new MongoDate(),
+                   'description' => $description,
+                   'name' => $groupName);
+   $db->groups->insert($insert);
+   joinGroup($userId, $userName, $insert['_id']->{'$id'});
 }
 
 ?>

@@ -21,6 +21,20 @@
       </div>
    </div>
 
+   <div id='leave-group' class='second-level-area'>
+      <h2 onclick='toggleCollapse("leave-group-collapse-button", "leave-group-area");'>
+         <div class='collapse-button' id='leave-group-collapse-button'></div>
+         Leave A Group
+      </h2>
+      <div id='leave-group-area' class='collapsing-area'>
+         <a name='leave-group'></a>
+         <select id='leave-group-select'>
+            <option value=''>Joined Groups</option>
+         </select>
+         <button id='leave-group-button' onclick='leaveGroup();'>Leave Group</button>
+      </div>
+   </div>
+
    <div id='create-group' class='second-level-area'>
       <h2 onclick='toggleCollapse("create-group-collapse-button", "create-group-area");'>
          <div class='collapse-button' id='create-group-collapse-button'></div>
@@ -28,6 +42,17 @@
       </h2>
       <div id='create-group-area' class='collapsing-area'>
          <a name='create-group'></a>
+         <div class='input-align-kids-field'>
+            <span id='create-group-name-span'>Group Name</span>
+            <input type='text' id='create-group-name' />
+         </div>
+
+         <div class='input-align-kids-field'>
+            <span id='create-group-description-span'>Group Description</span>
+            <textarea id='create-group-description' /></textarea>
+         </div>
+
+         <button id='create-group-button' onclick='createGroup();'>Create Group</button>
       </div>
    </div>
 
