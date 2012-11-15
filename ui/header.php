@@ -68,17 +68,15 @@ function makeHeader($title = 'CGAT', $subtitle = '', $extraCSS = array(), $extra
          <div id='top-nav' class='nav'>
             <ul>";
    if (isset($_SESSION['userId'])) {
-      echo("<li><a href='/profile'>" . $_SESSION['userName'] . "'s Profile</a></li>");
+      echo("<li><a href='/profile'>" . $_SESSION['userName'] . "'s Profile</a></li>
+            <li><a href='/search'>Search</a></li>
+            <li><a href='/administration'>Administration</a></li>
+            <li><a class='logout-link' onclick='logout();'>Logout</a></li>
+            ");
    } else {
-      echo("<li><a href='/login'>Login / Register</a></li>");
-   }
-
-   echo "<li><a href='/upload'>Upload A Contig</a></li>
-         <li><a href='/assign'>Assign A Task</a></li>
-         <li><a href='/search'>Search</a></li>";
-
-   if (isset($_SESSION['userId'])) {
-      echo("<li><a class='logout-link' onclick='logout();'>Logout</a></li>");
+      echo("<li><a href='/login'>Login / Register</a></li>
+            <li><a href='/search'>Search</a></li>
+            ");
    }
 
    echo "      </ul>

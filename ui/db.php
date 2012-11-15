@@ -337,7 +337,7 @@ function attemptRegistration($user, $hash, $firstName, $lastName, $email, &$erro
       $error = 'namenotavailable';
       return false;
    }
-   
+
    $emailCheck = $db->users->findOne(array('meta.email' => $email));
    if ($emailCheck) {
       $error = 'emailnotavailable';
@@ -421,6 +421,66 @@ function assignTask($userId, $userName, $groups, $description, $contigId, $endDa
                                                      'end_date' => new MongoDate($endDateEpoch))));
 
    $db->users->update($query, $update, false /* upsert */, true /* multiple updates */);
+}
+
+function getFullContigInfo($contigId) {
+   $db = getDB();
+
+   $rtn = array();
+
+   $rtn['contig'] = $db->contigs->findOne(array('_id' => new MongoId($contigId)),
+                                          array('sequence' => 0));
+
+   // Expand the annotations of this contig.
+   // Note that expert annotations should also be expanded there and they can just be referenced later.
+   $expandedAnnotations = array();
+   foreach ($rtn['contig']['isoform_names'] as $geneName => $ids) {
+      $expandedAnnotations[$geneName] = array();
+
+      foreach ($ids as $id) {
+         $expandedAnnotations[$geneName][$id->{'$id'}] = getAnnotation($id->{'$id'});
+      }
+   }
+   $rtn['expandedAnnotations'] = $expandedAnnotations;
+
+   return $rtn;
+}
+
+function getFullGeneInfo($geneName) {
+   $db = getDB();
+
+   $rtn = array();
+
+   $rtn['annotations'] = array();
+   $rtn['expertAannotations'] = array();
+   $rtn['contigs'] = array();
+
+   $annotationsToExpand = array();
+
+   $cursor = $db->contigs->find(array(('isoform_names.' . $geneName) => array('$exists' => true)),
+                                array('sequence' => 0));
+
+   foreach ($cursor as $contig) {
+      $rtn['contigs'][] = $contig;
+
+      foreach ($contig['isoform_names'][$geneName] as $annotationId) {
+         $annotationsToExpand[] = $annotationId->{'$id'};
+      }
+   }
+
+   foreach ($annotationsToExpand as $annotationId) {
+      $annotationInfo = getAnnotation($annotationId);
+
+      if (!$annotationInfo['partial']) {
+         if ($annotationInfo['expert']) {
+            $rtn['expertAnnotations'][] = $annotationInfo;
+         } else {
+            $rtn['annotations'][] = $annotationInfo;
+         }
+      }
+   }
+
+   return $rtn;
 }
 
 ?>
