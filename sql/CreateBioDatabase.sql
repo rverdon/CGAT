@@ -85,7 +85,7 @@ CREATE TABLE GeneNames (
 );
 
 
-CREATE TABLE Annotations (
+CREATE TABLE CollabAnnotations (
    CollabAnnotationId INT UNSIGNED NOT NULL AUTO_INCREMENT,
    GeneId INT NOT NULL,
    StartPos INT UNSIGNED NOT NULL,
@@ -98,7 +98,7 @@ CREATE TABLE Annotations (
    INDEX(UserId)
 );
 
-CREATE TABLE Collab_Exons (
+CREATE TABLE CollabExons (
    ExonId INT UNSIGNED NOT NULL AUTO_INCREMENT,
    StartPos INT UNSIGNED NOT NULL,
    EndPos INT UNSIGNED NOT NULL,
