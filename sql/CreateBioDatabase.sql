@@ -1,27 +1,31 @@
+
+DROP TABLE Users;
 CREATE TABLE Users (
    UserId INT UNSIGNED NOT NULL AUTO_INCREMENT,
    FirstName VARCHAR(20) NOT NULL,
    LastName VARCHAR(40) NOT NULL,
    UserName VARCHAR(40) NOT NULL,
    Email VARCHAR(60) NOT NULL,
-   Pass CHAR(64) NOT NULL,
-   Salt CHAR(64) NOT NULL,
+   Pass VARCHAR(64) NOT NULL,
+   Salt VARCHAR(64) NOT NULL,
    LastLoginDate DATETIME NOT NULL,
    RegistrationDate DATETIME NOT NULL,
    Level INT NOT NULL,
    Role VARCHAR(10) NOT NULL,
-   Exp INT NOT NULL
+   Exp INT NOT NULL,
    PRIMARY KEY ( UserId )
 );
-   
+
+DROP TABLE Groups;
 CREATE TABLE Groups (
    GroupId INT UNSIGNED NOT NULL AUTO_INCREMENT,
    Name VARCHAR(80) NOT NULL,
    GroupDescription TEXT NOT NULL,
-   CreateDate DATETIME NOT NULL
+   CreateDate DATETIME NOT NULL,
    PRIMARY KEY ( GroupId )
 );
 
+DROP TABLE Contigs;
 CREATE TABLE Contigs (
    ContigId INT UNSIGNED NOT NULL AUTO_INCREMENT,
    Name VARCHAR(40) NOT NULL,
@@ -35,12 +39,14 @@ CREATE TABLE Contigs (
    PRIMARY KEY ( ContigId )
 );
 
+DROP TABLE GroupMembership;
 CREATE TABLE GroupMembership (
    GroupId INT UNSIGNED NOT NULL,
    UserId INT UNSIGNED NOT NULL,
    PRIMARY KEY ( GroupId, UserId )
 );
 
+DROP TABLE Tasks;
 CREATE TABLE Tasks (
    UserId INT UNSIGNED NOT NULL,
    ContigId INT UNSIGNED NOT NULL,
@@ -50,6 +56,7 @@ CREATE TABLE Tasks (
    INDEX(UserId)
 );
 
+DROP TABLE Annotations;
 CREATE TABLE Annotations (
    AnnotationId INT UNSIGNED NOT NULL AUTO_INCREMENT,
    GeneId INT NOT NULL,
@@ -70,6 +77,7 @@ CREATE TABLE Annotations (
    INDEX(UserId)
 );
 
+DROP TABLE Exons;
 CREATE TABLE Exons (
    ExonId INT UNSIGNED NOT NULL AUTO_INCREMENT,
    StartPos INT UNSIGNED NOT NULL,
@@ -78,6 +86,7 @@ CREATE TABLE Exons (
    PRIMARY KEY ( ExonId )
 );
 
+DROP TABLE GeneNames;
 CREATE TABLE GeneNames (
    GeneId INT NOT NULL AUTO_INCREMENT,
    Name VARCHAR(255) NOT NULL,
@@ -85,6 +94,7 @@ CREATE TABLE GeneNames (
 );
 
 
+DROP TABLE CollabAnnotations;
 CREATE TABLE CollabAnnotations (
    CollabAnnotationId INT UNSIGNED NOT NULL AUTO_INCREMENT,
    GeneId INT NOT NULL,
@@ -98,6 +108,7 @@ CREATE TABLE CollabAnnotations (
    INDEX(UserId)
 );
 
+DROP TABLE CollabExons;
 CREATE TABLE CollabExons (
    ExonId INT UNSIGNED NOT NULL AUTO_INCREMENT,
    StartPos INT UNSIGNED NOT NULL,
