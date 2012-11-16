@@ -1,5 +1,5 @@
 
-DROP TABLE Users;
+DROP TABLE Users IF EXISTS;
 CREATE TABLE Users (
    UserId INT UNSIGNED NOT NULL AUTO_INCREMENT,
    FirstName VARCHAR(20) NOT NULL,
@@ -16,7 +16,7 @@ CREATE TABLE Users (
    PRIMARY KEY ( UserId )
 );
 
-DROP TABLE Groups;
+DROP TABLE Groups IF EXISTS;
 CREATE TABLE Groups (
    GroupId INT UNSIGNED NOT NULL AUTO_INCREMENT,
    Name VARCHAR(80) NOT NULL,
@@ -25,7 +25,7 @@ CREATE TABLE Groups (
    PRIMARY KEY ( GroupId )
 );
 
-DROP TABLE Contigs;
+DROP TABLE Contigs IF EXISTS;
 CREATE TABLE Contigs (
    ContigId INT UNSIGNED NOT NULL AUTO_INCREMENT,
    Name VARCHAR(40) NOT NULL,
@@ -39,14 +39,14 @@ CREATE TABLE Contigs (
    PRIMARY KEY ( ContigId )
 );
 
-DROP TABLE GroupMembership;
+DROP TABLE GroupMembership IF EXISTS;
 CREATE TABLE GroupMembership (
    GroupId INT UNSIGNED NOT NULL,
    UserId INT UNSIGNED NOT NULL,
    PRIMARY KEY ( GroupId, UserId )
 );
 
-DROP TABLE Tasks;
+DROP TABLE Tasks IF EXISTS;
 CREATE TABLE Tasks (
    UserId INT UNSIGNED NOT NULL,
    ContigId INT UNSIGNED NOT NULL,
@@ -56,7 +56,7 @@ CREATE TABLE Tasks (
    INDEX(UserId)
 );
 
-DROP TABLE Annotations;
+DROP TABLE Annotations IF EXISTS;
 CREATE TABLE Annotations (
    AnnotationId INT UNSIGNED NOT NULL AUTO_INCREMENT,
    GeneId INT NOT NULL,
@@ -77,7 +77,7 @@ CREATE TABLE Annotations (
    INDEX(UserId)
 );
 
-DROP TABLE Exons;
+DROP TABLE Exons IF EXISTS;
 CREATE TABLE Exons (
    ExonId INT UNSIGNED NOT NULL AUTO_INCREMENT,
    StartPos INT UNSIGNED NOT NULL,
@@ -86,7 +86,7 @@ CREATE TABLE Exons (
    PRIMARY KEY ( ExonId )
 );
 
-DROP TABLE GeneNames;
+DROP TABLE GeneNames IF EXISTS;
 CREATE TABLE GeneNames (
    GeneId INT NOT NULL AUTO_INCREMENT,
    Name VARCHAR(255) NOT NULL,
@@ -94,7 +94,7 @@ CREATE TABLE GeneNames (
 );
 
 
-DROP TABLE CollabAnnotations;
+DROP TABLE CollabAnnotations IF EXISTS;
 CREATE TABLE CollabAnnotations (
    CollabAnnotationId INT UNSIGNED NOT NULL AUTO_INCREMENT,
    GeneId INT NOT NULL,
@@ -104,11 +104,11 @@ CREATE TABLE CollabAnnotations (
    ContigId INT UNSIGNED NOT NULL,
    CreateDate DATETIME NOT NULL,
    LastModifiedDate DATETIME NOT NULL,
-   PRIMARY KEY ( AnnotationId ),
+   PRIMARY KEY ( CollabAnnotationId ),
    INDEX(UserId)
 );
 
-DROP TABLE CollabExons;
+DROP TABLE CollabExons IF EXISTS;
 CREATE TABLE CollabExons (
    ExonId INT UNSIGNED NOT NULL AUTO_INCREMENT,
    StartPos INT UNSIGNED NOT NULL,
