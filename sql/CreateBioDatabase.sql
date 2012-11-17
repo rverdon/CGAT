@@ -115,3 +115,6 @@ CREATE TABLE CollabExons (
    CollabAnnotationId INT NOT NULL,
    PRIMARY KEY ( ExonId )
 );
+
+DROP TABLE IF EXISTS ReadWriteTest;
+CREATE TABLE ReadWriteTest(id INT, name VARCHAR(128));

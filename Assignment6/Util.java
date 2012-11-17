@@ -1,6 +1,12 @@
 import java.util.Collections;
 import java.util.List;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+
 /**
  * Helper for stuff and things.
  */
@@ -39,6 +45,131 @@ public class Util {
       stdDev = Math.sqrt(stdDev / numbers.size());
 
       return new AverageStats(min, max, mean, median, stdDev);
+   }
+
+   public static boolean doUpdate(Connection conn, String update) {
+      Statement statement = null;
+      boolean rtn = false;
+
+      try {
+         // Get a statement from the connection
+         statement = conn.createStatement();
+
+         // Execute the update
+         statement.executeUpdate(update);
+
+         rtn = true;
+      } catch (Exception ex) {
+         System.err.println("Error doing update: " + ex);
+         ex.printStackTrace(System.err);
+         rtn = false;
+      } finally {
+         try {
+            if (statement != null) {
+               statement.close();
+               statement = null;
+            }
+         } catch (SQLException sqlEx) {
+            // ... oh well.
+            System.err.println("Error Closing results.");
+         }
+      }
+
+      return rtn;
+   }
+
+   // The results will still be fetched so the driver doesn't try any crafty lazy fetching.
+   public static boolean doThrowAwayResultsQuery(Connection conn, String query) {
+      Statement statement = null;
+      ResultSet results = null;
+      boolean rtn = false;
+
+      try {
+         // Get a statement from the connection
+         statement = conn.createStatement();
+
+         // Execute the query
+         results = statement.executeQuery(query);
+
+         int colCount = results.getMetaData().getColumnCount();
+         String resultString;
+
+         if (results.next()) {
+            do {
+               for (int index = 1; index <= colCount; index++) {
+                  resultString = results.getString(index);
+               }
+            } while (results.next());
+         }
+
+         rtn = true;
+      } catch (Exception ex) {
+         System.err.println("Error doing query: " + ex);
+         ex.printStackTrace(System.err);
+         rtn = false;
+      } finally {
+         try {
+            if (results != null) {
+               results.close();
+               results = null;
+            }
+
+            if (statement != null) {
+               statement.close();
+               statement = null;
+            }
+         } catch (SQLException sqlEx) {
+            // ... oh well.
+            System.err.println("Error Closing results.");
+         }
+      }
+
+      return rtn;
+   }
+
+
+   public static boolean doStringListQuery(Connection conn, String query, String[] resultArray) {
+      Statement statement = null;
+      ResultSet results = null;
+      boolean rtn = false;
+
+      try {
+         // Get a statement from the connection
+         statement = conn.createStatement();
+
+         // Execute the query
+         results = statement.executeQuery(query);
+
+         if (results.next()) {
+            int count = 0;
+            do {
+               resultArray[count++] = results.getString(1);
+            } while (results.next());
+         }
+
+         rtn = true;
+      } catch (Exception ex) {
+         System.err.println("Error doing query: " + ex);
+         ex.printStackTrace(System.err);
+         rtn = false;
+      } finally {
+         try {
+            if (results != null) {
+               results.close();
+               results = null;
+            }
+
+            if (statement != null) {
+               statement.close();
+               statement = null;
+            }
+         } catch (SQLException sqlEx) {
+            // ... oh well.
+            System.err.println("Error Closing results.");
+         }
+      }
+
+      return rtn;
    }
 
    public static class AverageStats {

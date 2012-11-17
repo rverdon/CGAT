@@ -14,7 +14,7 @@ import java.sql.Statement;
  */
 public class StupidWorkload extends Workload {
    //private static final int TIMES = 1000000;
-   private static final int TIMES = 100;
+   private static final int TIMES = 10;
 
    private String[] randomStrings;
 
@@ -47,7 +47,7 @@ public class StupidWorkload extends Workload {
       }
 
       // TODO(eriq): Use the real CGAT data.
-      String readQuery = "SELECT name FROM users WHERE id = 1";
+      String readQuery = "SELECT name FROM ReadWriteTest WHERE id = 1";
       String writeUpdate = "UPDATE users SET name = '%s' WHERE id = 1";
       List<Long> readAfterWriteTimes = new ArrayList<Long>(TIMES);
       List<Long> writeAfterReadTimes = new ArrayList<Long>(TIMES);
