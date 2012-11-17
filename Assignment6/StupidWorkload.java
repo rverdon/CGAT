@@ -18,7 +18,8 @@ public class StupidWorkload extends Workload {
    private static final String DB_USER = "";
    private static final String DB_PASS = "";
 
-   private static final int TIMES = 1000000;
+   //private static final int TIMES = 1000000;
+   private static final int TIMES = 100;
 
    private String[] randomStrings;
 
