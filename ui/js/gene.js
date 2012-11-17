@@ -23,8 +23,22 @@ document.addEventListener('DOMContentLoaded', function() {
 
          setSubtitle(window.params.name);
 
-         //TODO: Place the info.
-         console.log(data);
+         // Place Contigs
+         var contigs = '';
+         data.info.contigs.forEach(function(contig) {
+            contigs += makeContig(contig) + '<br /><hr />';
+         });
+         $('#contigs-area').html(contigs);
+
+         // Place Collabs
+         // TODO(eriq): collabs.
+
+         // Place Annotations.
+         var annotations = '';
+         data.info.annotations.forEach(function(annotation) {
+            annotations += makeInlineAnnotation(annotation);
+         });
+         $('#annitations-inset').html(annotations);
 
          disableModal();
       }

@@ -29,28 +29,14 @@ document.addEventListener('DOMContentLoaded', function() {
          window.cgat.contigId = data.info.contig['_id']['$id'];
 
          // Place the contigs info.
-         var contigInfo = '';
-         contigInfo += "<label>Contig Name: </label><span>" + data.info.contig.meta.name + "</span><br />";
-         contigInfo += "<label>Difficulty: </label><span>" + data.info.contig.meta.difficulty + "</span><br />";
-         contigInfo += "<label>Species: </label><span>" + data.info.contig.meta.species + "</span><br />";
-         contigInfo += "<label>Source: </label><span>" + data.info.contig.meta.source + "</span><br />";
-         contigInfo += "<label>Upload Date: </label><span>" + data.info.contig.meta.upload_date.sec + "</span><br />";
-         contigInfo += "<label>Uploader: </label><span>" + data.info.contig.meta.uploader_name + "</span>";
-         $('#contig-info-area').html(contigInfo);
+         $('#contig-info-area').html(makeContig(data.info.contig));
 
          // Place all the normal and expert annotations.
          var annotations = '';
          var expertAnnotations = '';
          for (var geneName in data.info.expandedAnnotations) {
             for (var id in data.info.expandedAnnotations[geneName]) {
-               var numExons = data.info.expandedAnnotations[geneName][id].exons ?
-                              data.info.expandedAnnotations[geneName][id].exons.length : 0;
-               var annotation =
-                     "<a href='/view-annotation?id=" + id + "'>Gene Name: " + geneName +
-                     ", Number of Exons: " + numExons +
-                     ", Expert: " + data.info.expandedAnnotations[geneName][id].expert +
-                     ", Reverse Complement: " + data.info.expandedAnnotations[geneName][id].reverse_complement +
-                     "</a>";
+               var annotation = makeInlineAnnotation(data.info.expandedAnnotations[geneName][id]);
 
                annotations += annotation;
                if (data.info.expandedAnnotations[geneName][id].expert) {

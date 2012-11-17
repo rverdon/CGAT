@@ -13,7 +13,6 @@
          Contigs Information
       </h2>
       <div id='contigs-area' class='collapsing-area'>
-         TODO
       </div>
    </div>
 
@@ -33,7 +32,7 @@
          Completed Annotations
       </h2>
       <div id='annotations-area' class='collapsing-area collapse'>
-         TODO
+         <div id='annitations-inset' class='second-level-inset'></div>
       </div>
    </div>
 

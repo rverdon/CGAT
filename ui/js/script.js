@@ -161,3 +161,26 @@ function logout() {
       }
    });
 }
+
+// Generate some html to represent a contig (given the standard information from the api).
+function makeContig(contig) {
+   var contigInfo = '';
+   contigInfo += "<label>Contig Name: </label><span>" + contig.meta.name + "</span><br />";
+   contigInfo += "<label>Difficulty: </label><span>" + contig.meta.difficulty + "</span><br />";
+   contigInfo += "<label>Species: </label><span>" + contig.meta.species + "</span><br />";
+   contigInfo += "<label>Source: </label><span>" + contig.meta.source + "</span><br />";
+   contigInfo += "<label>Upload Date: </label><span>" + contig.meta.upload_date.sec + "</span><br />";
+   contigInfo += "<label>Uploader: </label><span>" + contig.meta.uploader_name + "</span>";
+   return contigInfo;
+}
+
+// Generate some html meant to diplay an inline annotation given stantard api annotation info.
+function makeInlineAnnotation(annotation) {
+   var numExons = annotation.exons ? annotation.exons.length : 0;
+   return "<a href='/view-annotation?id=" + annotation['_id']['$id'] + "'>" +
+          "Gene Name: " + annotation.isoform_name +
+          ", Number of Exons: " + numExons +
+          ", Expert: " + annotation.expert +
+          ", Reverse Complement: " + annotation.reverse_complement +
+          "</a>";
+}
