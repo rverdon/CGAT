@@ -7,13 +7,17 @@
 
 <div id='content' class='top-level-area'>
 
+   <button id='annotate-button' class='second-level-area second-level-button full-second-level-button'
+           onclick='annotate();'>
+      Annotate This Contig
+   </button>
+
    <div id='contig-info' class='second-level-area'>
       <h2 onclick='toggleCollapse("contig-info-collapse-button", "contig-info-area");'>
          <div class='collapse-button' id='contig-info-collapse-button'></div>
          Contig Info
       </h2>
       <div id='contig-info-area' class='collapsing-area'>
-         TODO
       </div>
    </div>
 
@@ -23,7 +27,7 @@
          Expert Annotations
       </h2>
       <div id='expert-annotations-area' class='collapsing-area collapse'>
-         TODO
+         <div id='expert-annotations-inset' class='second-level-inset'></div>
       </div>
    </div>
 
@@ -33,7 +37,7 @@
          All Annotations
       </h2>
       <div id='annotations-area' class='collapsing-area collapse'>
-         TODO
+         <div id='annotations-inset' class='second-level-inset'></div>
       </div>
    </div>
 

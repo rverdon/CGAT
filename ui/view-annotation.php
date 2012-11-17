@@ -13,27 +13,25 @@
          Annotation Info
       </h2>
       <div id='annotation-info-area' class='collapsing-area'>
-         TODO
       </div>
    </div>
 
    <div id='exons' class='second-level-area'>
       <h2 onclick='toggleCollapse("exons-collapse-button", "exons-area");'>
-         <div class='collapse-button collapse-on' id='exons-collapse-button'></div>
+         <div class='collapse-button' id='exons-collapse-button'></div>
          Exons
       </h2>
-      <div id='exons-area' class='collapsing-area collapse'>
-         TODO
+      <div id='exons-area' class='collapsing-area'>
+         <div id='exons-inset' class='second-level-inset'></div>
       </div>
    </div>
 
    <div id='contig-info' class='second-level-area'>
       <h2 onclick='toggleCollapse("contig-info-collapse-button", "contig-info-area");'>
-         <div class='collapse-button collapse-on' id='contig-info-collapse-button'></div>
+         <div class='collapse-button' id='contig-info-collapse-button'></div>
          Contig Info
       </h2>
-      <div id='contig-info-area' class='collapsing-area collapse'>
-         TODO
+      <div id='contig-info-area' class='collapsing-area'>
       </div>
    </div>
 

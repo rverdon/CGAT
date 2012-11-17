@@ -37,6 +37,10 @@ h2 {
    margin-bottom: 10px;
 }
 
+a {
+   text-decoration: none;
+}
+
 .debug {
    background: #d87d86;
    display: none;

@@ -186,6 +186,8 @@ function createAnnotation($userId, $contigId) {
    $db->annotations->insert($insertAnnotation);
    $annotationId = $insertAnnotation['_id'];
 
+   $db->users->update(array('_id' => new MongoId($userId)), array('$addToSet' => array('incomplete_annotations' => new MongoId($annotationId))));
+
    return $annotationId;
 }
 
