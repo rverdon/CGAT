@@ -197,8 +197,8 @@ public class GenerateSQLData {
          pstmt.setString(4, randomBool());
          pstmt.setString(5, randomBool());
          pstmt.setString(6, randomBool());
-         pstmt.setString(7, String.valueOf(randomInt(numContigs)+1));
-         pstmt.setString(8, String.valueOf(randomInt(numUsers)+1));
+         pstmt.setString(7, String.valueOf(rand.nextInt(numContigs)+1));
+         pstmt.setString(8, String.valueOf(rand.nextInt(numUsers)+1));
          pstmt.setString(9, randomDate());
          pstmt.setString(10, randomDate());
          pstmt.setString(11, randomDate());
