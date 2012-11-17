@@ -13,11 +13,6 @@ import java.sql.Statement;
  * Ryan thinks that it is stupid.
  */
 public class StupidWorkload extends Workload {
-   // TODO(eriq): These constants should probably be centralized somewhere.
-   private static final String DB_URL = "jdbc:mysql://localhost:3306/test?autoReconnect=true";
-   private static final String DB_USER = "";
-   private static final String DB_PASS = "";
-
    //private static final int TIMES = 1000000;
    private static final int TIMES = 100;
 
@@ -44,7 +39,8 @@ public class StupidWorkload extends Workload {
          // Instantiate the DB Driver
          Class.forName("com.mysql.jdbc.Driver");
 
-         conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASS);
+         conn = DriverManager.getConnection(TestMaster.DB_URL, TestMaster.DB_USER,
+                                            TestMaster.DB_PASS);
       } catch (Exception ex) {
          System.err.println("Failed to get the DB Connection, we are bonned.");
          return null;
@@ -73,7 +69,7 @@ public class StupidWorkload extends Workload {
             }
 
             time = System.currentTimeMillis();
-            statement.executeUpdate(writeUpdate);
+            statement.executeUpdate(String.format(writeUpdate, randomStrings[i]));
             writeAfterReadTimes.add(System.currentTimeMillis() - time);
 
             time = System.currentTimeMillis();
