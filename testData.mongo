@@ -121,10 +121,10 @@ db.users.insert({
    ],
    "meta" : {
       "email" : "asdasd@asdtest.com",
-      "first_name" : "Your",
+      "first_name" : "John",
       "joined" : ISODate("2012-11-09T04:23:07.986Z"),
       "last_login" : ISODate("2012-11-09T04:23:07.986Z"),
-      "last_name" : "Mom",
+      "last_name" : "Smith",
       "level" : 1,
       "pass_hash" : "f0fa51352761dfeac1d146a3cdda558b9027b32f8d97f6ca2482e06302217d3eeebe56d11d1e9be6e1b476e8d1b186ff8b735594543bd3052ac1a36a13c9c1c1",
       "_plain_text_password_for_testing_only_": 'password',
