@@ -7,8 +7,6 @@
 //  than the range of the current exons.
 //  Aldrin says to just yell at them on gene start/end change.
 
-// TODO(eriq): Clear on gene name is broken.
-
 document.addEventListener('DOMContentLoaded', function () {
    window.cgat = {};
    window.cgat.exons = [];

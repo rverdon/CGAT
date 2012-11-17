@@ -1,8 +1,9 @@
 "use strict";
 
-// TODO(eriq): COMBOBOXES!
 // TODO(eriq): Validate group name.
-// TODO(eriq): Date selector for end date.
+
+// TODO(eriq): Have an option that disables previews for FASTA
+//  it requires a full round trip... then again, it is a good chance for the loading screen.
 
 document.addEventListener('DOMContentLoaded', function() {
    if (!window.cgatSession) {
@@ -108,7 +109,20 @@ document.addEventListener('DOMContentLoaded', function() {
    $('.assign-task-field').change(function() {
       validateAssignTask();
    });
+
+   // Attach listeners to the radio buttons.
+   $('input[name=method]:radio').change(updateSelectedMethod);
 });
+
+function updateSelectedMethod(eventObj) {
+   $('input[name=method]:radio').each(function(radioElement) {
+      if (this.checked) {
+         $('#' + this.value + '-method-area').addClass('selected-method');
+      } else {
+         $('#' + this.value + '-method-area').removeClass('selected-method');
+      }
+   });
+}
 
 // TODO(eriq): Don't yell about all fields if they have never gotten any input.
 function validateAssignTask() {
@@ -310,4 +324,29 @@ function goToCreateGroup() {
 function goToAssignTask() {
    window.location.href = '/administration#assign-task';
    window.location.reload(true);
+}
+
+function uploadManual() {
+   // TODO(eriq): Validation.
+
+   enableLoadingModal('administration');
+   $.ajax({
+      url: 'api/upload_contig',
+      type: 'POST',
+      data: {name: $('#manual-method-name').val(),
+             source: $('#manual-method-source').val(),
+             difficulty: $('#manual-method-difficulty').val(),
+             species: $('#manual-method-species').val(),
+             sequence: $('#manual-method-sequence').val()},
+      error: function(jqXHR, textStatus, errorThrown) {
+         enableErrorConfirmModal('Uploading Contig', 'administration');
+      },
+      success: function(data, textStatus, jqXHR) {
+         enableConfirmModal('Successfully Uploaded Contig', 'administration',
+                            'goToAssignTask');
+      }
+   });
+}
+
+function uploadFasta() {
 }

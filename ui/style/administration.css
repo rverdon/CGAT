@@ -1,9 +1,32 @@
-#create-group-area {
+#upload-contig-area {
+   text-align: center;
 }
 
-#create-group-area span {
+#upload-inset {
+   position: relative;
 }
 
-#create-group-area textarea,
-#create-group-area input {
+.method {
+   position: relative;
+   display: none;
+   text-align: initial;
+}
+
+.selected-method {
+   display: block;
+}
+
+#manual-method-seqence-area {
+   display: inline-block;
+   text-align: center;
+}
+
+#manual-method-sequence {
+   height: 275px;
+}
+
+#manual-method-details {
+   display: inline-block;
+   padding-left: 120px;
+   padding-right: 120px;
 }

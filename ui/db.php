@@ -1,5 +1,7 @@
 <?php
 
+// Nothing should enter any method in this file unless it has been sanitized.
+
 // TODO(eriq): There are no specs for gene name, so we cannot sanitize it!
 // Sanitize the data that comes in for saving/submitting an annotation.
 function annotationDataSanitize($data) {
@@ -64,6 +66,17 @@ function mongoNumberSanitize($val) {
 
 function mongoHexSanitize($val) {
    return preg_replace('/[^a-fA-F0-9]/', '', $val);
+}
+
+// Seqeunces are long, but simple.
+function mongoSequenceSanitize($val) {
+   return preg_replace('/[^ATCG]/', '', strtoupper($val));
+}
+
+// A general name. Like a group or contig name. Maybe a username?
+// TODO(eriq): We need rules!
+function mongoNameSanitize($val) {
+   return $val;
 }
 
 function getDB() {
@@ -483,6 +496,23 @@ function getFullGeneInfo($geneName) {
    }
 
    return $rtn;
+}
+
+function insertContig($userId, $userName, $name, $source, $species, $difficulty, $sequence) {
+   $db = getDB();
+
+   $insert = array('expert_annotations' => array(),
+                   'isoform_names' => array(),
+                   'meta' => array('name' => $name,
+                                   'difficulty' => $difficulty,
+                                   'source' => $source,
+                                   'species' => $species,
+                                   'status' => 'active',
+                                   'uploader' => new MongoId($userId),
+                                   'uploader_name' => $userName,
+                                   'upload_date' => new MongoDate()),
+                   'sequence' => $sequence);
+   $db->contigs->insert($insert);
 }
 
 ?>

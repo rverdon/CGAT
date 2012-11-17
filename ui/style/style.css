@@ -194,6 +194,27 @@ a {
    overflow: hidden;
 }
 
+.second-level-area .second-level-inset input,
+.second-level-area .second-level-inset textarea {
+   background: #395668;
+   color: white;
+}
+
+.second-level-area .second-level-inset button {
+   background: #395668;
+   color: white;
+   text-shadow: initial;
+}
+
+.second-level-area .second-level-inset button:hover {
+   background: #133044;
+}
+
+.second-level-area .second-level-inset button:active {
+   background: #34444E;
+}
+
+
 .collapse-button {
    display: inline-block;
    width: 0;
