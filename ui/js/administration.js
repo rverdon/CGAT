@@ -112,6 +112,30 @@ document.addEventListener('DOMContentLoaded', function() {
 
    // Attach listeners to the radio buttons.
    $('input[name=method]:radio').change(updateSelectedMethod);
+
+   // Listen to the file upload iframe.
+   document.getElementById('fasta-file-upload-iframe').addEventListener('load', function() {
+      var content = document.getElementById('fasta-file-upload-iframe').contentWindow.cgatFasta;
+
+      if (content && content.valid) {
+         $('#fasta-method-sequence').val(content.sequence);
+         $('#fasta-method-name').val(content.contigName);
+         disableModal();
+      } else {
+         enableErrorConfirmModal('Parsing FASTA File', 'administration');
+      }
+   });
+
+   // Automatically try to parse the FASTA file.
+   $('#fasta-file-upload-input').change(function() {
+      if (this.value != '') {
+         document.getElementById('fasta-file-upload-form').target = 'fasta-file-upload-iframe';
+         document.getElementById('fasta-file-upload-form').submit();
+
+         // Balanced in the load listener for the iframe.
+         enableLoadingModal('administration');
+      }
+   });
 });
 
 function updateSelectedMethod(eventObj) {
@@ -349,4 +373,23 @@ function uploadManual() {
 }
 
 function uploadFasta() {
+   // TODO(eriq): Validation, share validation with manual.
+
+   enableLoadingModal('administration');
+   $.ajax({
+      url: 'api/upload_contig',
+      type: 'POST',
+      data: {name: $('#fasta-method-name').val(),
+             source: $('#fasta-method-source').val(),
+             difficulty: $('#fasta-method-difficulty').val(),
+             species: $('#fasta-method-species').val(),
+             sequence: $('#fasta-method-sequence').val()},
+      error: function(jqXHR, textStatus, errorThrown) {
+         enableErrorConfirmModal('Uploading Contig', 'administration');
+      },
+      success: function(data, textStatus, jqXHR) {
+         enableConfirmModal('Successfully Uploaded Contig', 'administration',
+                            'goToAssignTask');
+      }
+   });
 }

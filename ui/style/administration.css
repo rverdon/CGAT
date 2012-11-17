@@ -16,17 +16,30 @@
    display: block;
 }
 
-#manual-method-seqence-area {
+.method-seqence-area {
    display: inline-block;
    text-align: center;
 }
 
-#manual-method-sequence {
+.method-seqence-area .method-sequence {
    height: 275px;
 }
 
-#manual-method-details {
+.method-details {
    display: inline-block;
    padding-left: 120px;
    padding-right: 120px;
+}
+
+#fasta-file-upload-iframe {
+   display: none;
+}
+
+#fasta-file-upload-input {
+}
+
+#fasta-file-upload-area {
+   text-align: center;
+   width: 100%;
+   margin-bottom: 20px;
 }

@@ -105,16 +105,54 @@
 
          <div id='upload-inset' class='second-level-inset'>
             <div class='method selected-method' id='fasta-method-area'>
-               <input type='file' accept='fasta' />
+
+               <div id='fasta-file-upload-area'>
+                  <form id='fasta-file-upload-form' action='/api/parse_fasta' method='POST' enctype='multipart/form-data' >
+                     <label>Choose a FASTA File: </label>
+                     <input id="fasta-file-upload-input" name='file' type="file" />
+                     <iframe id='fasta-file-upload-iframe' src=""></iframe>
+                  </form>
+               </div>
+
+               <div>
+                  <div id='fasta-method-seqence-area' class='method-seqence-area' >
+                     <h2>Sequence</h2>
+                     <textarea id='fasta-method-sequence' class='method-sequence'></textarea>
+                  </div>
+
+                  <div id='fasta-method-details' class='method-details'>
+                     <div class='input-align-kids-field'>
+                        <span>Name</span>
+                        <input type='text' id='fasta-method-name' />
+                     </div>
+
+                     <div class='input-align-kids-field'>
+                        <span>Source</span>
+                        <input type='text' id='fasta-method-source' />
+                     </div>
+
+                     <div class='input-align-kids-field'>
+                        <span>Species</span>
+                        <input type='text' id='fasta-method-species' />
+                     </div>
+
+                     <div class='input-align-kids-field'>
+                        <span>Difficulty</span>
+                        <input type='number' id='fasta-method-difficulty' />
+                     </div>
+
+                     <button onclick='uploadFasta();'>Upload Contig</button>
+                  </div>
+               </div>
             </div>
 
             <div class='method' id='manual-method-area'>
-               <div id='manual-method-seqence-area'>
+               <div id='manual-method-seqence-area' class='method-seqence-area'>
                   <h2>Sequence</h2>
-                  <textarea id='manual-method-sequence'></textarea>
+                  <textarea id='manual-method-sequence' class='method-sequence'></textarea>
                </div>
 
-               <div id='manual-method-details'>
+               <div id='manual-method-details' class='method-details'>
                   <div class='input-align-kids-field'>
                      <span>Name</span>
                      <input type='text' id='manual-method-name' />
@@ -122,7 +160,7 @@
 
                   <div class='input-align-kids-field'>
                      <span>Source</span>
-                     <input type='text' value='Unknown-Manual' id='manual-method-source' />
+                     <input type='text' id='manual-method-source' />
                   </div>
 
                   <div class='input-align-kids-field'>
@@ -135,7 +173,7 @@
                      <input type='number' id='manual-method-difficulty' />
                   </div>
 
-                  <button onclick='uploadManual();'>Upload</button>
+                  <button onclick='uploadManual();'>Upload Contig</button>
                </div>
             </div>
          </div>
