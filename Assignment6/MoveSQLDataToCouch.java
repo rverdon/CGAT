@@ -8,6 +8,7 @@ import java.sql.ResultSet;
 import java.util.Date;
 import java.util.Random;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 
 
@@ -47,10 +48,10 @@ public class MoveSQLDataToCouch {
       System.out.println("\nDone!");
    }
 
-   //TODO add incomplete annotations
+
    private static void moveUsers(Connection conn) throws Exception {
       String usersQuery = "SELECT UserId, FirstName, LastName, Email, Pass, Salt, LastLoginDate, RegistrationDate, Level, Role, Exp FROM Users;";
-      String historyQuery = "SELECT AnnotationId, FinishedDate, ExpGained FROM Annotation WHERE UserId = ?;";
+      String historyQuery = "SELECT AnnotationId, FinishedDate, ExpGained, PartialSubmission FROM Annotations WHERE UserId = ?;";
       String taskQuery = "SELECT ContigId, Description, EndDate FROM Tasks WHERE UserId = ?;";
       PreparedStatement userQ = conn.prepareStatement(usersQuery);
       PreparedStatement historyQ = conn.prepareStatement(historyQuery);
@@ -72,6 +73,7 @@ public class MoveSQLDataToCouch {
          ArrayList<Integer> historyIds = new ArrayList<Integer>();
          ArrayList<Date> historyDates = new ArrayList<Date>();
          ArrayList<Integer> historyExp = new ArrayList<Integer>();
+         ArrayList<Boolean> historyPartialFlag = new ArrayList<Boolean>();
          ArrayList<Integer> taskContig = new ArrayList<Integer>();
          ArrayList<String> taskDesc = new ArrayList<String>();
          ArrayList<Date> taskEnd = new ArrayList<Date>();
@@ -82,9 +84,11 @@ public class MoveSQLDataToCouch {
             int annotationId = hrs.getInt("AnnotationId");
             Date finished = hrs.getDate("FinishedDate");
             int expGained = hrs.getInt("ExpGained");
+            boolean partial = hrs.getInt("PartialSubmission") == 1;
             historyIds.add(annotationId);
             historyDates.add(finished);
             historyExp.add(expGained);
+            historyPartialFlag.add(partial);
          }
 
          taskQ.setInt(1, userId);
@@ -100,7 +104,7 @@ public class MoveSQLDataToCouch {
          //toJSON
          String JSON = userToJSON(userId, first, last, email, pass, salt, lastLogin, registered,
                                   level, role, exp, historyIds, historyDates, historyExp, 
-                                  taskContig, taskDesc, taskEnd);     
+                                  historyPartialFlag, taskContig, taskDesc, taskEnd);     
          //SEND TO COUCHBASE  
       }
 
@@ -112,7 +116,7 @@ public class MoveSQLDataToCouch {
 
    private static void moveGroups(Connection conn) throws Exception {
       String groupsQuery = "SELECT GroupId, Name, GroupDescription, CreateDate FROM Groups;";
-      String membershipQuery = "SELECT UserId FROM GroupMemberShip WHERE GroupId = ?;";
+      String membershipQuery = "SELECT UserId FROM GroupMembership WHERE GroupId = ?;";
       PreparedStatement groupsQ = conn.prepareStatement(groupsQuery);
       PreparedStatement membersQ = conn.prepareStatement(membershipQuery);
 
@@ -140,12 +144,14 @@ public class MoveSQLDataToCouch {
       membersQ.close();
    }
 
-   //TODO get the mapping of gene name -> annotations
+
    private static void moveContigs(Connection conn) throws Exception {
       String contigsQuery = "SELECT ContigId, Name, Difficulty, Sequence, UploaderId, Source, Species, Status, CreateDate FROM Contigs;";
       String expertAnnoQuery = "SELECT AnnotationId FROM Annotations WHERE ExpertSubmission = 1 AND ContigId = ?;";
+      String geneAnnoQuery = " SELECT A.AnnotationId, G.Name FROM Annotations A, GeneNames G WHERE A.GeneId = G.GeneId AND A.ContigId = ?;";
       PreparedStatement contigQ = conn.prepareStatement(contigsQuery);
       PreparedStatement expertAnnoQ = conn.prepareStatement(expertAnnoQuery);
+      PreparedStatement geneAnnoQ = conn.prepareStatement(geneAnnoQuery);
 
       ResultSet rs = contigQ.executeQuery();
       while(rs.next()) {
@@ -159,6 +165,8 @@ public class MoveSQLDataToCouch {
          String status = rs.getString("Status");
          Date create = rs.getDate("CreateDate");
          ArrayList<Integer> expertAnnos = new ArrayList<Integer>();
+         HashMap<String, ArrayList<Integer>> isoforms = 
+                  new HashMap<String, ArrayList<Integer>>();
 
          expertAnnoQ.setInt(1,contigId);
          ResultSet expertrs = expertAnnoQ.executeQuery();
@@ -167,19 +175,33 @@ public class MoveSQLDataToCouch {
             expertAnnos.add(annoId);
          }
 
+         geneAnnoQ.setInt(1, contigId);
+         ResultSet isors = geneAnnoQ.executeQuery();
+         while(isors.next()) {
+            int annoId = isors.getInt("A.AnnotationId");
+            String isoName = isors.getString("G.Name");
+            //ENSURE the key exists
+            if(!isoforms.containsKey(isoName)) {
+               isoforms.put(isoName, new ArrayList<Integer>());
+            }
+            //ADD the annoId to the correct list
+            isoforms.get(isoName).add(annoId);
+         }
+
          //toJSON
          String JSON = contigToJSON(contigId, name, diff, seq, uploader, source, species,
-                                    status, create, expertAnnos);     
+                                    status, create, expertAnnos, isoforms);     
          //SEND TO COUCHBASE  
       }
 
       rs.close();
       contigQ.close();
       expertAnnoQ.close();
+      geneAnnoQ.close();
    }
 
    private static void moveAnnotations(Connection conn) throws Exception {
-      String annotationQuery = "SELECT A.AnnotationId, G.Name, A.StartPos, A.EndPos, A.ReverseComplement, A.PartialSubmmision, A.ExpertSubmission, A.ContigId, A.UserId,  A.CreateDate, A.LastModifiedDate, A.FinishedDate, A.Incorrect, A.ExpertIncorrect, A.ExpGained FROM Annotations A, GeneNames G WHERE A.GeneId = G.GeneId;";
+      String annotationQuery = "SELECT A.AnnotationId, G.Name, A.StartPos, A.EndPos, A.ReverseComplement, A.PartialSubmission, A.ExpertSubmission, A.ContigId, A.UserId,  A.CreateDate, A.LastModifiedDate, A.FinishedDate, A.Incorrect, A.ExpertIncorrect, A.ExpGained FROM Annotations A, GeneNames G WHERE A.GeneId = G.GeneId;";
       String exonQuery = "SELECT StartPos, EndPos FROM Exons WHERE AnnotationId = ?;";
       PreparedStatement annotationQ = conn.prepareStatement(annotationQuery);
       PreparedStatement exonQ = conn.prepareStatement(exonQuery);
@@ -191,7 +213,7 @@ public class MoveSQLDataToCouch {
          int startPos = rs.getInt("A.StartPos");
          int endPos = rs.getInt("A.EndPos");
          boolean reverse = rs.getInt("A.ReverseComplement") == 1;
-         boolean partial = rs.getInt("A.PartialSubmmision") == 1;
+         boolean partial = rs.getInt("A.PartialSubmission") == 1;
          boolean expert = rs.getInt("A.ExpertSubmission") == 1;
          int contigId =  rs.getInt("A.ContigId");
          int userId = rs.getInt("A.UserId");
@@ -269,6 +291,7 @@ public class MoveSQLDataToCouch {
                                     int level, String role, int exp, 
                                     ArrayList<Integer> historyIds, ArrayList<Date> historyDates,
                                     ArrayList<Integer> historyExp, 
+                                    ArrayList<Boolean> historyPartialFlag,
                                     ArrayList<Integer> taskContig, ArrayList<String> taskDesc,
                                     ArrayList<Date> taskEnd) {
       return "{}";
@@ -282,7 +305,8 @@ public class MoveSQLDataToCouch {
    private static String contigToJSON(int contigId, String name, int diff, String seq, 
                                       int uploader, String source, String species, 
                                       String status, Date create, 
-                                      ArrayList<Integer> expertAnnos) {
+                                      ArrayList<Integer> expertAnnos,
+                                      HashMap<String, ArrayList<Integer>> isoforms) {
       return "{}";
    }
 
