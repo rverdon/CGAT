@@ -56,8 +56,8 @@ public class GroupMemWorkload extends Workload {
       String joinGroupQuery = "INSERT IGNORE INTO GroupMembership (UserId, GroupId) VALUES (%s, %s)";
 
       for (int i = 0; i < TIMES; i++) {
-         Util.doThrowAwayResultsQuery(conn, String.format(deleteGroupQuery, userIds[i], groupIds[i]));
-         Util.doThrowAwayResultsQuery(conn, String.format(joinGroupQuery, userIds[i], groupIds[i]));
+         Util.doUpdate(conn, String.format(deleteGroupQuery, userIds[i], groupIds[i]));
+         Util.doUpdate(conn, String.format(joinGroupQuery, userIds[i], groupIds[i]));
       }
 
       return new Stats();

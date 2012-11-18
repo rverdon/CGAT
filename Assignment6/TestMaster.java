@@ -8,7 +8,7 @@ import java.util.List;
 public class TestMaster {
    // Some constants for DB connections.
    public static final String DB_URL =
-         "jdbc:mysql://ec2-204-236-188-48.us-west-1.compute.amazonaws.com:3306/cgat?autoReconnect=true";
+         "jdbc:mysql://localhost:3306/cgat?autoReconnect=true";
    public static final String DB_USER = "cgat";
    public static final String DB_PASS = "csc560";
 
@@ -16,7 +16,8 @@ public class TestMaster {
       Workload[] workloads = {
                               //new StupidWorkload(),
                               //new ProfileWorkload(),
-                              new AssignTaskWorkload(),
+                              //new AssignTaskWorkload(),
+                              new GroupMemWorkload(),
                               };
 
       for (Workload workload : workloads) {
