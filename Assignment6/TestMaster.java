@@ -15,7 +15,8 @@ public class TestMaster {
    public static void main(String[] args) {
       Workload[] workloads = {
                               //new StupidWorkload(),
-                              new ProfileWorkload(),
+                              //new ProfileWorkload(),
+                              new AssignTaskWorkload(),
                               };
 
       for (Workload workload : workloads) {
