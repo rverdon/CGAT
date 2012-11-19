@@ -172,6 +172,51 @@ public class Util {
       return rtn;
    }
 
+   public static boolean doStrStrListQuery(Connection conn, String query, String[] idArray, String[] valArray) {
+      Statement statement = null;
+      ResultSet results = null;
+      boolean rtn = false;
+
+      try {
+         // Get a statement from the connection
+         statement = conn.createStatement();
+
+         // Execute the query
+         results = statement.executeQuery(query);
+
+         if (results.next()) {
+            int count = 0;
+            do {
+               idArray[count] = results.getString(1);
+               valArray[count++] = results.getString(2);
+            } while (results.next());
+         }
+
+         rtn = true;
+      } catch (Exception ex) {
+         System.err.println("Error doing query: " + ex);
+         ex.printStackTrace(System.err);
+         rtn = false;
+      } finally {
+         try {
+            if (results != null) {
+               results.close();
+               results = null;
+            }
+
+            if (statement != null) {
+               statement.close();
+               statement = null;
+            }
+         } catch (SQLException sqlEx) {
+            // ... oh well.
+            System.err.println("Error Closing results.");
+         }
+      }
+
+      return rtn;
+   }
+
    public static class AverageStats {
       public double min;
       public double max;
