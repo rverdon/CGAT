@@ -17,7 +17,7 @@
          <span>Group Name: </span><span id='group-name'></span></br>
          <span>Number of Members: </span><span id='group-num-members'></span></br> 
          <span>Group Description: </span><span id='group-desc'></span></br> 
-         <span>Craeted On: </span><span id='group-created'></span>
+         <span>Created On: </span><span id='group-created'></span>
       </div>
    </div>
 
