@@ -64,11 +64,20 @@ document.addEventListener('DOMContentLoaded', function () {
          window.cgat.reverseComplement = data.annotation.reverse_complement;
          document.getElementById('annotation-rc').checked = data.annotation.reverse_complement;
 
+         // Set up the simple-box.
+         var geneOptions = '';
+         for (var geneName in data.contig.isoform_names) {
+            geneOptions += "<option value='" + geneName + "'>" + geneName + "</option>";
+         }
+         $('#annotation-name').html(geneOptions);
+         $('#annotation-name').addClass('simple-box');
+         simpleBoxInit();
+
          // Fill in the gene name
          window.cgat.geneName = data.annotation.isoform_name || '';
          document.title = 'Annotate: ' + window.cgat.geneName;
          setSubtitle(window.cgat.geneName);
-         $('#annotation-name').val(window.cgat.geneName);
+         simpleBoxSelectValue(0, window.cgat.geneName, window.cgat.geneName);
 
          fillRuler(window.cgat.dna.length);
 
@@ -116,6 +125,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
    // Change the title of the page with the gene name.
    document.getElementById('annotation-name').addEventListener('change', function() {
+      //TEST
+      console.log("THIS");
+
       var newName = document.getElementById('annotation-name').value;
       window.cgat.geneName = newName;
       document.title = 'Annotate: ' + newName;

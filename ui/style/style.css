@@ -37,6 +37,10 @@ h2 {
    margin-bottom: 10px;
 }
 
+a {
+   text-decoration: none;
+}
+
 .debug {
    background: #d87d86;
    display: none;
@@ -190,6 +194,27 @@ h2 {
    overflow: hidden;
 }
 
+.second-level-area .second-level-inset input,
+.second-level-area .second-level-inset textarea {
+   background: #395668;
+   color: white;
+}
+
+.second-level-area .second-level-inset button {
+   background: #395668;
+   color: white;
+   text-shadow: initial;
+}
+
+.second-level-area .second-level-inset button:hover {
+   background: #133044;
+}
+
+.second-level-area .second-level-inset button:active {
+   background: #34444E;
+}
+
+
 .collapse-button {
    display: inline-block;
    width: 0;
@@ -313,8 +338,34 @@ h2 {
    background: #34444E;
 }
 
+.second-level-area textarea {
+   resize: none;
+   overflow: auto;
+   height: 3em;
+   width: 30em;
+   background: lightSteelBlue;
+   border: none;
+   border-radius: 5px;
+}
 
 /* These buttons span the whole top-level. */
 .full-second-level-button {
    width: 1000px;
+}
+
+.input-align-kids-field {
+   margin-bottom: 25px;
+   min-width: 275px;
+   min-height: 50px;
+   display: block;
+   overflow: hidden;
+}
+
+.input-align-kids-field span {
+   float: left;
+}
+
+.input-align-kids-field input,
+.input-align-kids-field textarea {
+   float: right;
 }

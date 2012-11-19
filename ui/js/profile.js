@@ -113,7 +113,7 @@ function makeGroup(group, userId) {
 function makeRecent(recent, userId) {
    var annotationId = recent.annotation_info['_id']['$id'];
    return "<div class='recent profile-entry' id='recent-" + annotationId + "'>" +
-          "<span>Gene: <a href='gene?id=" + recent.annotation_info.isoform_name + "'>" +
+          "<span>Gene: <a href='gene?name=" + recent.annotation_info.isoform_name + "'>" +
                 recent.annotation_info.isoform_name + "</a></span>" +
           "<span>Contig: <a href='contig?id=" + recent.contig_info['_id']['$id'] + "'>" +
                 recent.contig_info.meta.name + "</a></span>" +
@@ -127,7 +127,7 @@ function makeRecent(recent, userId) {
 function makePartial(partial, userId) {
    var annotationId = partial.annotation_id['$id'];
    return "<div class='partial profile-entry' id='partial-" + annotationId + "'>" +
-          "<span>Gene: <a href='gene?id=" + partial.annotation_info.isoform_name + "'>" +
+          "<span>Gene: <a href='gene?name=" + partial.annotation_info.isoform_name + "'>" +
                 partial.annotation_info.isoform_name + "</a></span>" +
           "<span>Contig: <a href='contig?id=" + partial.contig_info['_id']['$id'] + "'>" +
                 partial.contig_info.meta.name + "</a></span>" +

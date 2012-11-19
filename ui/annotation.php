@@ -1,8 +1,8 @@
 <?php
    require_once('header.php');
    makeHeader('Annotate', '',
-              array('annotation.css', 'jquery-ui.css'),
-              array('jquery-ui.js', 'annotation.js'));
+              array('annotation.css', 'jquery-ui.css', 'simple-box.css'),
+              array('jquery-ui.js', 'annotation.js', 'simple-box.js'));
 ?>
 
 <div id='content' class='top-level-area'>
@@ -28,7 +28,8 @@
       <div id='annotation-data-area' class='collapsing-area'>
          <div id='gene-name-area' class='annotation-data annotation-data-left'>
             <span>Gene Name: </span>
-            <input type='text' id='annotation-name' />
+            <select id='annotation-name'>
+            </select>
          </div>
          <div class='annotation-data annotation-data-right'>
             <span>Reverse Complement: </span>

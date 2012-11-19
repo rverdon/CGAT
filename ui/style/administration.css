@@ -1,0 +1,45 @@
+#upload-contig-area {
+   text-align: center;
+}
+
+#upload-inset {
+   position: relative;
+}
+
+.method {
+   position: relative;
+   display: none;
+   text-align: initial;
+}
+
+.selected-method {
+   display: block;
+}
+
+.method-seqence-area {
+   display: inline-block;
+   text-align: center;
+}
+
+.method-seqence-area .method-sequence {
+   height: 275px;
+}
+
+.method-details {
+   display: inline-block;
+   padding-left: 120px;
+   padding-right: 120px;
+}
+
+#fasta-file-upload-iframe {
+   display: none;
+}
+
+#fasta-file-upload-input {
+}
+
+#fasta-file-upload-area {
+   text-align: center;
+   width: 100%;
+   margin-bottom: 20px;
+}

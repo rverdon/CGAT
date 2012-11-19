@@ -1,5 +1,7 @@
 <?php
 
+// Nothing should enter any method in this file unless it has been sanitized.
+
 // TODO(eriq): There are no specs for gene name, so we cannot sanitize it!
 // Sanitize the data that comes in for saving/submitting an annotation.
 function annotationDataSanitize($data) {
@@ -29,7 +31,11 @@ function annotationDataSanitize($data) {
 // Sanitize a value for use as a mongo id.
 function mongoIdSanitize($val) {
    $clean = preg_replace('/[^a-fA-F0-9]/', '', $val);
-   return substr($clean, 0, 24);
+   if (strlen($clean) != 24) {
+      die('Id is not 24 bits');
+      return null;
+   }
+   return $clean;
 }
 
 // TODO(eriq): implement
@@ -43,8 +49,34 @@ function mongoUserSanitize($val) {
    return preg_replace('/\W/', '', $val);
 }
 
+// TOOD(eriq): Figure out convention and sanitize
+function mongoGroupSanitize($val) {
+   return $val;
+}
+
+// TOOD(eriq): Figure out convention and sanitize
+// A general sanitize for text. Things like desctiptions.
+function mongoTextSanitize($val) {
+   return $val;
+}
+
+function mongoNumberSanitize($val) {
+   return intval(preg_replace('/\D/', '', $val));
+}
+
 function mongoHexSanitize($val) {
    return preg_replace('/[^a-fA-F0-9]/', '', $val);
+}
+
+// Seqeunces are long, but simple.
+function mongoSequenceSanitize($val) {
+   return preg_replace('/[^ATCG]/', '', strtoupper($val));
+}
+
+// A general name. Like a group or contig name. Maybe a username?
+// TODO(eriq): We need rules!
+function mongoNameSanitize($val) {
+   return $val;
 }
 
 function getDB() {
@@ -103,6 +135,7 @@ function getFullGroupInfo($groupId) {
    return $db->groups->findOne(array('_id' => new MongoId($groupId)));
 }
 
+// TODO(eriq): Abandon old notifications.
 function getExpandedProfile($userName) {
    $profile = getProfile($userName);
 
@@ -165,6 +198,8 @@ function createAnnotation($userId, $contigId) {
                              'user_id' => new MongoId($userId));
    $db->annotations->insert($insertAnnotation);
    $annotationId = $insertAnnotation['_id'];
+
+   $db->users->update(array('_id' => new MongoId($userId)), array('$addToSet' => array('incomplete_annotations' => new MongoId($annotationId))));
 
    return $annotationId;
 }
@@ -317,7 +352,7 @@ function attemptRegistration($user, $hash, $firstName, $lastName, $email, &$erro
       $error = 'namenotavailable';
       return false;
    }
-   
+
    $emailCheck = $db->users->findOne(array('meta.email' => $email));
    if ($emailCheck) {
       $error = 'emailnotavailable';
@@ -378,6 +413,106 @@ function getAdministrationInfo($userId) {
    }
 
    return $rtn;
+}
+
+function createGroup($userId, $userName, $groupName, $description) {
+   $db = getDB();
+
+   $insert = array('created' => new MongoDate(),
+                   'description' => $description,
+                   'name' => $groupName);
+   $db->groups->insert($insert);
+   joinGroup($userId, $userName, $insert['_id']->{'$id'});
+}
+
+// Groups should already be an array of MongoIds
+function assignTask($userId, $userName, $groups, $description, $contigId, $endDateEpoch) {
+   $db = getDB();
+
+   $query = array('groups' => array('$in' => $groups));
+   $update = array('$push' => array('tasks' => array('_id' => new MongoId(),
+                                                     'desc' => $description,
+                                                     'contig_id' => new MongoId($contigId),
+                                                     'end_date' => new MongoDate($endDateEpoch))));
+
+   $db->users->update($query, $update, false /* upsert */, true /* multiple updates */);
+}
+
+function getFullContigInfo($contigId) {
+   $db = getDB();
+
+   $rtn = array();
+
+   $rtn['contig'] = $db->contigs->findOne(array('_id' => new MongoId($contigId)),
+                                          array('sequence' => 0));
+
+   // Expand the annotations of this contig.
+   // Note that expert annotations should also be expanded there and they can just be referenced later.
+   $expandedAnnotations = array();
+   foreach ($rtn['contig']['isoform_names'] as $geneName => $ids) {
+      $expandedAnnotations[$geneName] = array();
+
+      foreach ($ids as $id) {
+         $expandedAnnotations[$geneName][$id->{'$id'}] = getAnnotation($id->{'$id'});
+      }
+   }
+   $rtn['expandedAnnotations'] = $expandedAnnotations;
+
+   return $rtn;
+}
+
+function getFullGeneInfo($geneName) {
+   $db = getDB();
+
+   $rtn = array();
+
+   $rtn['annotations'] = array();
+   $rtn['expertAannotations'] = array();
+   $rtn['contigs'] = array();
+
+   $annotationsToExpand = array();
+
+   $cursor = $db->contigs->find(array(('isoform_names.' . $geneName) => array('$exists' => true)),
+                                array('sequence' => 0));
+
+   foreach ($cursor as $contig) {
+      $rtn['contigs'][] = $contig;
+
+      foreach ($contig['isoform_names'][$geneName] as $annotationId) {
+         $annotationsToExpand[] = $annotationId->{'$id'};
+      }
+   }
+
+   foreach ($annotationsToExpand as $annotationId) {
+      $annotationInfo = getAnnotation($annotationId);
+
+      if (!$annotationInfo['partial']) {
+         if ($annotationInfo['expert']) {
+            $rtn['expertAnnotations'][] = $annotationInfo;
+         } else {
+            $rtn['annotations'][] = $annotationInfo;
+         }
+      }
+   }
+
+   return $rtn;
+}
+
+function insertContig($userId, $userName, $name, $source, $species, $difficulty, $sequence) {
+   $db = getDB();
+
+   $insert = array('expert_annotations' => array(),
+                   'isoform_names' => array(),
+                   'meta' => array('name' => $name,
+                                   'difficulty' => $difficulty,
+                                   'source' => $source,
+                                   'species' => $species,
+                                   'status' => 'active',
+                                   'uploader' => new MongoId($userId),
+                                   'uploader_name' => $userName,
+                                   'upload_date' => new MongoDate()),
+                   'sequence' => $sequence);
+   $db->contigs->insert($insert);
 }
 
 ?>
