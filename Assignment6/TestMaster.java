@@ -8,16 +8,17 @@ import java.util.List;
 public class TestMaster {
    // Some constants for DB connections.
    public static final String DB_URL =
-         "jdbc:mysql://localhost:3306/cgat?autoReconnect=true";
-   public static final String DB_USER = "cgat";
-   public static final String DB_PASS = "csc560";
+         "jdbc:mysql://localhost:3306/test?autoReconnect=true";
+   public static final String DB_USER = "";
+   public static final String DB_PASS = "";
 
    public static void main(String[] args) {
       Workload[] workloads = {
                               //new StupidWorkload(),
                               //new ProfileWorkload(),
                               //new AssignTaskWorkload(),
-                              new GroupMemWorkload(),
+                              //new GroupMemWorkload(),
+                              new ContigUploadWorkload(),
                               };
 
       for (Workload workload : workloads) {
