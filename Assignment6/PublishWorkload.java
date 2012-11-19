@@ -14,9 +14,9 @@ import java.sql.Date;
  * This one measures fetching a complete user's profile.
  */
 public class PublishWorkload extends Workload {
-   private static final int TIMES = 10000;
+   private static final int TIMES = 1;
 
-   private String[] userIds, annotationIds, annotationExp;
+   private String[] userIds, annotationIds, exp;
 
    private Connection conn;
 
@@ -26,12 +26,13 @@ public class PublishWorkload extends Workload {
    public PublishWorkload() {
       userIds = new String[TIMES];
       annotationIds = new String[TIMES];
-      annotationExp = new String[TIMES];
+      exp = new String[TIMES];
 
       try {
          Class.forName("com.mysql.jdbc.Driver");
 
-         conn = DriverManager.getConnection(TestMaster.DB_URL, TestMaster.DB_USER,
+         conn = DriverManager.getConnection(TestMaster.DB_URL,
+                                            TestMaster.DB_USER,
                                             TestMaster.DB_PASS);
       } catch (Exception ex) {
          System.err.println("Failed to get the DB Connection, we are boned.");
@@ -44,9 +45,15 @@ public class PublishWorkload extends Workload {
          throw new RuntimeException();
       }
 
-      query = randQuery("AnnotationId, ExpGained", "Annotations", TIMES);
-      if (!Util.doStrStrListQuery(conn, query, annotationIds, annotationExp)) {
+      query = randQuery("AnnotationId", "Annotations", TIMES);
+      if (!Util.doStringListQuery(conn, query, annotationIds)) {
          System.err.println("Couldn't get Annotation info.");
+         throw new RuntimeException();
+      }
+
+      query = randQuery("Difficulty", "Contigs", TIMES);
+      if (!Util.doStringListQuery(conn, query, exp)) {
+         System.err.println("Couldn't get Contig info.");
          throw new RuntimeException();
       }
    }
@@ -63,22 +70,24 @@ public class PublishWorkload extends Workload {
 
    protected Stats executeMySQLImpl() {
       String userXPQuery = "UPDATE Users " +
-                           "SET Exp = Exp + %s " +
+                           "SET Exp = Exp + %d " +
                            "WHERE UserId = %s";
 
       String annotationUpdateQuery = "UPDATE Annotations " +
                                      "SET PartialSubmission = 0, " +
-                                         "FinishedDate = '%s' " +
+                                         "FinishedDate = '%s', " +
+                                         "ExpGained = %d " +
                                      "WHERE AnnotationId = %s";
 
       Random rand = new Random();
       for (int i = 0; i < TIMES; i++) {
          Util.doUpdate(conn, String.format(userXPQuery,
-                                           annotationExp[i],
+                                           exp[i],
                                            userIds[i]));
 
          Util.doUpdate(conn, String.format(annotationUpdateQuery,
                                            currDate(),
+                                           exp[i],
                                            annotationIds[i]));
       }
 
