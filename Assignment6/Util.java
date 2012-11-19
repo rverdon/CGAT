@@ -127,6 +127,48 @@ public class Util {
       return rtn;
    }
 
+   public static String doQuery(Connection conn, String query) {
+      Statement statement = null;
+      ResultSet results = null;
+      String rtn = null;
+
+      try {
+         // Get a statement from the connection
+         statement = conn.createStatement();
+
+         // Execute the query
+         results = statement.executeQuery(query);
+
+         if (results.next()) {
+            int count = 0;
+            do {
+               rtn = results.getString(1);
+            } while (results.next());
+
+            if (count > 1) { rtn = null; }
+         }
+      } catch (Exception ex) {
+         System.err.println("Error doing query: " + ex);
+         ex.printStackTrace(System.err);
+      } finally {
+         try {
+            if (results != null) {
+               results.close();
+               results = null;
+            }
+
+            if (statement != null) {
+               statement.close();
+               statement = null;
+            }
+         } catch (SQLException sqlEx) {
+            // ... oh well.
+            System.err.println("Error Closing results.");
+         }
+      }
+
+      return rtn;
+   }
 
    public static boolean doStringListQuery(Connection conn, String query, String[] resultArray) {
       Statement statement = null;
