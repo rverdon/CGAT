@@ -14,15 +14,15 @@ import java.text.SimpleDateFormat;
  * Generate some random SQL data.
  */
 public class GenerateSQLData {
-   private static final String DB_URL = "jdbc:mysql://localhost:3306/test?autoReconnect=true";
-   private static final String DB_USER = "";
-   private static final String DB_PASS = "";
+   private static final String DB_URL = "jdbc:mysql://localhost:3306/cgat?autoReconnect=true";
+   private static final String DB_USER = "root";
+   private static final String DB_PASS = "csc560";
 
-   private static int numGeneNames = 100;
+   private static int numGeneNames = 500;
    private static int numContigs = 100;
-   private static int numCollabExons = 2500;
-   private static int numCollabAnnotations = 500;
-   private static int numGroups = 100;
+   private static int numCollabExons = 0;
+   private static int numCollabAnnotations = 0;
+   private static int numGroups =100;
    private static int numUsers = 100000;
    private static int numExons = 5000000;
    private static int numAnnotations = 1000000;
@@ -49,10 +49,6 @@ public class GenerateSQLData {
       System.out.println(" Finished generating " + numGeneNames + " Gene names");
       createContigs(numContigs, conn);
       System.out.println(" Finished generating " + numContigs + " Contigs");
-      createCollabExons(numCollabExons, conn);
-      System.out.println(" Finished generating " + numCollabExons + " Collaborative Exons");
-      createCollabAnnotations(numCollabAnnotations, conn);
-      System.out.println(" Finished generating " + numCollabAnnotations + " Collaborative Annotations");
       createGroups(numGroups, conn);
       System.out.println(" Finished generating " + numGroups + " Groups");
       createUsers(numUsers, conn);
@@ -179,7 +175,7 @@ public class GenerateSQLData {
          for (int i = 0; i < 5; i++) {
             pstmt.setString(1, randomInt(5000));//StartPos
             pstmt.setString(2, randomInt(5000));//EndPos
-            pstmt.setString(3, String.valueOf(x));
+            pstmt.setString(3, String.valueOf(x+1));
             pstmt.executeUpdate();
          }
       }
@@ -191,7 +187,7 @@ public class GenerateSQLData {
       PreparedStatement pstmt = conn.prepareStatement(insertQuery);
 
       for (int i = 0; i < count; i++) {
-         pstmt.setString(1, String.valueOf(randomInt(numGeneNames)+1));
+         pstmt.setString(1, String.valueOf(rand.nextInt(numGeneNames)+1));
          pstmt.setString(2, randomInt(7000));
          pstmt.setString(3, randomInt(7000));
          pstmt.setString(4, randomBool());
