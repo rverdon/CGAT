@@ -6,6 +6,7 @@ import java.util.Map;
 
 /**
  * This is an example to show everyone how to use the JSON library.
+ * See here for a complete reference: http://www.json.org/java/
  */
 public class JSONExample {
    // Note that most JSON conversions will throw a JSONException if they are given inproper JSON.
