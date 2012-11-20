@@ -1,0 +1,117 @@
+Annotation:
+{
+   "annotation_id": "1",
+   "contig_id": "1",
+   "end": "1743",
+   "exons": [
+      {
+         "start": "3660",
+         "end": "347"
+      },
+      {
+         "start": "4529",
+         "end": "2714"
+      },
+      {
+         "start": "4145",
+         "end": "4198"
+      },
+      {
+         "start": "4809",
+         "end": "605"
+      },
+      {
+         "start": "1434",
+         "end": "3520"
+      }
+   ],
+   "expert": "true",
+   "isoform_name": "gene38",
+   "meta": {
+        "created": "2012-11-19",
+        "expert_incorrect": "true",
+        "finished": "2012-11-19",
+        "incorrect": "false",
+        "last_modified": "2012-11-19"
+   },
+   "partial": "false",
+   "reverse_complement": "true",
+   "start": "1255",
+   "user_id": "9"
+}
+Contig:
+{
+   "contig_id": "1",
+   "expert_annotations": [
+       "1",
+       "7"
+   ],
+   "isoform_names": {
+       "gene4": [
+          "7"
+        ],
+       "gene38": [
+          "1"
+        ]
+   },
+   "meta": {
+        "difficulty": "0",
+        "name": "contig1",
+        "source": "BOXZZ5P6JUYGBJ9",
+        "species": "9UD5U4QUJIYGEZK3H1DBXU5KJFSESY80VLUIAX03",
+        "status": "XIA6J6UMBHCLT2SD7FDM",
+        "upload_date": "2012-11-19",
+        "uploader": "6",
+        "uploader_name": "QC6MFRKCS8K5I1CME29JYGL5AR8D50"
+   },
+   "sequence": "TAT...A"
+}
+User:
+{
+   "user_id": "1",
+   "groups": [
+
+   ],
+   "history": [
+
+    ],
+    "incomplete_annotations": [
+
+    ],
+    "meta": {
+         "email": "RMA3CRDIC7YFPRKSLGTELSMA45FQV377R7UZ06FL",
+         "first_name": "OZ1S8P4TU36SEKU4LXFK",
+         "joined": "2012-11-19",
+         "last_login": "2012-11-19",
+         "last_name": "EPRB9LL51YTRA7HKM096LIOJ7",
+         "level": "3",
+         "pass_hash": "5XFECUA1DME4LAYHFG5M4HJ0BUYYY0RL22K3ITSU03V5OBPSACIYY502PTTMCSVA",
+         "role": "1XT0J",
+         "salt": "DEZC7PVY76ASPAV68LGGD4FZIOXR8M3G",
+         "user_name": "6713MY6G8ZH9Q6J7Y7OH6V5FIYVE8Z",
+         "exp": "4187"
+    },
+    "tasks": [
+       {
+           "desc": "DJ0UFHQBY1AXOFFMM3JO8J1JBXJYH7Z1HK6MI7R468L4CZPO22LS2TTIA8VR",
+           "contig_id": "5",
+           "end_date": "2012-11-19"
+       },
+       {
+           "desc": "4BS34TA1XCUV2680A4ZV9E9X5LLCFPGDXVTM9OVEKV383J6ERFT2MLP5OX9H",
+           "contig_id": "9",
+           "end_date": "2012-11-19"
+       }
+    ]
+}
+
+Group:
+{
+   "group_id": "1",
+   "created": "2012-11-19",
+   "description": "5KZ43UG68IO5BF1FOZK8GIVUJI508D8GZQI5CS25148H6BY0TSF98LKY5DR1VAKADZATPOFR7VSGJAJ7Q66Q24Z73GQQJHZBJSCAADZEAJ447Q2UMG68SDK19AKHZHGD8LIM1YBXM3XUVECYDCOHLF",
+   "name": "group1",
+   "users": [
+
+   ]
+}

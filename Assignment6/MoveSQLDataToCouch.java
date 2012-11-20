@@ -10,6 +10,15 @@ import java.util.Random;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import java.net.URI;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+import com.couchbase.client.CouchbaseClient;
+import net.spy.memcached.internal.GetFuture;
+import net.spy.memcached.internal.OperationFuture;
+
 
 
 /**
@@ -20,36 +29,42 @@ public class MoveSQLDataToCouch {
    private static final String DB_USER = "";
    private static final String DB_PASS = "";
 
+   private static List<URI> uris;
+
    public static void main(String[] args) throws Exception {
       Connection conn = null;
+      CouchbaseClient client = null;
+      uris = new LinkedList<URI>();
+      uris.add(URI.create("http://127.0.0.1:8091/pools"));
 
     
       try {
          // Instantiate the DB Driver
          Class.forName("com.mysql.jdbc.Driver");
-
          conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASS);
+
+         client = new CouchbaseClient(uris, "default", "");
       } catch (Exception ex) {         
          System.err.println("Cannot connect to DB: " + ex);
       }
       
       System.out.println("Starting to move the stuff...\n");
-      moveUsers(conn);
+      moveUsers(conn, client);
       System.out.println("-Finished moving users.");
-      moveGroups(conn);
+      moveGroups(conn, client);
       System.out.println("-Finished moving groups.");
-      moveContigs(conn);
+      moveContigs(conn, client);
       System.out.println("-Finished moving contigs.");
-      moveAnnotations(conn);
+      moveAnnotations(conn, client);
       System.out.println("-Finished moving annotations.");
-      //moveCollabAnnotations(conn);
-      //System.out.println("-Finished moving collab annotations.");
      
       System.out.println("\nDone!");
+      conn.close();
+      client.shutdown();
    }
 
 
-   private static void moveUsers(Connection conn) throws Exception {
+   private static void moveUsers(Connection conn, CouchbaseClient client) throws Exception {
       String usersQuery = "SELECT UserId, FirstName, LastName, UserName, Email, Pass, Salt, LastLoginDate, RegistrationDate, Level, Role, Exp FROM Users;";
       String historyQuery = "SELECT AnnotationId, FinishedDate, ExpGained, PartialSubmission FROM Annotations WHERE UserId = ?;";
       String taskQuery = "SELECT ContigId, Description, EndDate FROM Tasks WHERE UserId = ?;";
@@ -118,7 +133,8 @@ public class MoveSQLDataToCouch {
                                   lastLogin, registered,
                                   level, role, exp, historyIds, historyDates, historyExp, 
                                   historyPartialFlag, taskContig, taskDesc, taskEnd, groups);
-         //SEND TO COUCHBASE  
+         //SEND TO COUCHBASE
+         client.set("Users-"+userId, 0, JSON);
       }
 
       rs.close();
@@ -128,7 +144,7 @@ public class MoveSQLDataToCouch {
       groupQ.close();
    }
 
-   private static void moveGroups(Connection conn) throws Exception {
+   private static void moveGroups(Connection conn, CouchbaseClient client) throws Exception {
       String groupsQuery = "SELECT GroupId, Name, GroupDescription, CreateDate FROM Groups;";
       String membershipQuery = "SELECT G.UserId, U.UserName FROM GroupMembership G, Users U WHERE G.UserId = U.UserId AND GroupId = ?;";
       PreparedStatement groupsQ = conn.prepareStatement(groupsQuery);
@@ -153,7 +169,8 @@ public class MoveSQLDataToCouch {
          }
          //toJSON
          String JSON = groupToJSON(groupId, name, desc, createDate, memberIds, memberNames);
-         //SEND TO COUCHBASE    
+         //SEND TO COUCHBASE  
+         client.set("Groups-"+groupId, 0, JSON);  
       }
 
       rs.close();
@@ -162,7 +179,7 @@ public class MoveSQLDataToCouch {
    }
 
 
-   private static void moveContigs(Connection conn) throws Exception {
+   private static void moveContigs(Connection conn, CouchbaseClient client) throws Exception {
       String contigsQuery = "SELECT ContigId, Name, Difficulty, Sequence, UploaderId, UserName, Source, Species, Status, CreateDate FROM Contigs, Users WHERE Contigs.UploaderId = Users.UserId;";
       String expertAnnoQuery = "SELECT AnnotationId FROM Annotations WHERE ExpertSubmission = 1 AND ContigId = ?;";
       String geneAnnoQuery = " SELECT A.AnnotationId, G.Name FROM Annotations A, GeneNames G WHERE A.GeneId = G.GeneId AND A.ContigId = ?;";
@@ -209,7 +226,8 @@ public class MoveSQLDataToCouch {
          //toJSON
          String JSON = contigToJSON(contigId, name, diff, seq, uploader, source, species,
                                     status, create, uploader_name, expertAnnos, isoforms);
-         //SEND TO COUCHBASE  
+         //SEND TO COUCHBASE
+         client.set("Contigs-"+contigId, 0, JSON);
       }
 
       rs.close();
@@ -218,7 +236,7 @@ public class MoveSQLDataToCouch {
       geneAnnoQ.close();
    }
 
-   private static void moveAnnotations(Connection conn) throws Exception {
+   private static void moveAnnotations(Connection conn, CouchbaseClient client) throws Exception {
       String annotationQuery = "SELECT A.AnnotationId, G.Name, A.StartPos, A.EndPos, A.ReverseComplement, A.PartialSubmission, A.ExpertSubmission, A.ContigId, A.UserId,  A.CreateDate, A.LastModifiedDate, A.FinishedDate, A.Incorrect, A.ExpertIncorrect, A.ExpGained FROM Annotations A, GeneNames G WHERE A.GeneId = G.GeneId;";
       String exonQuery = "SELECT StartPos, EndPos FROM Exons WHERE AnnotationId = ?;";
       PreparedStatement annotationQ = conn.prepareStatement(annotationQuery);
@@ -257,6 +275,7 @@ public class MoveSQLDataToCouch {
                                               expertIncorrect, exonStartEndPairs);
          
          //SEND to couchbase
+         client.set("Annotations-"+annoId, 0, JSON);
       }
 
       rs.close();
@@ -264,7 +283,7 @@ public class MoveSQLDataToCouch {
       exonQ.close();
    }
 
-   private static void moveCollabAnnotations(Connection conn) throws Exception {
+   private static void moveCollabAnnotations(Connection conn, CouchbaseClient client) throws Exception {
       String annotationQuery = "SELECT A.CollabAnnotationId, G.Name, A.StartPos, A.EndPos, A.ReverseComplement, A.ContigId, A.CreateDate, A.LastModifiedDate FROM CollabAnnotations A, GeneNames G WHERE A.GeneId = G.GeneId;";
       String exonQuery = "SELECT StartPos, EndPos FROM CollabExons WHERE CollabAnnotationId = ?;";
       PreparedStatement annotationQ = conn.prepareStatement(annotationQuery);
