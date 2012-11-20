@@ -16,7 +16,7 @@ import java.sql.PreparedStatement;
  */
 public class ContigUploadWorkload extends Workload {
    // Should be no more than 9999999999999999999999999999
-   private static final int TIMES = 1000000;
+   private static final int TIMES = 100000;
    //private static final int TIMES = 5;
    private static final int MIN_SEQ_LENGTH = 45000;
    private static final int MAX_ADDITIONAL_LENGTH = 15001;
@@ -60,9 +60,9 @@ public class ContigUploadWorkload extends Workload {
             pstmt.setString(2, randomDouble());
             pstmt.setString(3, seqs.get(rand.nextInt(seqs.size())));
             pstmt.setString(4, userIds[rand.nextInt(TIMES)]);
-            pstmt.setString(5, randomString(15));
-            pstmt.setString(6, randomString(40));
-            pstmt.setString(7, randomString(20));
+            pstmt.setString(5, randomString(7));
+            pstmt.setString(6, randomString(20));
+            pstmt.setString(7, randomString(10));
             pstmt.setString(8, randomDate());
             pstmt.executeUpdate();
          }
