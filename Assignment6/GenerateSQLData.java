@@ -27,7 +27,7 @@ public class GenerateSQLData {
    private static int numExons = 5000000;
    private static int numAnnotations = 1000000;
    private static double groupJoinChance = 0.1;
-   private static double taskAssignChance = 0.4;
+   private static double taskAssignChance = 0.05;
    private static Random rand;
 
    public static void main(String[] args) throws Exception {
@@ -49,10 +49,6 @@ public class GenerateSQLData {
       System.out.println(" Finished generating " + numGeneNames + " Gene names");
       createContigs(numContigs, conn);
       System.out.println(" Finished generating " + numContigs + " Contigs");
-      createCollabExons(numCollabExons, conn);
-      /*System.out.println(" Finished generating " + numCollabExons + " Collaborative Exons");
-      createCollabAnnotations(numCollabAnnotations, conn);
-      System.out.println(" Finished generating " + numCollabAnnotations + " Collaborative Annotations");*/
       createGroups(numGroups, conn);
       System.out.println(" Finished generating " + numGroups + " Groups");
       createUsers(numUsers, conn);
