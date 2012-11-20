@@ -35,6 +35,8 @@ public abstract class Workload {
 
       stats.setRunningTime(finalTime - startTime);
 
+      cleanupMySQL();
+
       return stats;
    }
 
@@ -50,7 +52,20 @@ public abstract class Workload {
 
       stats.setRunningTime(finalTime - startTime);
 
+      cleanupCouch();
+
       return stats;
+   }
+
+   protected void cleanupMySQL() {
+      try {
+         conn.close();
+         conn = null;
+      } catch (Exception ex) {
+         System.err.println("Error closing the connection.");
+      }
+
+      System.gc();
    }
 
    /**
@@ -67,6 +82,9 @@ public abstract class Workload {
          System.err.println("Failed to get the DB Connection.: " + ex);
          throw new RuntimeException();
       }
+   }
+
+   protected void cleanupCouch() {
    }
 
    /**

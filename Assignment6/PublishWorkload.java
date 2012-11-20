@@ -47,6 +47,11 @@ public class PublishWorkload extends Workload {
       }
    }
 
+   protected void cleanupMySQL() {
+      super.cleanupMySQL();
+      userIds = null;
+   }
+
    protected Stats executeMySQLImpl() {
       String userXPQuery = "UPDATE Users " +
                            "SET Exp = Exp + %s " +

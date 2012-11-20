@@ -36,6 +36,12 @@ public class ProfileWorkload extends Workload {
       }
    }
 
+   protected void cleanupMysql() {
+      super.cleanupMySQL();
+
+      userIds = null;
+   }
+
    protected Stats executeMySQLImpl() {
       String userQuery = "SELECT * FROM Users u WHERE UserId = %s";
 

@@ -43,6 +43,13 @@ public class GroupMemWorkload extends Workload {
       }
    }
 
+   protected void cleanupMySQL() {
+      super.cleanupMySQL();
+
+      userIds = null;
+      groupIds = null;
+   }
+
    protected Stats executeMySQLImpl() {
       String deleteGroupQuery = "DELETE GM FROM GroupMembership GM JOIN Users U USING (UserId) JOIN Groups G USING (GroupId) WHERE U.UserId=%s AND G.GroupId=%s";
       String joinGroupQuery = "INSERT IGNORE INTO GroupMembership (UserId, GroupId) VALUES (%s, %s)";

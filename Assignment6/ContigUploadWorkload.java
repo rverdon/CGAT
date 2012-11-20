@@ -16,7 +16,7 @@ import java.sql.PreparedStatement;
  */
 public class ContigUploadWorkload extends Workload {
    // Should be no more than 9999999999999999999999999999
-   private static final int TIMES = 100000;
+   private static final int TIMES = 10000;
    //private static final int TIMES = 5;
    private static final int MIN_SEQ_LENGTH = 45000;
    private static final int MAX_ADDITIONAL_LENGTH = 15001;
@@ -47,6 +47,14 @@ public class ContigUploadWorkload extends Workload {
          int extra_length = rand.nextInt(MAX_ADDITIONAL_LENGTH);
          seqs.add(randomSequence(MIN_SEQ_LENGTH + extra_length));
       }
+   }
+
+   protected void cleanupMySQL() {
+      super.cleanupMySQL();
+
+      seqs.clear();
+      seqs = null;
+      userIds = null;
    }
 
    protected Stats executeMySQLImpl() {
