@@ -7,6 +7,22 @@ import java.sql.DriverManager;
 public abstract class Workload {
    protected Connection conn;
 
+   // See if we can get a clean connection.
+   public static void main(String[] args) {
+      Connection conn;
+
+      try {
+         // Instantiate the DB Driver
+         Class.forName("com.mysql.jdbc.Driver");
+
+         conn = DriverManager.getConnection(TestMaster.DB_URL, TestMaster.DB_USER,
+                                            TestMaster.DB_PASS);
+      } catch (Exception ex) {
+         System.err.println("Failed to get the DB Connection.: " + ex);
+         throw new RuntimeException();
+      }
+   }
+
    /**
     * Do the assigned workload using the MySQL Cluster.
     */

@@ -13,8 +13,8 @@ import java.sql.Statement;
  */
 public class GroupMemWorkload extends Workload {
    // Should be no more than 100000 (the number of users in the db).
-   //private static final int TIMES = 1000000;
-   private static final int TIMES = 1;
+   private static final int TIMES = 1000000;
+   //private static final int TIMES = 1;
 
    private String[] userIds;
    private String[] groupIds;

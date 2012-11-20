@@ -13,12 +13,10 @@ import java.sql.Statement;
  */
 public class ProfileWorkload extends Workload {
    // Should be no more than 100000 (the number of users in the db).
-   //private static final int TIMES = 1000000;
-   private static final int TIMES = 1;
+   private static final int TIMES = 1000000;
+   //private static final int TIMES = 1;
 
    private String[] userIds;
-
-   private Connection conn;
 
    /**
     * Fetch the user ids here, and preserve the connection.
