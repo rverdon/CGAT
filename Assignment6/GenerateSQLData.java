@@ -18,7 +18,7 @@ public class GenerateSQLData {
    private static final String DB_USER = "root";
    private static final String DB_PASS = "csc560";
 
-   private static int numGeneNames = 100;
+   private static int numGeneNames = 500;
    private static int numContigs = 100;
    private static int numCollabExons = 0;
    private static int numCollabAnnotations = 0;
@@ -175,7 +175,7 @@ public class GenerateSQLData {
          for (int i = 0; i < 5; i++) {
             pstmt.setString(1, randomInt(5000));//StartPos
             pstmt.setString(2, randomInt(5000));//EndPos
-            pstmt.setString(3, String.valueOf(x));
+            pstmt.setString(3, String.valueOf(x+1));
             pstmt.executeUpdate();
          }
       }
