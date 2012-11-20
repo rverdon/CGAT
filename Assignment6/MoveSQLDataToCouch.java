@@ -152,7 +152,7 @@ public class MoveSQLDataToCouch {
             memberNames.add(uname);
          }
          //toJSON
-         String JSON = groupToJSON(groupId, name, desc, createDate, memberIds, memberNames); 
+         String JSON = groupToJSON(groupId, name, desc, createDate, memberIds, memberNames);
          //SEND TO COUCHBASE    
       }
 
@@ -163,7 +163,7 @@ public class MoveSQLDataToCouch {
 
 
    private static void moveContigs(Connection conn) throws Exception {
-      String contigsQuery = "SELECT ContigId, Name, Difficulty, Sequence, UploaderId, Source, Species, Status, CreateDate FROM Contigs;";
+      String contigsQuery = "SELECT ContigId, Name, Difficulty, Sequence, UploaderId, UserName, Source, Species, Status, CreateDate FROM Contigs, Users WHERE Contigs.UploaderId = Users.UserId;";
       String expertAnnoQuery = "SELECT AnnotationId FROM Annotations WHERE ExpertSubmission = 1 AND ContigId = ?;";
       String geneAnnoQuery = " SELECT A.AnnotationId, G.Name FROM Annotations A, GeneNames G WHERE A.GeneId = G.GeneId AND A.ContigId = ?;";
       PreparedStatement contigQ = conn.prepareStatement(contigsQuery);
@@ -177,6 +177,7 @@ public class MoveSQLDataToCouch {
          int diff = rs.getInt("Difficulty");
          String seq = rs.getString("Sequence");
          int uploader = rs.getInt("UploaderId");
+         String uploader_name = rs.getString("UserName");
          String source = rs.getString("Source");
          String species = rs.getString("Species");
          String status = rs.getString("Status");
@@ -207,7 +208,7 @@ public class MoveSQLDataToCouch {
 
          //toJSON
          String JSON = contigToJSON(contigId, name, diff, seq, uploader, source, species,
-                                    status, create, expertAnnos, isoforms);     
+                                    status, create, uploader_name, expertAnnos, isoforms);
          //SEND TO COUCHBASE  
       }
 
@@ -254,7 +255,7 @@ public class MoveSQLDataToCouch {
                                               partial, expert, contigId, userId, createDate,
                                               lastModifiedDate, finishedDate, incorrect, 
                                               expertIncorrect, exonStartEndPairs);
-
+         
          //SEND to couchbase
       }
 
@@ -421,9 +422,9 @@ public class MoveSQLDataToCouch {
       String ret = "";
       
       for (int i = 0; i < memberIds.size(); i++) {
-         ret += "   {\n" +
-                "      \"user_id\": \"" + memberIds.get(i) + "\"\n" +
-                "      \"name\": \"" + memberNames.get(i) + "\"\n" + "   }";
+         ret += "      {\n" +
+                "         \"user_id\": \"" + memberIds.get(i) + "\",\n" +
+                "         \"name\": \"" + memberNames.get(i) + "\"\n" + "      }";
          if (i != memberIds.size() - 1) {
             ret+= ",\n";
          }
@@ -434,10 +435,52 @@ public class MoveSQLDataToCouch {
 
    private static String contigToJSON(int contigId, String name, int diff, String seq, 
                                       int uploader, String source, String species, 
-                                      String status, Date create, 
+                                      String status, Date create, String uploader_name,
                                       ArrayList<Integer> expertAnnos,
                                       HashMap<String, ArrayList<Integer>> isoforms) {
-      return "{}";
+       return "{\n" + "   \"contig_id\": \"" + contigId + "\",\n" +
+                   "   \"expert_annotations\": [\n" + listToJSON(expertAnnos) + "\n   ],\n" +
+                   "   \"isoform_names\": {\n" + isoformsToJSON(isoforms) + "\n" +
+                   "   },\n" +
+                   "   \"meta\": {\n" +
+                   "        \"difficulty\": \"" + diff + "\",\n" +
+                   "        \"name\": \"" + name + "\",\n" +
+                   "        \"source\": \"" + source + "\",\n" +
+                   "        \"species\": \"" + species + "\",\n" +
+                   "        \"status\": \"" + status + "\",\n" +
+                   "        \"upload_date\": \"" + create + "\",\n" +
+                   "        \"uploader\": \"" + uploader + "\",\n" +
+                   "        \"uploader_name\": \"" + uploader_name + "\"\n" +
+                   "   },\n" +
+                   "   \"sequence\": \"" + seq + "\"\n}"; 
+   }
+   
+   private static String isoformsToJSON(HashMap<String, ArrayList<Integer>> isoforms) {
+      String ret = "";
+
+      for (String key: isoforms.keySet()) {
+         ArrayList<Integer> ids = isoforms.get(key);
+         ret += "       \"" + key + "\": [\n" +
+                        specialListToJSON(ids) + "\n" +
+                "        ],\n";
+                
+      }
+      if(ret.length() >= 2) {
+         return ret.substring(0, ret.length()-2);
+      }
+      return ret;
+   }
+
+   private static String specialListToJSON(ArrayList<?> list) {
+      String ret = "";
+
+      for (int i = 0; i < list.size(); i++) {
+         ret += "          \"" + list.get(i) + "\"";
+         if (i != list.size() - 1) {
+            ret+= ",\n";
+         }
+      }
+      return ret;
    }
 
    private static String annotationToJSON(int annoId, String geneName, int startPos, 
@@ -447,7 +490,39 @@ public class MoveSQLDataToCouch {
                                           Date finishedDate, boolean incorrect, 
                                           boolean expertIncorrect, 
                                          ArrayList<Integer> exonStartEndPairs) {
-      return "{}";
+      return "{\n" + "   \"annotation_id\": \"" + annoId + "\",\n" +
+                   "   \"contig_id\": \"" + contigId + "\",\n" +
+                   "   \"end\": \"" + endPos + "\",\n" +
+                   "   \"exons\": [\n" + exonsToJSON(exonStartEndPairs) + "\n" +
+                   "   ],\n" +
+                   "   \"expert\": \"" + expert + "\",\n" +
+                   "   \"isoform_name\": \"" + geneName + "\",\n" +
+                   "   \"meta\": {\n" +
+                   "        \"created\": \"" + createDate + "\",\n" +
+                   "        \"expert_incorrect\": \"" + expertIncorrect + "\",\n" +
+                   "        \"finished\": \"" + finishedDate + "\",\n" +
+                   "        \"incorrect\": \"" + incorrect + "\",\n" +
+                   "        \"last_modified\": \"" + lastModifiedDate + "\"\n" +
+                   "   },\n" +
+                   "   \"partial\": \"" + partial + "\",\n" +
+                   "   \"reverse_complement\": \"" + reverse + "\",\n" +
+                   "   \"start\": \"" + startPos + "\",\n" +               
+                   "   \"user_id\": \"" + userId + "\"\n}"; 
+   }
+
+   private static String exonsToJSON(ArrayList<Integer> exons) {
+      String ret = "";
+      
+      for (int i = 0; i < exons.size(); i+=2) {
+         ret += "      {\n" +
+                "         \"start\": \"" + exons.get(i) + "\",\n" +
+                "         \"end\": \"" + exons.get(i+1) + "\"\n" + "      }";
+         if (i != exons.size() - 2) {
+            ret+= ",\n";
+         }
+      }
+
+      return ret;
    }
 
    private static String collabAnnotationToJSON(int collabId, String geneName, int startPos,
