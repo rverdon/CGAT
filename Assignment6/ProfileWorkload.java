@@ -26,17 +26,10 @@ public class ProfileWorkload extends Workload {
    public ProfileWorkload() {
       // Keeping as a string to reduce conversion time.
       userIds = new String[TIMES];
+   }
 
-      try {
-         // Instantiate the DB Driver
-         Class.forName("com.mysql.jdbc.Driver");
-
-         conn = DriverManager.getConnection(TestMaster.DB_URL, TestMaster.DB_USER,
-                                            TestMaster.DB_PASS);
-      } catch (Exception ex) {
-         System.err.println("Failed to get the DB Connection, we are bonned.");
-         throw new RuntimeException();
-      }
+   protected void initMySQL() {
+      super.initMySQL();
 
       String query = "SELECT UserId FROM Users ORDER BY RAND(0) LIMIT " + TIMES;
       if (!Util.doStringListQuery(conn, query, userIds)) {
@@ -79,6 +72,9 @@ public class ProfileWorkload extends Workload {
       }
 
       return new Stats();
+   }
+
+   protected void initCouch() {
    }
 
    protected Stats executeCouchImpl() {

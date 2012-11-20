@@ -12,7 +12,7 @@ import java.sql.SQLException;
 import java.sql.PreparedStatement;
 
 /**
- * This one measures uploading a ton of contigs. 
+ * This one measures uploading a ton of contigs.
  */
 public class ContigUploadWorkload extends Workload {
    // Should be no more than 9999999999999999999999999999
@@ -21,7 +21,6 @@ public class ContigUploadWorkload extends Workload {
    private static final int MIN_SEQ_LENGTH = 45000;
    private static final int MAX_ADDITIONAL_LENGTH = 15001;
 
-   private Connection conn;
    private ArrayList<String> seqs;
    private String[] userIds;
    private Random rand;
@@ -33,17 +32,10 @@ public class ContigUploadWorkload extends Workload {
       seqs = new ArrayList<String>();
       rand = new Random(1242414);
       userIds = new String[TIMES];
+   }
 
-      try {
-         // Instantiate the DB Driver
-         Class.forName("com.mysql.jdbc.Driver");
-
-         conn = DriverManager.getConnection(TestMaster.DB_URL, TestMaster.DB_USER,
-                                            TestMaster.DB_PASS);
-      } catch (Exception ex) {
-         System.err.println("Failed to get the DB Connection.: " + ex);
-         throw new RuntimeException();
-      }
+   protected void initMySQL() {
+      super.initMySQL();
 
       String query = "SELECT UserId FROM Users ORDER BY RAND(0) LIMIT " + TIMES;
       if (!Util.doStringListQuery(conn, query, userIds)) {
@@ -83,6 +75,9 @@ public class ContigUploadWorkload extends Workload {
       return new Stats();
    }
 
+   protected void initCouch() {
+   }
+
    protected Stats executeCouchImpl() {
       // Nope
       throw new UnsupportedOperationException();
@@ -109,7 +104,7 @@ public class ContigUploadWorkload extends Workload {
       }
       return stringb.toString();
    }
-  
+
    private String randomDate() {
       SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
       return formatter.format(new Date());

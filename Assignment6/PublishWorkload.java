@@ -26,23 +26,6 @@ public class PublishWorkload extends Workload {
    public PublishWorkload() {
       userIds = new String[TIMES];
       annotationIds = new String[TIMES];
-
-      try {
-         Class.forName("com.mysql.jdbc.Driver");
-
-         conn = DriverManager.getConnection(TestMaster.DB_URL,
-                                            TestMaster.DB_USER,
-                                            TestMaster.DB_PASS);
-      } catch (Exception ex) {
-         System.err.println("Failed to get the DB Connection, we are boned.");
-         throw new RuntimeException();
-      }
-
-      String query = randQuery("UserId, AnnotationId", "Annotations", TIMES);
-      if (!Util.doStrStrListQuery(conn, query, userIds, annotationIds)) {
-         System.err.println("Couldn't get annotation information.");
-         throw new RuntimeException();
-      }
    }
 
    private String randQuery(String attr, String table, int numTuples) {
@@ -53,6 +36,16 @@ public class PublishWorkload extends Workload {
    private static String currDate() {
       SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
       return formatter.format(new Date(System.currentTimeMillis()));
+   }
+
+   protected void initMySQL() {
+      super.initMySQL();
+
+      String query = randQuery("UserId, AnnotationId", "Annotations", TIMES);
+      if (!Util.doStrStrListQuery(conn, query, userIds, annotationIds)) {
+         System.err.println("Couldn't get annotation information.");
+         throw new RuntimeException();
+      }
    }
 
    protected Stats executeMySQLImpl() {
@@ -87,6 +80,9 @@ public class PublishWorkload extends Workload {
       }
 
       return new Stats();
+   }
+
+   protected void initCouch() {
    }
 
    protected Stats executeCouchImpl() {

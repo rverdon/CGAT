@@ -33,20 +33,6 @@ public class StupidWorkload extends Workload {
    }
 
    protected Stats executeMySQLImpl() {
-      Connection conn = null;
-
-      try {
-         // Instantiate the DB Driver
-         Class.forName("com.mysql.jdbc.Driver");
-
-         conn = DriverManager.getConnection(TestMaster.DB_URL, TestMaster.DB_USER,
-                                            TestMaster.DB_PASS);
-      } catch (Exception ex) {
-         System.err.println("Failed to get the DB Connection, we are bonned.");
-         return null;
-      }
-
-      // TODO(eriq): Use the real CGAT data.
       String readQuery = "SELECT name FROM ReadWriteTest WHERE id = 1";
       String writeUpdate = "UPDATE users SET name = '%s' WHERE id = 1";
       List<Long> readAfterWriteTimes = new ArrayList<Long>(TIMES);
@@ -95,6 +81,9 @@ public class StupidWorkload extends Workload {
       }
 
       return new ReadWriteStats(readAfterWriteTimes, writeAfterReadTimes);
+   }
+
+   protected void initCouch() {
    }
 
    protected Stats executeCouchImpl() {

@@ -27,24 +27,11 @@ public class AssignTaskWorkload extends Workload {
 
    private Random rand;
 
-   private Connection conn;
-
    /**
     * Fetch the user ids here, and preserve the connection.
     */
    public AssignTaskWorkload() {
       rand = new Random(4);
-
-      try {
-         // Instantiate the DB Driver
-         Class.forName("com.mysql.jdbc.Driver");
-
-         conn = DriverManager.getConnection(TestMaster.DB_URL, TestMaster.DB_USER,
-                                            TestMaster.DB_PASS);
-      } catch (Exception ex) {
-         System.err.println("Failed to get the DB Connection, we are bonned.");
-         throw new RuntimeException();
-      }
    }
 
    protected Stats executeMySQLImpl() {
@@ -60,6 +47,9 @@ public class AssignTaskWorkload extends Workload {
       }
 
       return new Stats();
+   }
+
+   protected void initCouch() {
    }
 
    protected Stats executeCouchImpl() {
