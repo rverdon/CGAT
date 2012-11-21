@@ -14,7 +14,9 @@ import java.text.SimpleDateFormat;
  * Generate some random SQL data.
  */
 public class GenerateSQLData {
-   private static final String DB_URL = "jdbc:mysql://localhost:3306/cgat?autoReconnect=true";
+   //private static final String DB_URL = "jdbc:mysql://localhost:3306/cgat?autoReconnect=true";
+   private static final String DB_URL =
+         "jdbc:mysql://ip-10-168-85-10.us-west-1.compute.internal:3306/cgat?autoReconnect=true";
    private static final String DB_USER = "root";
    private static final String DB_PASS = "csc560";
 

@@ -13,7 +13,7 @@ import java.sql.Statement;
  * Ryan thinks that it is stupid.
  */
 public class StupidWorkload extends Workload {
-   private static final int TIMES = 1000000;
+   private static final int TIMES = 100000;
    //private static final int TIMES = 10;
 
    private String[] randomStrings;
@@ -34,7 +34,7 @@ public class StupidWorkload extends Workload {
 
    protected Stats executeMySQLImpl() {
       String readQuery = "SELECT name FROM ReadWriteTest WHERE id = 1";
-      String writeUpdate = "UPDATE users SET name = '%s' WHERE id = 1";
+      String writeUpdate = "UPDATE ReadWriteTest SET name = '%s' WHERE id = 1";
       List<Long> readAfterWriteTimes = new ArrayList<Long>(TIMES);
       List<Long> writeAfterReadTimes = new ArrayList<Long>(TIMES);
 
@@ -84,7 +84,25 @@ public class StupidWorkload extends Workload {
    }
 
    protected Stats executeCouchImpl() {
-      // Nope
-      throw new UnsupportedOperationException();
+      List<Long> readAfterWriteTimes = new ArrayList<Long>(TIMES);
+      List<Long> writeAfterReadTimes = new ArrayList<Long>(TIMES);
+      long time = System.currentTimeMillis();
+      Object throwAway;
+
+      for (int i = 0; i < TIMES; i++) {
+         throwAway = client.get("ReadAfterWrite-1");
+
+         if (i != 0) {
+            readAfterWriteTimes.add(System.currentTimeMillis() - time);
+         }
+
+         time = System.currentTimeMillis();
+         client.set("ReadAfterWrite-1", 0, randomStrings[i]);
+         writeAfterReadTimes.add(System.currentTimeMillis() - time);
+
+         time = System.currentTimeMillis();
+      }
+
+      return new ReadWriteStats(readAfterWriteTimes, writeAfterReadTimes);
    }
 }
