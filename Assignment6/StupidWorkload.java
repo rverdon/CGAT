@@ -13,7 +13,7 @@ import java.sql.Statement;
  * Ryan thinks that it is stupid.
  */
 public class StupidWorkload extends Workload {
-   private static final int TIMES = 1000000;
+   private static final int TIMES = 100000;
    //private static final int TIMES = 10;
 
    private String[] randomStrings;

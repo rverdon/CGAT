@@ -18,11 +18,11 @@ public class TestMaster {
 
    public static void main(String[] args) {
       Workload[] workloads = {
-                              new ContigUploadWorkload(),
-                              new ProfileWorkload(),
-                              new AssignTaskWorkload(),
-                              new GroupMemWorkload(),
-                              new PublishWorkload(),
+                              //new ContigUploadWorkload(),
+                              //new ProfileWorkload(),
+                              //new AssignTaskWorkload(),
+                              //new GroupMemWorkload(),
+                              //new PublishWorkload(),
                               new StupidWorkload(),
                               };
 
