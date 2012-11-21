@@ -8,6 +8,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 /**
  * This one measures assigning a task to an arbitraty group.
  * This is pretty much exacly a 50% R/W Workload.
@@ -48,26 +52,41 @@ public class AssignTaskWorkload extends Workload {
       return new Stats();
    }
 
-   protected Stats executeCouchImpl() {	  
-	  String data = null;
+   protected Stats executeCouchImpl() {
+      String data = null;
       JSONObject jsonUser = null;
-	  JSONObject jsonGroup = null;
+      JSONObject jsonGroup = null;
       JSONArray users = null;
-	  
+
+      JSONObject task = new JSONObject();
+      try {
+         // Since the rest of the db stringifys their numbers, stringify this.
+         task.put("contig_id", "" + CONTIG_ID);
+         task.put("end_date", DATE);
+         task.put("desc", DESCRIPTION);
+      } catch (JSONException ex) {
+         System.err.println("Error creating core task object.");
+         ex.printStackTrace(System.err);
+         return null;
+      }
+
       for (int i = 0; i < TIMES; i++) {
          try {
-            data = (String)client.get("Groups-" + (rand.nextInt() % MAX_GROUP_ID) + 1);
-			jsonGroup = new JSONObject(data);
+            data = (String)client.get("Groups-" + (rand.nextInt(MAX_GROUP_ID) + 1));
+            jsonGroup = new JSONObject(data);
             users = jsonGroup.getJSONArray("users");
-			
-			// assign the task to every user in the group we randomly selected
-			for (int j = 0; j < users.length(); j++) {
-               jsonUser = users.getJSONObject(j);
-			   String userId = jsonUser.getString("user_id");
-			   
-			   taskJSON = taskToJSON(userId, CONTIG_ID, DESCRIPTION, DATE);
-		       client.set("Tasks-" + userId + '-' + CONTIG_ID, 0, taskJSON);
-			}
+
+            // assign the task to every user in the group we randomly selected
+            for (int j = 0; j < users.length(); j++) {
+               String userId = users.getString(j);
+
+               jsonUser = new JSONObject(client.get("Users-" + userId));
+               // Update the user's tasks.
+               jsonUser.getJSONArray("tasks").put(task);
+
+               // Rewrite the user.
+               client.set("Users-" + userId, 0, jsonUser.toString());
+            }
          } catch (JSONException jsonEx) {
             System.err.println("Error parsing json (" + data + "): " + jsonEx);
             jsonEx.printStackTrace(System.err);
@@ -75,14 +94,8 @@ public class AssignTaskWorkload extends Workload {
             System.err.println("Error fetching profile: " + ex);
             ex.printStackTrace(System.err);
          }
-      }    
-   }
+      }
 
-   private static String taskToJSON(int userId, int contigId, string description, Date endDate) {
-	  return "{\n" +
-	  "   \"user_id\": \"" + userId + "\",\n" +
-	  "   \"contig_id\": \"" + contigId + "\",\n" +
-	  "   \"end_date\": \"" + endDate + "\",\n" +
-	  "   \"description\": \"" + description + "\"\n}";
-   }   
+      return new Stats();
+   }
 }
