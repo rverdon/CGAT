@@ -83,9 +83,6 @@ public class ContigUploadWorkload extends Workload {
       return new Stats();
    }
 
-   protected void initCouch() {
-   }
-
    protected Stats executeCouchImpl() {
       // Nope
       throw new UnsupportedOperationException();

@@ -1,11 +1,18 @@
+import java.util.List;
+import java.util.LinkedList;
+import java.net.URI;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
+
+import com.couchbase.client.CouchbaseClient;
 
 /**
  * The base class for all workloads.
  */
 public abstract class Workload {
    protected Connection conn;
+   protected CouchbaseClient client;
 
    // See if we can get a clean connection.
    public static void main(String[] args) {
@@ -84,7 +91,24 @@ public abstract class Workload {
       }
    }
 
+   /**
+    * Do whatever setup must be done to initialize the Couch version of the workload.
+    */
+   protected void initCouch() {
+      try {
+         List<URI> uris = new LinkedList<URI>();
+         uris.add(URI.create(TestMaster.COUCH_URI));
+         client = new CouchbaseClient(uris, "default", "");
+      } catch (Exception ex) {
+         System.err.println("Failed to get the CouchBase Connection: " + ex);
+         ex.printStackTrace(System.err);
+         throw new RuntimeException();
+      }
+   }
+
    protected void cleanupCouch() {
+      client.shutdown();
+      client = null;
    }
 
    /**
@@ -92,10 +116,6 @@ public abstract class Workload {
     */
    protected abstract Stats executeMySQLImpl();
 
-   /**
-    * Do ehatever setup must be done to initialize the Couch version of the workload.
-    */
-   protected abstract void initCouch();
 
    /**
     * The actual work for the CouchDB.

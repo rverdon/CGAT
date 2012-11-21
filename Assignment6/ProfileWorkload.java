@@ -8,11 +8,16 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 /**
  * This one measures fetching a complete user's profile.
  */
 public class ProfileWorkload extends Workload {
-   // Should be no more than 100000 (the number of users in the db).
+   private static final int MAX_USERS = 100000;
+
    private static final int TIMES = 1000000;
    //private static final int TIMES = 1;
 
@@ -79,10 +84,80 @@ public class ProfileWorkload extends Workload {
    }
 
    protected void initCouch() {
+      super.initCouch();
+      Random rand = new Random(4);
+
+      for (int i = 0; i < TIMES; i++) {
+         userIds[i] = "" + (rand.nextInt(MAX_USERS) + 1);
+      }
+   }
+
+   protected void cleanupCouch() {
+      super.cleanupCouch();
+
+      userIds = null;
    }
 
    protected Stats executeCouchImpl() {
-      // Nope
-      throw new UnsupportedOperationException();
+      String data = null;
+      JSONObject jsonUser = null;
+      JSONArray groups = null;
+      JSONArray history = null;
+      JSONArray partials = null;
+      JSONArray tasks = null;
+
+      // THis shouldn't even be necessary, but I am being neurotic.
+      Object throwAway = null;
+
+      for (int i = 0; i < TIMES; i++) {
+         try {
+            // I saw the api just casting, so I will too.
+            data = (String)client.get("Users-" + i);
+            jsonUser = new JSONObject(data);
+
+            // Expand groups
+            groups = jsonUser.getJSONArray("groups");
+            for (int j = 0; j < groups.length(); j++) {
+               String groupId = groups.getString(j);
+
+               // The next step would be trivial, get the groups name form the JSON.
+               throwAway = client.get("Groups-" + groupId);
+            }
+
+            // Expand history
+            history = jsonUser.getJSONArray("history");
+            for (int j = 0; j < history.length(); j++) {
+               JSONObject historyJson = history.getJSONObject(j);
+               String annotationId = historyJson.getString("anno_id");
+
+               throwAway = client.get("Annotations-" + annotationId);
+            }
+
+            // Expand partials
+            partials = jsonUser.getJSONArray("incomplete_annotations");
+            for (int j = 0; j < partials.length(); j++) {
+               String annotationId = partials.getString(j);
+
+               throwAway = client.get("Annotations-" + annotationId);
+            }
+
+            // Expand tasks
+            tasks = jsonUser.getJSONArray("tasks");
+            for (int j = 0; j < tasks.length(); j++) {
+               JSONObject taskJson = tasks.getJSONObject(j);
+               String contigId = taskJson.getString("contig_id");
+
+               throwAway = client.get("Contigs-" + contigId);
+            }
+         } catch (JSONException jsonEx) {
+            System.err.println("Error parsing json (" + data + "): " + jsonEx);
+            jsonEx.printStackTrace(System.err);
+         } catch (Exception ex) {
+            System.err.println("Error fetching profile: " + ex);
+            ex.printStackTrace(System.err);
+         }
+      }
+
+      return new Stats();
    }
 }

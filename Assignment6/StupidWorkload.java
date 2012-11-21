@@ -83,9 +83,6 @@ public class StupidWorkload extends Workload {
       return new ReadWriteStats(readAfterWriteTimes, writeAfterReadTimes);
    }
 
-   protected void initCouch() {
-   }
-
    protected Stats executeCouchImpl() {
       // Nope
       throw new UnsupportedOperationException();
