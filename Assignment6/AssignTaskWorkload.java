@@ -35,22 +35,54 @@ public class AssignTaskWorkload extends Workload {
    }
 
    protected Stats executeMySQLImpl() {
-         String assignTaskInsert = String.format("REPLACE INTO Tasks (UserId, ContigId, Description, EndDate)" +
-                                                 " SELECT UserId, %d, '%s', '%s'" +
-                                                 " FROM GroupMembership" +
-                                                 " WHERE GroupId = %%d",
-                                                 CONTIG_ID, DESCRIPTION, DATE);
+      String assignTaskInsert = String.format("REPLACE INTO Tasks (UserId, ContigId, Description, EndDate)" +
+                                              " SELECT UserId, %d, '%s', '%s'" +
+                                              " FROM GroupMembership" +
+                                              " WHERE GroupId = %%d",
+                                              CONTIG_ID, DESCRIPTION, DATE);
 
       for (int i = 0; i < TIMES; i++) {
-         Util.doUpdate(conn, String.format(
-               assignTaskInsert, (rand.nextInt() % MAX_GROUP_ID) + 1));
+         Util.doUpdate(conn, String.format(assignTaskInsert, (rand.nextInt() % MAX_GROUP_ID) + 1));
       }
 
       return new Stats();
    }
 
-   protected Stats executeCouchImpl() {
-      // Nope
-      throw new UnsupportedOperationException();
+   protected Stats executeCouchImpl() {	  
+	  String data = null;
+      JSONObject jsonUser = null;
+	  JSONObject jsonGroup = null;
+      JSONArray users = null;
+	  
+      for (int i = 0; i < TIMES; i++) {
+         try {
+            data = (String)client.get("Groups-" + (rand.nextInt() % MAX_GROUP_ID) + 1);
+			jsonGroup = new JSONObject(data);
+            users = jsonGroup.getJSONArray("users");
+			
+			// assign the task to every user in the group we randomly selected
+			for (int j = 0; j < users.length(); j++) {
+               jsonUser = users.getJSONObject(j);
+			   String userId = jsonUser.getString("user_id");
+			   
+			   taskJSON = taskToJSON(userId, CONTIG_ID, DESCRIPTION, DATE);
+		       client.set("Tasks-" + userId + '-' + CONTIG_ID, 0, taskJSON);
+			}
+         } catch (JSONException jsonEx) {
+            System.err.println("Error parsing json (" + data + "): " + jsonEx);
+            jsonEx.printStackTrace(System.err);
+         } catch (Exception ex) {
+            System.err.println("Error fetching profile: " + ex);
+            ex.printStackTrace(System.err);
+         }
+      }    
    }
+
+   private static String taskToJSON(int userId, int contigId, string description, Date endDate) {
+	  return "{\n" +
+	  "   \"user_id\": \"" + userId + "\",\n" +
+	  "   \"contig_id\": \"" + contigId + "\",\n" +
+	  "   \"end_date\": \"" + endDate + "\",\n" +
+	  "   \"description\": \"" + description + "\"\n}";
+   }   
 }
