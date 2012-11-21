@@ -16,6 +16,8 @@ public class TestMaster {
    public static final String DB_USER = "cgat";
    public static final String DB_PASS = "csc560";
 
+   public static final String COUCH_URI = "http://127.0.0.1:8091/pools";
+
    public static void main(String[] args) {
       Workload[] workloads = {
                               //new ContigUploadWorkload(),
