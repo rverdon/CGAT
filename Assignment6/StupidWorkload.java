@@ -84,7 +84,25 @@ public class StupidWorkload extends Workload {
    }
 
    protected Stats executeCouchImpl() {
-      // Nope
-      throw new UnsupportedOperationException();
+      List<Long> readAfterWriteTimes = new ArrayList<Long>(TIMES);
+      List<Long> writeAfterReadTimes = new ArrayList<Long>(TIMES);
+      long time = System.currentTimeMillis();
+      Object throwAway;
+
+      for (int i = 0; i < TIMES; i++) {
+         throwAway = client.get("ReadAfterWrite-1");
+
+         if (i != 0) {
+            readAfterWriteTimes.add(System.currentTimeMillis() - time);
+         }
+
+         time = System.currentTimeMillis();
+         client.set("ReadAfterWrite-1", 0, randomStrings[i]);
+         writeAfterReadTimes.add(System.currentTimeMillis() - time);
+
+         time = System.currentTimeMillis();
+      }
+
+      return new ReadWriteStats(readAfterWriteTimes, writeAfterReadTimes);
    }
 }
