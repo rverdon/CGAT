@@ -34,7 +34,7 @@ public class StupidWorkload extends Workload {
 
    protected Stats executeMySQLImpl() {
       String readQuery = "SELECT name FROM ReadWriteTest WHERE id = 1";
-      String writeUpdate = "UPDATE users SET name = '%s' WHERE id = 1";
+      String writeUpdate = "UPDATE ReadWriteTest SET name = '%s' WHERE id = 1";
       List<Long> readAfterWriteTimes = new ArrayList<Long>(TIMES);
       List<Long> writeAfterReadTimes = new ArrayList<Long>(TIMES);
 
