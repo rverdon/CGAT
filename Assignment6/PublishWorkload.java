@@ -100,6 +100,7 @@ public class PublishWorkload extends Workload {
 
    protected void initCouch() {
       super.initCouch();
+      /*
 
       Random rand = new Random(4);
 
@@ -110,9 +111,11 @@ public class PublishWorkload extends Workload {
          annotationIdList.add(String.format("Annotations-%d", rand.nextInt(1000)));
          userIdList.add(String.format("Users-%d", rand.nextInt(100)));
       }
+      */
    }
 
    protected Stats executeCouchImpl() {
+      /*
       JSONObject userJSON = null, annotationJSON = null, contigJSON = null;
 
       for (int iter_ndx = 0; iter_ndx < TIMES; iter_ndx++) {
@@ -137,5 +140,7 @@ public class PublishWorkload extends Workload {
       }
 
       return new Stats();
+      */
+      throw new UnsupportedOperationException();
    }
 }
