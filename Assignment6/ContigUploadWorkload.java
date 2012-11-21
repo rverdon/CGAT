@@ -53,6 +53,15 @@ public class ContigUploadWorkload extends Workload {
       }
    }
 
+   protected void initCouch() {
+      super.initCouch();
+
+      for (int i = 0; i < TIMES; i++) {
+         int extra_length = rand.nextInt(MAX_ADDITIONAL_LENGTH);
+         seqs.add(randomSequence(MIN_SEQ_LENGTH + extra_length));
+      }
+   }
+
    protected void cleanupMySQL() {
       super.cleanupMySQL();
 
@@ -93,15 +102,16 @@ public class ContigUploadWorkload extends Workload {
       for (int i = 0; i < TIMES; i++) {
          int uploaderId = rand.nextInt(TIMES)+1;
          int newContigId = 9000 + i;
-         String user_json = (String)client.get("Users-1");
+         String user_json = (String)client.get("Users-"+uploaderId);
 
          try {
             JSONObject user = new JSONObject(user_json);
+            String name = user.getJSONObject("meta").getString("user_name");
          
             json = contigToJSON(newContigId, "contig-" + randomString(15), rand.nextInt(10)+1, 
                                       seqs.get(rand.nextInt(seqs.size())), 
                                       uploaderId, randomString(7), randomString(20), 
-                                      randomString(10), new Date(), user.getString("meta.user_name"),
+                                      randomString(10), new Date(), name,
                                       new ArrayList<Integer>(),
                                       new HashMap<String, ArrayList<Integer>>());
          }
