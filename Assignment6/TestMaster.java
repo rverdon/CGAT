@@ -16,21 +16,21 @@ public class TestMaster {
    public static final String DB_USER = "cgat";
    public static final String DB_PASS = "csc560";
 
-   public static final String COUCH_URI = "http://127.0.0.1:8091/pools";
+   public static final String COUCH_URI = "http://ec2-204-236-188-48.us-west-1.compute.amazonaws.com:8091/pools";
 
    public static void main(String[] args) {
       Workload[] workloads = {
-                              //new ContigUploadWorkload(),
+                              new ContigUploadWorkload(),
                               //new ProfileWorkload(),
                               //new AssignTaskWorkload(),
                               //new GroupMemWorkload(),
                               //new PublishWorkload(),
-                              new StupidWorkload(),
+                              //new StupidWorkload(),
                               };
 
       for (Workload workload : workloads) {
          System.out.println("Running Workload [" + workload.getClass().getCanonicalName() + "]...");
-         Stats results = workload.executeMySQL();
+         Stats results = workload.executeCouchImpl();
          System.out.println("Completed Workload [" + workload.getClass().getCanonicalName() + "]...");
          System.out.println(results + "\n");
       }
