@@ -20,8 +20,8 @@ import java.sql.PreparedStatement;
  */
 public class ContigUploadWorkload extends Workload {
    // Should be no more than 9999999999999999999999999999
-   private static final int TIMES = 10;
-   //private static final int TIMES = 5;
+   //private static final int TIMES = 10000;
+   private static final int TIMES = 1;
    private static final int MIN_SEQ_LENGTH = 45000;
    private static final int MAX_ADDITIONAL_LENGTH = 15001;
 

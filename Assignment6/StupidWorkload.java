@@ -13,8 +13,8 @@ import java.sql.Statement;
  * Ryan thinks that it is stupid.
  */
 public class StupidWorkload extends Workload {
-   private static final int TIMES = 100000;
-   //private static final int TIMES = 10;
+   //private static final int TIMES = 100000;
+   private static final int TIMES = 10;
 
    private String[] randomStrings;
 
@@ -81,6 +81,13 @@ public class StupidWorkload extends Workload {
       }
 
       return new ReadWriteStats(readAfterWriteTimes, writeAfterReadTimes);
+   }
+
+   protected void initCouch() {
+      super.initCouch();
+
+      // Make an initial set of the key.
+      client.set("ReadAfterWrite-1", 0, "0");
    }
 
    protected Stats executeCouchImpl() {

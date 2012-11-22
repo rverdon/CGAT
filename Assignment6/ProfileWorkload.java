@@ -18,8 +18,8 @@ import org.json.JSONObject;
 public class ProfileWorkload extends Workload {
    private static final int MAX_USERS = 100000;
 
-   private static final int TIMES = 1000000;
-   //private static final int TIMES = 1;
+   //private static final int TIMES = 1000000;
+   private static final int TIMES = 1;
 
    private String[] userIds;
 
@@ -109,10 +109,13 @@ public class ProfileWorkload extends Workload {
       // THis shouldn't even be necessary, but I am being neurotic.
       Object throwAway = null;
 
-      for (int i = 0; i < TIMES; i++) {
+      for (int i = 1; i <= TIMES; i++) {
          try {
             // I saw the api just casting, so I will too.
             data = (String)client.get("Users-" + i);
+            //TEST
+            System.out.println(data);
+
             jsonUser = new JSONObject(data);
 
             // Expand groups
@@ -122,6 +125,9 @@ public class ProfileWorkload extends Workload {
 
                // The next step would be trivial, get the groups name form the JSON.
                throwAway = client.get("Groups-" + groupId);
+
+               //TEST
+               System.out.println(throwAway);
             }
 
             // Expand history
@@ -131,6 +137,9 @@ public class ProfileWorkload extends Workload {
                String annotationId = historyJson.getString("anno_id");
 
                throwAway = client.get("Annotations-" + annotationId);
+
+               //TEST
+               System.out.println(throwAway);
             }
 
             // Expand partials
@@ -139,6 +148,9 @@ public class ProfileWorkload extends Workload {
                String annotationId = partials.getString(j);
 
                throwAway = client.get("Annotations-" + annotationId);
+
+               //TEST
+               System.out.println(throwAway);
             }
 
             // Expand tasks
@@ -148,6 +160,9 @@ public class ProfileWorkload extends Workload {
                String contigId = taskJson.getString("contig_id");
 
                throwAway = client.get("Contigs-" + contigId);
+
+               //TEST
+               System.out.println(throwAway);
             }
          } catch (JSONException jsonEx) {
             System.err.println("Error parsing json (" + data + "): " + jsonEx);

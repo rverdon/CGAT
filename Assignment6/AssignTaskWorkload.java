@@ -20,8 +20,8 @@ import org.json.JSONObject;
  */
 public class AssignTaskWorkload extends Workload {
    // Should be no more than 100000 (the number of users in the db).
-   private static final int TIMES = 1000000;
-   //private static final int TIMES = 10;
+   //private static final int TIMES = 1000000;
+   private static final int TIMES = 10;
 
    private static final int MAX_GROUP_ID = 100;
 
@@ -70,7 +70,7 @@ public class AssignTaskWorkload extends Workload {
          return null;
       }
 
-      for (int i = 0; i < TIMES; i++) {
+      for (int i = 1; i <= TIMES; i++) {
          try {
             data = (String)client.get("Groups-" + (rand.nextInt(MAX_GROUP_ID) + 1));
             jsonGroup = new JSONObject(data);
