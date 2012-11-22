@@ -100,7 +100,7 @@ public class GroupMemWorkload extends Workload {
             if(0 < users.length()) {
                String userId = users.getString(0);
                users.remove(0);
-               //Not needed jsonUser = new JSONObject(client.get("Users-" + userId));
+               //Not needed at the momemnt jsonUser = new JSONObject(client.get("Users-" + userId));
                //Put the modified user list back into the group JSON
                jsonGroup.getJSONArray("users").put(users);
                //Overwrite the group object
