@@ -25,9 +25,9 @@ import net.spy.memcached.internal.OperationFuture;
  * Copy the SQL data into JSON format, then send it to Couchbase.
  */
 public class MoveSQLDataToCouch {
-   private static final String DB_URL = "jdbc:mysql://localhost:3306/test?autoReconnect=true";
-   private static final String DB_USER = "";
-   private static final String DB_PASS = "";
+   private static final String DB_URL = "jdbc:mysql://localhost:3306/cgat?autoReconnect=true";
+   private static final String DB_USER = "cgat";
+   private static final String DB_PASS = "csc560";
 
    private static List<URI> uris;
 
