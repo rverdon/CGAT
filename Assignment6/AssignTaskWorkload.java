@@ -20,14 +20,15 @@ import org.json.JSONObject;
  */
 public class AssignTaskWorkload extends Workload {
    // Should be no more than 100000 (the number of users in the db).
-   //private static final int TIMES = 1000000;
-   private static final int TIMES = 10;
+   // DON'T TOUCH THIS NUMBER. I need to keep it consistent for testing. -Eriq
+   //private static final int TIMES = 100000;
+   private static final int TIMES = 1;
 
    private static final int MAX_GROUP_ID = 100;
 
    private static final String DESCRIPTION = "Some task description.";
    private static final String DATE = "2012-12-12";
-   private static final int CONTIG_ID = 5;
+   private static final int CONTIG_ID = 2;
 
    private Random rand;
 
@@ -78,11 +79,11 @@ public class AssignTaskWorkload extends Workload {
 
             // assign the task to every user in the group we randomly selected
             for (int j = 0; j < users.length(); j++) {
-               String userId = users.getString(j);
+               String userId = users.getJSONObject(j).getString("user_id");
 
-               jsonUser = new JSONObject(client.get("Users-" + userId));
+               jsonUser = new JSONObject((String)client.get("Users-" + userId));
                // Update the user's tasks.
-               jsonUser.getJSONArray("tasks").put(task);
+               jsonUser.put("tasks", jsonUser.getJSONArray("tasks").put(task));
 
                // Rewrite the user.
                client.set("Users-" + userId, 0, jsonUser.toString());

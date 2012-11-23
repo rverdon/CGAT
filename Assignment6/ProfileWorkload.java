@@ -18,6 +18,7 @@ import org.json.JSONObject;
 public class ProfileWorkload extends Workload {
    private static final int MAX_USERS = 100000;
 
+   // DON'T TOUCH THIS NUMBER. I need to keep it consistent for testing. -Eriq
    //private static final int TIMES = 1000000;
    private static final int TIMES = 1;
 
@@ -120,6 +121,9 @@ public class ProfileWorkload extends Workload {
 
             // Expand groups
             groups = jsonUser.getJSONArray("groups");
+            //TEST
+            System.out.println("Num Groups: " + groups.length());
+
             for (int j = 0; j < groups.length(); j++) {
                String groupId = groups.getString(j);
 
@@ -132,6 +136,9 @@ public class ProfileWorkload extends Workload {
 
             // Expand history
             history = jsonUser.getJSONArray("history");
+            //TEST
+            System.out.println("Num History: " + history.length());
+
             for (int j = 0; j < history.length(); j++) {
                JSONObject historyJson = history.getJSONObject(j);
                String annotationId = historyJson.getString("anno_id");
@@ -144,6 +151,9 @@ public class ProfileWorkload extends Workload {
 
             // Expand partials
             partials = jsonUser.getJSONArray("incomplete_annotations");
+            //TEST
+            System.out.println("Num Partials: " + partials.length());
+
             for (int j = 0; j < partials.length(); j++) {
                String annotationId = partials.getString(j);
 
@@ -155,6 +165,9 @@ public class ProfileWorkload extends Workload {
 
             // Expand tasks
             tasks = jsonUser.getJSONArray("tasks");
+            //TEST
+            System.out.println("Num Tasks: " + tasks.length());
+
             for (int j = 0; j < tasks.length(); j++) {
                JSONObject taskJson = tasks.getJSONObject(j);
                String contigId = taskJson.getString("contig_id");

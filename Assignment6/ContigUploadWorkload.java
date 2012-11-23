@@ -20,6 +20,7 @@ import java.sql.PreparedStatement;
  */
 public class ContigUploadWorkload extends Workload {
    // Should be no more than 9999999999999999999999999999
+   // DON'T TOUCH THIS NUMBER. I need to keep it consistent for testing. -Eriq
    //private static final int TIMES = 10000;
    private static final int TIMES = 1;
    private static final int MIN_SEQ_LENGTH = 45000;
