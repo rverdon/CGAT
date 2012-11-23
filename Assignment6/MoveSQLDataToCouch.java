@@ -9,6 +9,7 @@ import java.util.Date;
 import java.util.Random;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 import java.net.URI;
 import java.util.LinkedList;
@@ -258,9 +259,9 @@ public class MoveSQLDataToCouch {
       for (int page = 0; page < (1000000 / pageSize); page++) {
          annotationQ.setInt(1, pageSize * page);
 
-         List<ArrayList<Integer>> exonsBatch = new ArrayList<ArrayList<Integer>>();
+         Map<Integer, ArrayList<Integer>> exonsBatch = new HashMap<Integer, ArrayList<Integer>>();
          for (int i = 0; i < pageSize; i++) {
-            exonsBatch.add(new ArrayList());
+            exonsBatch.put(new Integer(page * pageSize + i + 1), new ArrayList());
          }
 
          // It costs too much to do the exon queries one at a time.
