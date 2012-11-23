@@ -248,15 +248,33 @@ public class MoveSQLDataToCouch {
                                " WHERE A.GeneId = G.GeneId" +
                                " ORDER BY A.AnnotationId" +
                                " LIMIT ?, " + pageSize;
-      String exonQuery = "SELECT StartPos, EndPos FROM Exons WHERE AnnotationId = ?;";
+      String exonQuery = "SELECT AnnotationId, StartPos, EndPos FROM Exons WHERE AnnotationId BETWEEN ? AND ?";
       PreparedStatement annotationQ = conn.prepareStatement(annotationQuery);
       PreparedStatement exonQ = conn.prepareStatement(exonQuery);
 
       ResultSet rs = null;
 
       // We know we have 1 million annotations.
-      for (int count = 0; count < (1000000 / pageSize); count++) {
-         annotationQ.setInt(1, pageSize * count);
+      for (int page = 0; page < (1000000 / pageSize); page++) {
+         annotationQ.setInt(1, pageSize * page);
+
+         List<ArrayList<Integer>> exonsBatch = new ArrayList<ArrayList<Integer>>();
+         for (int i = 0; i < pageSize; i++) {
+            exonsBatch.add(new ArrayList());
+         }
+
+         // It costs too much to do the exon queries one at a time.
+         // Do a batch at a time.
+         exonQ.setInt(1, page * pageSize + 1);
+         exonQ.setInt(2, page * (pageSize + 1) + 1);
+         ResultSet exonrs = exonQ.executeQuery();
+         while(exonrs.next()) {
+            int annotationId = exonrs.getInt("AnnotationId");
+            int exonStartPos = exonrs.getInt("StartPos");
+            int exonEndPos = exonrs.getInt("EndPos");
+            exonsBatch.get(annotationId).add(exonStartPos);
+            exonsBatch.get(annotationId).add(exonEndPos);
+         }
 
          rs = annotationQ.executeQuery();
          while(rs.next()) {
@@ -274,16 +292,7 @@ public class MoveSQLDataToCouch {
             Date finishedDate = rs.getDate("A.FinishedDate");
             boolean incorrect = rs.getInt("A.Incorrect") == 1;
             boolean expertIncorrect = rs.getInt("A.ExpertIncorrect") == 1;
-            ArrayList<Integer> exonStartEndPairs = new ArrayList<Integer>();
-
-            exonQ.setInt(1,annoId);
-            ResultSet exonrs = exonQ.executeQuery();
-            while(exonrs.next()) {
-               int exonStartPos = exonrs.getInt("StartPos");
-               int exonEndPos = exonrs.getInt("EndPos");
-               exonStartEndPairs.add(exonStartPos);
-               exonStartEndPairs.add(exonEndPos);
-            }
+            ArrayList<Integer> exonStartEndPairs = exonsBatch.get(annoId);
             //toJSON
             String JSON = annotationToJSON(annoId, geneName, startPos, endPos, reverse,
                                                 partial, expert, contigId, userId, createDate,
@@ -295,7 +304,7 @@ public class MoveSQLDataToCouch {
          }
 
          //TEST
-         System.out.println("Batch #" + count + " Complete");
+         System.out.println("Batch #" + page + " Complete");
       }
 
       rs.close();
