@@ -46,6 +46,11 @@ public class PublishWorkload extends Workload {
    }
 
    private static String currDate() {
+      SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+      return formatter.format(new Date(System.currentTimeMillis()));
+   }
+
+   private static String currDateTime() {
       SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
       return formatter.format(new Date(System.currentTimeMillis()));
    }
@@ -90,7 +95,7 @@ public class PublishWorkload extends Workload {
                                               userIds[i]));
 
             Util.doUpdate(conn, String.format(annotationUpdateQuery,
-                                              currDate(),
+                                              this.currDateTime(),
                                               annotationExp,
                                               annotationIds[i]));
          }
@@ -134,6 +139,7 @@ public class PublishWorkload extends Workload {
 
             /*###############################################################*/
             //CONTIG DIFFICULTY
+            //System.out.println("getting contig difficulty");
 
             /*
              * Get the contig document based on the contig_id in the annotation
@@ -143,17 +149,20 @@ public class PublishWorkload extends Workload {
             Object contig = client.get("Contigs-" + contigId);
             contigJSON = new JSONObject(contig.toString());
 
+            JSONObject contigMeta = contigJSON.getJSONObject("meta");
+
             //Get the difficulty from the contig document
-            Integer contigDifficulty = Integer.parseInt(contigJSON.getString("difficulty"));
+            Integer contigDifficulty = Integer.parseInt(contigMeta.getString("difficulty"));
 
             /*###############################################################*/
             //USER META
+            //System.out.println("increasing user experience");
 
             /*
              * Get the meta object from the user document. This contains the
              * user's total experience
              */
-            JSONObject userMeta = new JSONObject(userJSON.getJSONObject("meta"));
+            JSONObject userMeta = userJSON.getJSONObject("meta");
             Integer userXP = Integer.parseInt(userMeta.getString("exp"));
 
             /*
@@ -171,6 +180,7 @@ public class PublishWorkload extends Workload {
 
             /*###############################################################*/
             //USER HISTORY
+            //System.out.println("appending annotation to user history");
 
             /*
              * Add annotation to user history
@@ -196,6 +206,7 @@ public class PublishWorkload extends Workload {
 
             /*###############################################################*/
             //USER INCOMPLETE ANNOTATIONS
+            //System.out.println("removing annotation from user's incomplete annotations");
 
             /*
              * Remove annotation from user's incomplete annotations if it is present
@@ -203,7 +214,7 @@ public class PublishWorkload extends Workload {
             JSONArray inc_annotations = userJSON.getJSONArray("incomplete_annotations");
 
             for (int ann_ndx = 0; ann_ndx < inc_annotations.length(); ann_ndx++) {
-               String inc_annotation = userHistory.getString(ann_ndx);
+               String inc_annotation = inc_annotations.getString(ann_ndx);
 
                if (annotationIdList.get(iter_ndx).equals(inc_annotation)) {
                   inc_annotations.remove(ann_ndx);
@@ -214,6 +225,7 @@ public class PublishWorkload extends Workload {
 
             /*###############################################################*/
             //ANNOTATION META
+            //System.out.println("setting annotation to complete");
 
             /*
              * Modify annotation to be marked as finished.
@@ -230,8 +242,10 @@ public class PublishWorkload extends Workload {
              * Overwrite the old user and annotation documents with the updated
              * user and annotation documents
              */
-            client.set(user_id, 0, userJSON);
-            client.set(anno_id, 0, annotationJSON);
+            //System.out.println("updating user and annotation documents in couchbase");
+
+            client.set(user_id, 0, userJSON.toString());
+            client.set(anno_id, 0, annotationJSON.toString());
          }
          catch (Exception ex) {
             System.err.println("Error in PublishWorkload Couchbase code: " + ex);
