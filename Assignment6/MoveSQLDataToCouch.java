@@ -9,6 +9,7 @@ import java.util.Date;
 import java.util.Random;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 import java.net.URI;
 import java.util.LinkedList;
@@ -25,9 +26,9 @@ import net.spy.memcached.internal.OperationFuture;
  * Copy the SQL data into JSON format, then send it to Couchbase.
  */
 public class MoveSQLDataToCouch {
-   private static final String DB_URL = "jdbc:mysql://localhost:3306/test?autoReconnect=true";
-   private static final String DB_USER = "";
-   private static final String DB_PASS = "";
+   private static final String DB_URL = "jdbc:mysql://localhost:3306/cgat?autoReconnect=true";
+   private static final String DB_USER = "cgat";
+   private static final String DB_PASS = "csc560";
 
    private static List<URI> uris;
 
@@ -48,6 +49,7 @@ public class MoveSQLDataToCouch {
          System.err.println("Cannot connect to DB: " + ex);
       }
       
+      /*
       System.out.println("Starting to move the stuff...\n");
       moveUsers(conn, client);
       System.out.println("-Finished moving users.");
@@ -55,6 +57,7 @@ public class MoveSQLDataToCouch {
       System.out.println("-Finished moving groups.");
       moveContigs(conn, client);
       System.out.println("-Finished moving contigs.");
+      */
       moveAnnotations(conn, client);
       System.out.println("-Finished moving annotations.");
      
@@ -237,45 +240,72 @@ public class MoveSQLDataToCouch {
    }
 
    private static void moveAnnotations(Connection conn, CouchbaseClient client) throws Exception {
-      String annotationQuery = "SELECT A.AnnotationId, G.Name, A.StartPos, A.EndPos, A.ReverseComplement, A.PartialSubmission, A.ExpertSubmission, A.ContigId, A.UserId,  A.CreateDate, A.LastModifiedDate, A.FinishedDate, A.Incorrect, A.ExpertIncorrect, A.ExpGained FROM Annotations A, GeneNames G WHERE A.GeneId = G.GeneId;";
-      String exonQuery = "SELECT StartPos, EndPos FROM Exons WHERE AnnotationId = ?;";
+      int pageSize = 1000;
+
+      String annotationQuery = "SELECT A.AnnotationId, G.Name, A.StartPos, A.EndPos, A.ReverseComplement," +
+                               " A.PartialSubmission, A.ExpertSubmission, A.ContigId, A.UserId,  A.CreateDate," +
+                               " A.LastModifiedDate, A.FinishedDate, A.Incorrect, A.ExpertIncorrect, A.ExpGained" +
+                               " FROM Annotations A, GeneNames G" +
+                               " WHERE A.GeneId = G.GeneId" +
+                               " ORDER BY A.AnnotationId" +
+                               " LIMIT ?, " + pageSize;
+      String exonQuery = "SELECT AnnotationId, StartPos, EndPos FROM Exons WHERE AnnotationId BETWEEN ? AND ?";
       PreparedStatement annotationQ = conn.prepareStatement(annotationQuery);
       PreparedStatement exonQ = conn.prepareStatement(exonQuery);
-      
-      ResultSet rs = annotationQ.executeQuery();
-      while(rs.next()) {
-         int annoId = rs.getInt("A.AnnotationId");
-         String geneName = rs.getString("G.Name");
-         int startPos = rs.getInt("A.StartPos");
-         int endPos = rs.getInt("A.EndPos");
-         boolean reverse = rs.getInt("A.ReverseComplement") == 1;
-         boolean partial = rs.getInt("A.PartialSubmission") == 1;
-         boolean expert = rs.getInt("A.ExpertSubmission") == 1;
-         int contigId =  rs.getInt("A.ContigId");
-         int userId = rs.getInt("A.UserId");
-         Date createDate =  rs.getDate("A.CreateDate");
-         Date lastModifiedDate = rs.getDate("A.LastModifiedDate");
-         Date finishedDate = rs.getDate("A.FinishedDate");
-         boolean incorrect = rs.getInt("A.Incorrect") == 1;
-         boolean expertIncorrect = rs.getInt("A.ExpertIncorrect") == 1;
-         ArrayList<Integer> exonStartEndPairs = new ArrayList<Integer>();
 
-         exonQ.setInt(1,annoId);
+      ResultSet rs = null;
+
+      // We know we have 1 million annotations.
+      for (int page = 0; page < (1000000 / pageSize); page++) {
+         annotationQ.setInt(1, pageSize * page);
+
+         Map<Integer, ArrayList<Integer>> exonsBatch = new HashMap<Integer, ArrayList<Integer>>();
+         for (int i = 0; i < pageSize; i++) {
+            exonsBatch.put(new Integer(page * pageSize + i + 1), new ArrayList());
+         }
+
+         // It costs too much to do the exon queries one at a time.
+         // Do a batch at a time.
+         exonQ.setInt(1, page * pageSize + 1);
+         exonQ.setInt(2, page * (pageSize + 1) + 1);
          ResultSet exonrs = exonQ.executeQuery();
          while(exonrs.next()) {
+            int annotationId = exonrs.getInt("AnnotationId");
             int exonStartPos = exonrs.getInt("StartPos");
             int exonEndPos = exonrs.getInt("EndPos");
-            exonStartEndPairs.add(exonStartPos);
-            exonStartEndPairs.add(exonEndPos);
+            exonsBatch.get(annotationId).add(exonStartPos);
+            exonsBatch.get(annotationId).add(exonEndPos);
          }
-         //toJSON
-         String JSON = annotationToJSON(annoId, geneName, startPos, endPos, reverse,
-                                              partial, expert, contigId, userId, createDate,
-                                              lastModifiedDate, finishedDate, incorrect, 
-                                              expertIncorrect, exonStartEndPairs);
-         
-         //SEND to couchbase
-         client.set("Annotations-"+annoId, 0, JSON);
+
+         rs = annotationQ.executeQuery();
+         while(rs.next()) {
+            int annoId = rs.getInt("A.AnnotationId");
+            String geneName = rs.getString("G.Name");
+            int startPos = rs.getInt("A.StartPos");
+            int endPos = rs.getInt("A.EndPos");
+            boolean reverse = rs.getInt("A.ReverseComplement") == 1;
+            boolean partial = rs.getInt("A.PartialSubmission") == 1;
+            boolean expert = rs.getInt("A.ExpertSubmission") == 1;
+            int contigId =  rs.getInt("A.ContigId");
+            int userId = rs.getInt("A.UserId");
+            Date createDate =  rs.getDate("A.CreateDate");
+            Date lastModifiedDate = rs.getDate("A.LastModifiedDate");
+            Date finishedDate = rs.getDate("A.FinishedDate");
+            boolean incorrect = rs.getInt("A.Incorrect") == 1;
+            boolean expertIncorrect = rs.getInt("A.ExpertIncorrect") == 1;
+            ArrayList<Integer> exonStartEndPairs = exonsBatch.get(annoId);
+            //toJSON
+            String JSON = annotationToJSON(annoId, geneName, startPos, endPos, reverse,
+                                                partial, expert, contigId, userId, createDate,
+                                                lastModifiedDate, finishedDate, incorrect, 
+                                                expertIncorrect, exonStartEndPairs);
+
+            //SEND to couchbase
+            client.set("Annotations-"+annoId, 0, JSON);
+         }
+
+         //TEST
+         System.out.println("Batch #" + page + " Complete");
       }
 
       rs.close();

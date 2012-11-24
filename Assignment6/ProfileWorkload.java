@@ -18,8 +18,9 @@ import org.json.JSONObject;
 public class ProfileWorkload extends Workload {
    private static final int MAX_USERS = 100000;
 
-   private static final int TIMES = 1000000;
-   //private static final int TIMES = 1;
+   // DON'T TOUCH THIS NUMBER. I need to keep it consistent for testing. -Eriq
+   //private static final int TIMES = 1000000;
+   private static final int TIMES = 1;
 
    private String[] userIds;
 
@@ -109,45 +110,72 @@ public class ProfileWorkload extends Workload {
       // THis shouldn't even be necessary, but I am being neurotic.
       Object throwAway = null;
 
-      for (int i = 0; i < TIMES; i++) {
+      for (int i = 1; i <= TIMES; i++) {
          try {
             // I saw the api just casting, so I will too.
             data = (String)client.get("Users-" + i);
+            //TEST
+            System.out.println(data);
+
             jsonUser = new JSONObject(data);
 
             // Expand groups
             groups = jsonUser.getJSONArray("groups");
+            //TEST
+            System.out.println("Num Groups: " + groups.length());
+
             for (int j = 0; j < groups.length(); j++) {
                String groupId = groups.getString(j);
 
                // The next step would be trivial, get the groups name form the JSON.
                throwAway = client.get("Groups-" + groupId);
+
+               //TEST
+               System.out.println(throwAway);
             }
 
             // Expand history
             history = jsonUser.getJSONArray("history");
+            //TEST
+            System.out.println("Num History: " + history.length());
+
             for (int j = 0; j < history.length(); j++) {
                JSONObject historyJson = history.getJSONObject(j);
                String annotationId = historyJson.getString("anno_id");
 
                throwAway = client.get("Annotations-" + annotationId);
+
+               //TEST
+               System.out.println(throwAway);
             }
 
             // Expand partials
             partials = jsonUser.getJSONArray("incomplete_annotations");
+            //TEST
+            System.out.println("Num Partials: " + partials.length());
+
             for (int j = 0; j < partials.length(); j++) {
                String annotationId = partials.getString(j);
 
                throwAway = client.get("Annotations-" + annotationId);
+
+               //TEST
+               System.out.println(throwAway);
             }
 
             // Expand tasks
             tasks = jsonUser.getJSONArray("tasks");
+            //TEST
+            System.out.println("Num Tasks: " + tasks.length());
+
             for (int j = 0; j < tasks.length(); j++) {
                JSONObject taskJson = tasks.getJSONObject(j);
                String contigId = taskJson.getString("contig_id");
 
                throwAway = client.get("Contigs-" + contigId);
+
+               //TEST
+               System.out.println(throwAway);
             }
          } catch (JSONException jsonEx) {
             System.err.println("Error parsing json (" + data + "): " + jsonEx);

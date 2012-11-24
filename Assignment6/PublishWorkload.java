@@ -25,8 +25,9 @@ import net.spy.memcached.internal.OperationFuture;
  * This one measures fetching a complete user's profile.
  */
 public class PublishWorkload extends Workload {
-   private static final int TIMES = 100000;
-   //private static final int TIMES = 10;
+   // DON'T TOUCH THIS NUMBER. I need to keep it consistent for testing. -Eriq
+   //private static final int TIMES = 100000;
+   private static final int TIMES = 10;
 
    private String[] userIds, annotationIds, exp;
    List<String> annotationIdList, userIdList;

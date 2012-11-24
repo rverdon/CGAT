@@ -79,8 +79,7 @@ public class GroupMemWorkload extends Workload {
       JSONArray users = null;
       int groupId = 0;
       JSONObject task = new JSONObject();
-      try {
-         // Since the rest of the db stringifys their numbers, stringify this.
+      /**try {
          task.put("contig_id", "" + CONTIG_ID);
          task.put("end_date", DATE);
          task.put("desc", DESCRIPTION);
@@ -88,22 +87,38 @@ public class GroupMemWorkload extends Workload {
          System.err.println("Error creating core task object.");
          ex.printStackTrace(System.err);
          return null;
-      }
+      }**/
 
       for (int i = 0; i < TIMES; i++) {
          try {
+            //Get a random group from Couchbase
             groupId = rand.nextInt(MAX_GROUP_ID) + 1;
-            data = (String)client.get("Groups-" + (groupId));
+            data = (String)client.get("Groups-" + groupId);
+            //Make group into JSON and extract the users from the group
             jsonGroup = new JSONObject(data);
             users = jsonGroup.getJSONArray("users");
-            // Remove the first user from the group users list
             if(0 < users.length()) {
-               String userId = users.getString(0);
+               //Debug System.out.println(users.get(0)); 
+               //Remove the first user from that group
+               JSONObject removedUser = (JSONObject) users.get(0);
                users.remove(0);
-               //Not needed at the momemnt jsonUser = new JSONObject(client.get("Users-" + userId));
                //Put the modified user list back into the group JSON
-               jsonGroup.getJSONArray("users").put(users);
-               //Overwrite the group object
+               jsonGroup.remove("users");
+               jsonGroup.put("users", users);
+               //Overwrite the group in Couchbase
+               client.set("Groups-" + groupId, 0, jsonGroup.toString());
+               //Get the same group back from Couchbase
+               data = (String)client.get("Groups-" + groupId);
+               //Make group into JSON and extract the users from the group
+               jsonGroup = new JSONObject(data);
+               users = jsonGroup.getJSONArray("users");
+               //Put the user back into the group
+               users.put(0, removedUser);
+               //Debug users = jsonGroup.getJSONArray("users");
+               //Debug System.out.println(users.get(0)); 
+               jsonGroup.remove("users");
+               jsonGroup.put("users", users);
+               //Overwrite the group in Couchbase
                client.set("Groups-" + groupId, 0, jsonGroup.toString());
             }
          } catch (JSONException jsonEx) {
