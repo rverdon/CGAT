@@ -21,8 +21,8 @@ import org.json.JSONObject;
 public class AssignTaskWorkload extends Workload {
    // Should be no more than 100000 (the number of users in the db).
    // DON'T TOUCH THIS NUMBER. I need to keep it consistent for testing. -Eriq
-   //private static final int TIMES = 100000;
-   private static final int TIMES = 1;
+   private static final int TIMES = 100000;
+   //private static final int TIMES = 1;
 
    private static final int MAX_GROUP_ID = 100;
 

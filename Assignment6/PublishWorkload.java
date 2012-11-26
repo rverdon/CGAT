@@ -26,8 +26,8 @@ import net.spy.memcached.internal.OperationFuture;
  */
 public class PublishWorkload extends Workload {
    // DON'T TOUCH THIS NUMBER. I need to keep it consistent for testing. -Eriq
-   //private static final int TIMES = 100000;
-   private static final int TIMES = 10;
+   private static final int TIMES = 100000;
+   //private static final int TIMES = 10;
 
    private String[] userIds, annotationIds, exp;
    List<String> annotationIdList, userIdList;
@@ -114,8 +114,8 @@ public class PublishWorkload extends Workload {
       userIdList = new ArrayList<String>(TIMES);
 
       for (int repeat = 0; repeat < TIMES; repeat++) {
-         annotationIdList.add(String.format("Annotations-%d", rand.nextInt(1000)));
-         userIdList.add(String.format("Users-%d", rand.nextInt(100)));
+         annotationIdList.add(String.format("Annotations-%d", rand.nextInt(1000) + 1));
+         userIdList.add(String.format("Users-%d", rand.nextInt(100) + 1));
       }
    }
 
@@ -249,7 +249,7 @@ public class PublishWorkload extends Workload {
          }
          catch (Exception ex) {
             System.err.println("Error in PublishWorkload Couchbase code: " + ex);
-            System.exit(1);
+            ex.printStackTrace(System.err);
          }
 
       }

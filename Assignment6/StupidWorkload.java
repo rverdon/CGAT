@@ -14,8 +14,8 @@ import java.sql.Statement;
  */
 public class StupidWorkload extends Workload {
    // DON'T TOUCH THIS NUMBER. I need to keep it consistent for testing. -Eriq
-   //private static final int TIMES = 100000;
-   private static final int TIMES = 10;
+   private static final int TIMES = 100000;
+   //private static final int TIMES = 10;
 
    private String[] randomStrings;
 

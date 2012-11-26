@@ -23,10 +23,10 @@ public class TestMaster {
       Workload[] workloads = {
                               //new ContigUploadWorkload(),
                               //new ProfileWorkload(),
-                              new AssignTaskWorkload(),
-                              //new GroupMemWorkload(),
-                              //new PublishWorkload(),
                               //new StupidWorkload(),
+                              //new GroupMemWorkload(),
+                              new PublishWorkload(),
+                              new AssignTaskWorkload(),
                               };
 
       for (Workload workload : workloads) {
