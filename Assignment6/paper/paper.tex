@@ -37,28 +37,48 @@ instead of a relational database. We then created a set of six experiments to ru
 use cases found in the web application. While the other was designed to test the performance on each cluster
 of repeatedly writing and reading from the same object. Our major metrics are write performance, read performance,
 and time-delay between writes and reads of the same data. The rest of the paper is broken down as follows.
-Section 2 describes in depth how we designed the experiment. Section 3 discusses our implementation. Section 4 goes
-into the results of each of our experiments and some analysis on the data we obtained. Lastly, section 5 presents 
+Section 2 describes in depth how we designed the experiment. Section 3 discusses the workloads we ran on each system. Section 4 describes our implementation. Section 5 goes
+into the results of each of our experiments and some analysis on the data we obtained. Lastly, section 6 presents 
 our conclusions.
 
 \section{Experiment Design}
+For our experiments we are using a total of five EC2 instances from the Amazon Web Services cloud. For both of our systems four servers were used for the database while the last was used for running our workload harness. The MySQL system is setup with one master server for writes and three slaves servers that replicate all of the masters data. Unlike the Couchbase system where we had four servers setup for reads and writes of the keys they were incharge of.
+
+Our major driving force of this experiment was to see how Couchbase compared to MySQL for running a web application. To test which is better we created a workload harness. The main task of the workload harness was to define how many times a workload would run. In our case workloads define a certain task. For example, getting of the data necessary to display a users profile. We leave describing each workload we ran to the next section. Here we will focus on the design of the systems. 
+
+As each workload is run the workload harness records important stats. Some of the stats include how long the workload took to run, the min and max times of an individual query or insertion, and the standard deviations of individual runs.
+
+\subsection{Data}
+The data we are storing comes from Ryan Verdon's masters thesis. It is the backend for a community genome annotation database. So it has data like genome sequences, genes, and species information. The representation of the data is vastly different in the two systems. There exists four main pieces of data that are cruicial to either representation. They are Contigs, Annotations, Users, and Groups. Contigs are what a biologist annotates which basically means looks at to find a gene. The main portion of a Contig is a DNA sequence. Annotations are the record or formal representation of a gene that has been found in a Contig. An annotation has several parts. The main ones are coordinates in the Contig of where individual exons are located and a ton of meta information about the annotation like who uploaded it and when it was done, etc. Users is an important part of the data it is one of the central pillars that connects the data. Users upload Contigs, create Annotations, and join groups. Groups are an important part of the usefulness of the system. Users of likemindness can join the same group to receive important information that is important to them. Below we discuss the different ways we store the data in SQL versus JSON.
+
+\subsubsection{SQL}
 TODO
+ER DIAGRAM
+
+\subsubsection{JSON}
+TODO
+PIC OF EACH JSON OBJECT 
 
 \section{Workloads}
-The following workloads were applied to the both the MySQL and Couchbase clusers.
+The following workloads were ran on both the MySQL and Couchbase clusters.
 \subsection{Assigning a Task}
-TODO
+This workload comes from a use-case in the web application. The main idea is that a new Contig has been uploaded and some uses that care about this Contig need to be notified. 
+
+Subsubsections for each system?
 \subsection{Profiling}
-TODO
-\subsection{Read and Writing Performance}
 TODO
 \subsection{Publishing}
 TODO
 \subsection{Adding and Removing Group Membership}
 Adding or removing users to a group is a task common for classroom situations. In MySQL, this operation requires a join between three tables: Groups, Users, and GroupMembership. In Couchbase, this requires retrieving the key for the desired group and removing the user from the members field.
+\subsection{Uploading Contigs}
+
+\subsection{Read and Writing Performance}
+TODO
 
 \section{Implementation}
-TODO
+Our experiment was implemented completly in Java. To do the MySQL portion of the workload we used
+the MySQL JDBC driver. For the Couchbase portion we used their Java library from their website.
 
 \section{Evaluation}
 TODO
