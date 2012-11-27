@@ -49,29 +49,53 @@ Our major driving force of this experiment was to see how Couchbase compared to 
 As each workload is run the workload harness records important stats. Some of the stats include how long the workload took to run, the min and max times of an individual query or insertion, and the standard deviations of individual runs.
 
 \subsection{Data}
-The data we are storing comes from Ryan Verdon's masters thesis. It is the backend for a community genome annotation database. So it has data like genome sequences, genes, and species information. The representation of the data is vastly different in the two systems. There exists four main pieces of data that are cruicial to either representation. They are Contigs, Annotations, Users, and Groups. Contigs are what a biologist annotates which basically means looks at to find a gene. The main portion of a Contig is a DNA sequence. Annotations are the record or formal representation of a gene that has been found in a Contig. An annotation has several parts. The main ones are coordinates in the Contig of where individual exons are located and a ton of meta information about the annotation like who uploaded it and when it was done, etc. Users is an important part of the data it is one of the central pillars that connects the data. Users upload Contigs, create Annotations, and join groups. Groups are an important part of the usefulness of the system. Users of likemindness can join the same group to receive important information that is important to them. Below we discuss the different ways we store the data in SQL versus JSON.
+The data we are storing comes from Ryan Verdon's masters thesis. It is the backend for a community genome annotation database. So it has data like genome sequences, genes, and species information. The representation of the data is vastly different in the two systems. There exists four main pieces of data that are cruicial to either representation. They are Contigs, Annotations, Users, and Groups. Contigs are what a biologist annotates which basically means looks at to find a gene. The main portion of a contig is a DNA sequence. Annotations are the record or formal representation of a gene that has been found in a contig. An annotation has several parts. The main ones are coordinates in the contig of where individual exons are located and a ton of meta information about the annotation like who uploaded it and when it was done, etc. Users is an important part of the data it is one of the central pillars that connects the data. Users upload contigs, create annotations, and join groups. Groups are an important part of the usefulness of the system. Users of likemindness can join the same group to receive important information that is important to them. Below we discuss the different ways we store the data in SQL versus JSON.
 
 \subsubsection{SQL}
-TODO
-ER DIAGRAM
+The relational schema for the MySQL cluster is shown in Figure~\ref{fig:SQLDiagram}.
 
 \subsubsection{JSON}
-TODO
-PIC OF EACH JSON OBJECT 
+The JSON objects for the Couchbase cluster are shown in Figure~\ref{fig:JSON}.
 
+\clearpage
+\begin{figure}%
+{%
+\setlength{\fboxsep}{0pt}%
+\setlength{\fboxrule}{1pt}%
+\fbox{\includegraphics[width=180mm]{SQLDiagram.png}}%
+}%
+\caption{The SQL Schema for CGAT.}
+\label{fig:SQLDiagram}
+\end{figure}%
+
+\clearpage
+\begin{figure}%
+{%
+\setlength{\fboxsep}{0pt}%
+\setlength{\fboxrule}{1pt}%
+\fbox{\includegraphics[width=180mm]{SQLDiagram.png}}%
+}%
+\caption{The JSON object definitions for CGAT.}
+\label{fig:JSON}
+\end{figure}%
+
+\clearpage
 \section{Workloads}
 The following workloads were ran on both the MySQL and Couchbase clusters.
 \subsection{Assigning a Task}
-This workload comes from a use-case in the web application. The main idea is that a new Contig has been uploaded and some uses that care about this Contig need to be notified. 
+This workload comes from a use-case in the web application. The main idea is that a new contig has been uploaded and some users that care about this contig need to be notified. 
 
-Subsubsections for each system?
 \subsection{Profiling}
-TODO
+The profiling workload simulates what happens when all of the information about a user is gathered. This includes: all groups they are a member of, all full and partial annotations they have submitted, and all tasks they have assigned. This is a read-heavy workload.
+
 \subsection{Publishing}
-TODO
+This workload involves updating a user's experience because of a completed annotation. The corresponding annontation record must also be set to complete, have its finished date updated, and have its gained experience set. This is a write-heavy workload.
+
 \subsection{Adding and Removing Group Membership}
-Adding or removing users to a group is a task common for classroom situations. In MySQL, this operation requires a join between three tables: Groups, Users, and GroupMembership. In Couchbase, this requires retrieving the key for the desired group and removing the user from the members field.
+Adding or removing users to a group is a task common for classroom situations. In MySQL, this operation requires a join between three tables: Groups, Users, and GroupMembership. In Couchbase, this requires retrieving the key for the desired group and removing the user from the members field. This is a mixed workload involving reading and writing.
+
 \subsection{Uploading Contigs}
+This workload represents a contig being inserted into the database. All of the attributes of a contig are set, including the user who uploaded it and its sequence. This is a write-heavy workload.
 
 \subsection{Read and Writing Performance}
 TODO
