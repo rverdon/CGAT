@@ -38,7 +38,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
          // Rank info
          $('#stats-level').text('Level ' + data.meta.level);
-         $('#stats-exp').text(data.meta.exp + 'XP');
+         $('#stats-exp').text(data.meta.exp + ' Experience');
 
          // Notifications
          if (window.cgatSession && window.cgatSession.userId === data['_id']['$id']) {

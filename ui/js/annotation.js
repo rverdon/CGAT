@@ -388,18 +388,25 @@ function placeExons() {
 }
 
 // markPosition is meant to mark the first nucleotide in each line.
-function createNucleotideDiv(nucleotide, position, markPosition) {
+function createNucleotideDiv(nucleotide, position, markPosition, codon, codonWindow) {
    var positionMarker = '';
    if (markPosition) {
       positionMarker = '<div class="line-position-marker">' + position + '</div>';
    }
 
-   return "<div class='nucleotide nucleotide-" + nucleotide + "'" +
+   var codonElement = '';
+   if (codon) {
+      codonElement = '<div class="codon codon-' + codon.replace(/\W/, '') + ' codon-window-' +
+                     codonWindow + '">' + codon + '</div>';
+   }
+
+   return "<div class='nucleotide'" +
           " data-position='" + position + "'" +
           " onClick='nucleotideClicked(" + position + ");'" +
           " id='" + "nucleotide-" + position + "'>" +
-          nucleotide +
+          "<div class='nucleotide-base nucleotide-" + nucleotide + "'>" + nucleotide + "</div>" +
           positionMarker +
+          codonElement +
           "</div>";
 }
 
@@ -430,12 +437,31 @@ function updateDnaSelection(leftEdge) {
       sequence = window.cgat.dna.substring(start, start + window.cgat.nucleoditesPerWindow);
    }
 
+   // Get the translated codons.
+   // Remember, because of windows, not every nucleotide will be included in a codon.
+   // So, start from the first multiple of three.
+   var codonStartOffset = (Math.ceil(start / 3) * 3) - start;
+   var windowedCodons = [];
+   windowedCodons.push(codonTranslation(sequence, codonStartOffset));
+   windowedCodons.push(codonTranslation(sequence, codonStartOffset + 1));
+   windowedCodons.push(codonTranslation(sequence, codonStartOffset + 2));
+
+   var codonCounter = 0;
    var sequenceDivs = [];
    var markPosition = false;
    for (var i = 0; i < sequence.length; i++) {
       // TODO(eriq): 50 is magic for number of nucleotides per line. Put it in constants.
       markPosition = (i % 50) === 0;
-      sequenceDivs.push(createNucleotideDiv(sequence[i], start + i, markPosition));
+
+      // If there is a codon associated with the nucleodite, pair it with the nucleotide.
+      if (i >= codonStartOffset) {
+         var currentCodon = windowedCodons[codonCounter % 3][Math.floor(codonCounter / 3)];
+         sequenceDivs.push(createNucleotideDiv(sequence[i], start + i, markPosition,
+                                               currentCodon, codonCounter % 3));
+         codonCounter++;
+      } else {
+         sequenceDivs.push(createNucleotideDiv(sequence[i], start + i, markPosition, null));
+      }
    }
    document.getElementById('standard-sequence').innerHTML = sequenceDivs.join('');
 

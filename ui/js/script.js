@@ -1,32 +1,5 @@
 "use strict";
 
-// Get the reverse complement of a sequence
-// Will return undefined if the sequence is not valid (not upcase ATCG).
-function reverseComplement(sequence) {
-   var rc = [];
-
-   for (var i = sequence.length - 1; i >= 0; i--) {
-      switch(sequence[i]) {
-         case 'A':
-            rc.push('T');
-            break;
-         case 'T':
-            rc.push('A');
-            break;
-         case 'C':
-            rc.push('G');
-            break;
-         case 'G':
-            rc.push('C');
-            break;
-         default:
-            return undefined;
-      }
-   }
-
-   return rc.join('');
-}
-
 function collapse(buttonId, collapseAreaId) {
    $('#' + buttonId).addClass('collapse-on');
    $('#' + collapseAreaId).addClass('collapse');

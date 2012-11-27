@@ -2,7 +2,7 @@
    require_once('header.php');
    makeHeader('Annotate', '',
               array('annotation.css', 'jquery-ui.css', 'simple-box.css'),
-              array('jquery-ui.js', 'annotation.js', 'simple-box.js'));
+              array('jquery-ui.js', 'annotation.js', 'simple-box.js', 'bio.js'));
 ?>
 
 <div id='content' class='top-level-area'>
@@ -61,7 +61,7 @@
    <div class='dna-closeup second-level-area'>
       <h2 onclick='toggleCollapse("standard-collapse-button", "standard-sequence");'>
          <div class='collapse-button' id='standard-collapse-button'></div>
-         Sequence
+         Sequence And Translation
       </h2>
       <div id='standard-sequence' class='sequence-closeup collapsing-area'></div>
    </div>

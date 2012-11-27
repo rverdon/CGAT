@@ -24,7 +24,7 @@
 #top-dna {
    height: 32px;
    width: 100%;
-   background: transparent url('../images/double_helix.png') repeat-x;
+   background: transparent url('../images/straight_double_helix.png') repeat-x;
    position: relative;
    z-index: 0;
 }
@@ -99,9 +99,10 @@
    margin-right: 15px;
 }
 
-.selected-nucleotide {
+.selected-nucleotide .nucleotide-base,
+.selected-nucleotide .codon {
    outline: 2px solid purple;
-   z-index: 5;
+   z-index: 6;
    -webkit-transform: scale(1.2, 1.2);
    transform: scale(1.2, 1.2);
    -moz-transform: scale(1.2, 1.2);
@@ -119,21 +120,25 @@
 }
 
 .nucleotide {
-   height: 20px;
-   width: 19px;
+   display: inline-block;
+   position: relative;
    font-size: 18px;
    color: #292929;
    text-align: center;
-   display: inline-block;
-   margin-bottom: 35px;
    cursor: pointer;
-   position: relative;
    text-shadow: initial;
 }
 
-.nucleotide:hover {
+.nucleotide-base {
+   height: 20px;
+   width: 19px;
+   margin-bottom: 150px;
+   position: relative;
+}
+
+.nucleotide:hover .nucleotide-base {
    outline: 2px solid black;
-   z-index: 5;
+   z-index: 6;
    -webkit-transform: scale(1.2, 1.2);
    transform: scale(1.2, 1.2);
    -moz-transform: scale(1.2, 1.2);
@@ -172,9 +177,12 @@
    background: black;
 }
 
-.exonStart, .exonEnd {
+.exonStart .nucleotide-base,
+.exonEnd .nucleotide-base,
+.exonStart .codon,
+.exonEnd .codon {
    outline: 2px solid purple;
-   z-index: 5;
+   z-index: 6;
    -webkit-transform: scale(1.2, 1.2);
    transform: scale(1.2, 1.2);
    -moz-transform: scale(1.2, 1.2);
@@ -182,7 +190,8 @@
    -ms-transform: scale(1.2, 1.2);
 }
 
-.exonStart:after, .exonEnd:after {
+.exonStart:after,
+.exonEnd:after {
    position: absolute;
    top: -30px;
    border-radius: 5px;
@@ -235,6 +244,86 @@
 
 .nucleotide-T {
    background: #3C88EE;
+}
+
+.nucleotide:hover .codon {
+   outline: 2px solid black;
+   z-index: 6;
+}
+
+.codon {
+   position: absolute;
+   width: 60px;
+   z-index: 5;
+}
+
+.codon-window-0 {
+   top: 35px;
+}
+
+.codon-window-1 {
+   top: 70px;
+}
+
+.codon-window-2 {
+   top: 105px;
+}
+
+/**
+ * Colors from:
+ *  http://life.nthu.edu.tw/~fmhsu/rasframe/COLORS.HTM
+ */
+.codon-ASP, .codon-GLU {
+   background: rgb(230, 10, 10);
+}
+
+.codon-LYS, .codon-ARG {
+   background: rgb(20, 90, 255);
+}
+
+.codon-PHE, .codon-TYR {
+   background: rgb(50, 50, 170);
+}
+
+.codon-GLY {
+   background: rgb(235, 235, 235);
+}
+
+.codon-ALA {
+   background: rgb(200, 200, 200);
+}
+
+.codon-HIS {
+   background: rgb(130, 130, 210);
+}
+
+.codon-CYS, .codon-MET {
+   background: rgb(230, 230, 0);
+}
+
+.codon-SER, .codon-THR {
+   background: rgb(250, 150, 0);
+}
+
+.codon-ASN, .codon-GLN {
+   background: rgb(0, 220, 220);
+}
+
+.codon-LEU, .codon-VAL, .codon-ILE {
+   background: rgb(15, 130, 15);
+}
+
+.codon-TRP {
+   background: rgb(180, 90, 180);
+}
+
+.codon-PRO {
+   background: rgb(220, 150, 130);
+}
+
+.codon-STOP {
+   color: white;
+   background: black;
 }
 
 /** END DNA VIEWER **/

@@ -54,10 +54,10 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
             if (inGroup) {
-               $('#join-leave-button').text('Leave ' + window.cgat.groupName);
+               $('#join-leave-button').text('Click To Leave ' + window.cgat.groupName);
                $('#join-leave-button').click(leaveGroup);
             } else {
-               $('#join-leave-button').text('Join ' + window.cgat.groupName);
+               $('#join-leave-button').text('Click To Join ' + window.cgat.groupName);
                $('#join-leave-button').click(joinGroup);
             }
          }
@@ -85,7 +85,7 @@ function joinGroup() {
       },
       success: function(data, textStatus, jqXHR) {
          $('#join-leave-button').unbind('click');
-         $('#join-leave-button').text('Leave ' + window.cgat.groupName);
+         $('#join-leave-button').text('Click To Leave ' + window.cgat.groupName);
          $('#join-leave-button').click(leaveGroup);
          window.cgat.disableGroupButton = false;
       }
@@ -111,7 +111,7 @@ function leaveGroup() {
       },
       success: function(data, textStatus, jqXHR) {
          $('#join-leave-button').unbind('click');
-         $('#join-leave-button').text('Join ' + window.cgat.groupName);
+         $('#join-leave-button').text('Click To Join ' + window.cgat.groupName);
          $('#join-leave-button').click(joinGroup);
          window.cgat.disableGroupButton = false;
       }
