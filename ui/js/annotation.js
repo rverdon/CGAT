@@ -125,9 +125,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
    // Change the title of the page with the gene name.
    document.getElementById('annotation-name').addEventListener('change', function() {
-      //TEST
-      console.log("THIS");
-
       var newName = document.getElementById('annotation-name').value;
       window.cgat.geneName = newName;
       document.title = 'Annotate: ' + newName;
@@ -203,9 +200,6 @@ function updateBoundingMarkers() {
    var startSize = Math.floor(window.cgat.geneStart * sizeRatio);
    var endSize = Math.floor((window.cgat.dna.length - window.cgat.geneEnd) * sizeRatio);
 
-   console.log("len: " + window.cgat.dna.length + ", geneEnd: " + window.cgat.geneEnd);
-   console.log("Start: " + startSize + ", End: " + endSize);
-
    var startBound = document.createElement('div');
    startBound.className = 'top-dna-boundary-marker top-dna-boundary-marker-begin';
    startBound.style.top = '0px';
@@ -222,7 +216,7 @@ function updateBoundingMarkers() {
 }
 
 function fillRuler(length) {
-   var tick = Math.floor(length / 10);
+   var tick = highestOrderIntRound(Math.floor(length / 10));
    var ruler = [];
 
    for (var i = 1; i <= 10; i++) {
@@ -508,7 +502,6 @@ function collectAnnotationData() {
 // Validate any required information before a submit.
 function validateBeforeSubmit() {
    // The only thing I can think of here is the gene name.
-   console.log($('#annotation-name').val());
    if ($('#annotation-name').val().length === 0) {
       validationError('Must have a Gene Name', 'gene-name-area');
       return false;
