@@ -1,6 +1,7 @@
 DirectoryIndex index.php
 
 RewriteEngine On
+RewriteRule ^help/(.*)$ help.php?page=$1 [NC,L]
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME}.php -f
 RewriteRule ^(.*)$ $1.php [NC,L]
