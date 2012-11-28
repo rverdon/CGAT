@@ -289,10 +289,6 @@ the official Couchbase Java library from their website.
 \section{Evaluation}\label{sec:eval}
 In this section we discuss the results from each workload in turn.
 
-%section on each workload and the results on each system (could be a table tbh and not a graph)
-%probably some weak analysis on why we expected the results
-%need to ask eriq the # of times each workload was  run, might be in an email?
-
 \subsection{Assigning a Task}
 
 \begin{center}
@@ -300,14 +296,23 @@ In this section we discuss the results from each workload in turn.
 	\hline
 	{\bf Metric} & {\bf Result} \\
 	\hline
-        \# of runs & TODO \\
+        \# of runs & 100000 \\
         \hline
         MySQL runtime (ms) & 39325189 \\
 	\hline
-        Couchbase runtime (ms) & ? \\
+        Couchbase runtime (ms) & ?* \\
         \hline
 \end{tabular}
 \end{center}
+
+From the results it is obvious that MySQL performs much better than Couchbase. The result we have for
+Couchbase is actually a minimum runtime. It was running so long we killed it to get more results. Even with this
+in mind, MySQL vastly outperforms Couchbase. We believe this is because during the process of assigning a task
+a couple values have to be read into memory before a finally write can be done. Compared to MySQL where its a simple 
+ad-hoc query to find the necessary values prior to inserting the new task. 
+
+From our analysis, we believe if we had document or ad-hoc unstructured queries in Couchbase we could vastly improve the performance.
+When doing the Couchbase queries we only need a small subset of the JSON. By only querying for the necessary parts it could save vast amounts of time.
 
 \subsection{Profiling}
 
@@ -316,7 +321,7 @@ In this section we discuss the results from each workload in turn.
 	\hline
 	{\bf Metric} & {\bf Result} \\
 	\hline
-        \# of runs & TODO \\
+        \# of runs & 100000 \\
         \hline
         MySQL runtime (ms) & 2908257 \\
 	\hline
@@ -325,6 +330,9 @@ In this section we discuss the results from each workload in turn.
 \end{tabular}
 \end{center}
 
+Like the last workload, MySQL outperforms Couchbase. We believe that this is because this workload is read-heavy so several
+full documents are retrieved per run.  Again, this workload could be improved in Couchbase with the use of unstructured queries.
+
 \subsection{Publishing}
 
 \begin{center}
@@ -332,7 +340,7 @@ In this section we discuss the results from each workload in turn.
 	\hline
 	{\bf Metric} & {\bf Result} \\
 	\hline
-        \# of runs & TODO \\
+        \# of runs & 100000 \\
         \hline
         MySQL runtime (ms) & 510837 \\
 	\hline
@@ -341,6 +349,9 @@ In this section we discuss the results from each workload in turn.
 \end{tabular}
 \end{center}
 
+Again, a similar pattern in the results as the last two workloads. This was another workload that required some queries prior to inserting
+a new annotation. We believe this is another case where unstructured queries could vastly improve performance.
+
 \subsection{Adding and Removing Group Membership}
 
 \begin{center}
@@ -348,7 +359,7 @@ In this section we discuss the results from each workload in turn.
 	\hline
 	{\bf Metric} & {\bf Result} \\
 	\hline
-        \# of runs & TODO \\
+        \# of runs & 100000 \\
         \hline
         MySQL runtime (ms) & 316673 \\
 	\hline
@@ -357,6 +368,11 @@ In this section we discuss the results from each workload in turn.
 \end{tabular}
 \end{center}
 
+To our surprise this workload performed extremely bad on Couchbase. We were not expecting this because this is a 50\% read
+and 50\% write workload. Having to do lots of reads prior to inserting new group memberships really hurt Couchbase. This is most definitely 
+a case where having unstructured queries or document support would greatly improve performance. The way we store group memberships
+is as a sub-field in the user and group objects. By only queries for those fields we could reduce the amount of data we return to the workload harness by over 70\%.
+
 \subsection{Uploading Contigs}
 
 \begin{center}
@@ -364,7 +380,7 @@ In this section we discuss the results from each workload in turn.
 	\hline
 	{\bf Metric} & {\bf Result} \\
 	\hline
-        \# of runs & TODO \\
+        \# of runs & 10000 \\
         \hline
         MySQL runtime (ms) & 119892 \\
 	\hline
@@ -373,6 +389,10 @@ In this section we discuss the results from each workload in turn.
 \end{tabular}
 \end{center}
 
+The results from this test were no surprise. Couchbase demolished MySQL when most of the workload was insertions. Even with
+contig objects containing strings of over 50k characters Couchbase performed amazingly well. By not having to lock key-value pairs
+Couchbase can get some awesome write performance.
+
 \subsection{Read and Writing Performance}
 
 \begin{center}
@@ -380,7 +400,7 @@ In this section we discuss the results from each workload in turn.
 	\hline
 	{\bf Metric} & {\bf Result} \\
 	\hline
-        \# of runs & TODO \\
+        \# of runs & 100000 \\
         \hline
         MySQL runtime (ms) & 103808 \\
 	\hline
@@ -389,10 +409,127 @@ In this section we discuss the results from each workload in turn.
 \end{tabular}
 \end{center}
 
-TODO Need min,max,mean,median, and standard deviation from the results
+The results from this test were not that surprising based on the results from our other tests. It is obvious that Couchbase is much faster in terms of writes plus Couchbase can leverage Memcache in this workload to speed up queries to the database. For this workload we decided to gather a bunch more numbers to see what the minimum, maximum, mean, median and standard deviation of the individual reads and writes for each system. Below we list the six tables and discuss what the results mean.
+
+\begin{center}
+\begin{tabular}{|l|l|}
+	\hline
+  	\multicolumn{2}{|c|}{{\bf SQL read after writes of same object}} \\
+ 	\hline
+  	 Min (ms) & 0 \\
+  	\hline
+         Max (ms) & 25 \\
+  	\hline
+  	Mean (ms) & 0.473 \\
+ 	\hline
+  	Median (ms) & 0 \\
+  	\hline
+         Standard Deviation (ms) & 0.685 \\
+  	\hline
+\end{tabular}
+\end{center}
+
+\begin{center}
+\begin{tabular}{|l|l|}
+	\hline
+  	\multicolumn{2}{|c|}{{\bf SQL write after reads of same object}} \\
+ 	\hline
+  	 Min (ms) & 0 \\
+  	\hline
+         Max (ms) & 70 \\
+  	\hline
+  	Mean (ms) & 0.558 \\
+ 	\hline
+  	Median (ms) & 1 \\
+  	\hline
+         Standard Deviation (ms) & 0.859 \\
+  	\hline
+\end{tabular}
+\end{center}
+
+\begin{center}
+\begin{tabular}{|l|l|}
+	\hline
+  	\multicolumn{2}{|c|}{{\bf SQL combined results}} \\
+ 	\hline
+  	 Min (ms) & 0 \\
+  	\hline
+         Max (ms) & 70 \\
+  	\hline
+  	Mean (ms) & 0.516 \\
+ 	\hline
+  	Median (ms) & 0 \\
+  	\hline
+         Standard Deviation (ms) & 0.778 \\
+  	\hline
+\end{tabular}
+\end{center}
+
+The three prior tables are all of our SQL results. The first table lists the minimum, maximum, mean, median, and standard deviation of reads 
+that occur after writes. The second table lists the same metrics but for writes after reads. Lastly, the third table lists the metrics for
+all of the queries. Below we list the same three tables but this time show the Couchbase results.
+
+\begin{center}
+\begin{tabular}{|l|l|}
+	\hline
+  	\multicolumn{2}{|c|}{{\bf Couchbase read after writes of same object}} \\
+ 	\hline
+  	 Min (ms) & 0 \\
+  	\hline
+         Max (ms) & 71 \\
+  	\hline
+  	Mean (ms) & 0.562 \\
+ 	\hline
+  	Median (ms) & 1 \\
+  	\hline
+         Standard Deviation (ms) & 0.859 \\
+  	\hline
+\end{tabular}
+\end{center}
+
+\begin{center}
+\begin{tabular}{|l|l|}
+	\hline
+  	\multicolumn{2}{|c|}{{\bf Couchbase write after reads of same object}} \\
+ 	\hline
+  	 Min (ms) & 0 \\
+  	\hline
+         Max (ms) & 48 \\
+  	\hline
+  	Mean (ms) & 0.017 \\
+ 	\hline
+  	Median (ms) & 0 \\
+  	\hline
+         Standard Deviation (ms) & 0.213 \\
+  	\hline
+\end{tabular}
+\end{center}
+
+\begin{center}
+\begin{tabular}{|l|l|}
+	\hline
+  	\multicolumn{2}{|c|}{{\bf Couchbase combined results}} \\
+ 	\hline
+  	 Min (ms) & 0 \\
+  	\hline
+         Max (ms) & 71 \\
+  	\hline
+  	Mean (ms) & 0.29 \\
+ 	\hline
+  	Median (ms) & 0 \\
+  	\hline
+         Standard Deviation (ms) & 0.682 \\
+  	\hline
+\end{tabular}
+\end{center}
+
+By examining the read after writes results from the two systems we get the results we expect based on our other tests. MySQL outperforms
+Couchbase when it comes to reading after a write. The really interesting results come from the the write after read tables where it is obvious that
+Couchbase demolished MySQL by a lot. There is a huge difference in the means alone without even looking at the other metrics. This again
+backs up our other results from the contig workload where Couchbase outperformed MySQL in a mainly write task. Overall Couchbase outperformed MySQL because of its blazing fast writes after reads.
 
 \section{Conclusions}\label{sec:conclusions}
-TODO
+From our results MySQL appears to be the winner right now for the CGAT backend. The MySQL workloads outperformed Couchbase the majority of the time. We believe in a live scenario Couchbase would perform better than our tests mainly because our tests could not take advantage of Memcache. When a key had to be looked up there was almost no chance it was sitting in Memcache. We also believe that the Couchbase results would greatly improve with the addition of an unstructured query language. With the addition of this feature our workloads would be making much smaller requests from the database. 
 
 % TODO: Uncomment if we use any refs
 % \bibliographystyle{acm}
