@@ -125,9 +125,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
    // Change the title of the page with the gene name.
    document.getElementById('annotation-name').addEventListener('change', function() {
-      //TEST
-      console.log("THIS");
-
       var newName = document.getElementById('annotation-name').value;
       window.cgat.geneName = newName;
       document.title = 'Annotate: ' + newName;
@@ -181,7 +178,7 @@ function startEndValidate(start, end, errorDump) {
    if (start < 0 || end < 0 ||
        start >= window.cgat.dna.length ||
        end >= window.cgat.dna.length) {
-      validationError('Start and End must be >= 0 and < ' + window.cgat.dna.length,
+      validationError('Gene Start and End must be >= 0 and < ' + window.cgat.dna.length,
                       errorDump);
       return false;
    } else if (start >= end) {
@@ -204,14 +201,14 @@ function updateBoundingMarkers() {
    var endSize = Math.floor((window.cgat.dna.length - window.cgat.geneEnd) * sizeRatio);
 
    var startBound = document.createElement('div');
-   startBound.className = 'top-dna-boundary-marker';
+   startBound.className = 'top-dna-boundary-marker top-dna-boundary-marker-begin';
    startBound.style.top = '0px';
    startBound.style.width = '' + startSize + 'px';
    startBound.style.left = '0px';
    document.getElementById('top-dna').appendChild(startBound);
 
    var endBound = document.createElement('div');
-   endBound.className = 'top-dna-boundary-marker';
+   endBound.className = 'top-dna-boundary-marker top-dna-boundary-marker-end';
    endBound.style.top = '0px';
    endBound.style.width = '' + endSize + 'px';
    endBound.style.right = '0px';
@@ -219,7 +216,7 @@ function updateBoundingMarkers() {
 }
 
 function fillRuler(length) {
-   var tick = Math.floor(length / 10);
+   var tick = highestOrderIntRound(Math.floor(length / 10));
    var ruler = [];
 
    for (var i = 1; i <= 10; i++) {
@@ -289,9 +286,10 @@ function createExonElement(start, end, key) {
    var exonElement = document.createElement('div');
    exonElement.id = 'exon-' + key;
    exonElement.classList.add('exon');
+   exonElement.setAttribute('data-start', start);
 
    var exonElementString =
-         "<span>Start: </span>" +
+         "<span>Begin: </span>" +
          "<input type='number' id='exon-start-" + key + "'" +
             " value=" + start +
             " onchange='updateExon(" + key + ");'/>" +
@@ -302,7 +300,19 @@ function createExonElement(start, end, key) {
          "<button onclick='removeExon(" + key + ");'>Remove Exon</button>";
 
    exonElement.innerHTML = exonElementString;
-   document.getElementById('exons').appendChild(exonElement);
+
+   // Find the correct place to insert the node.
+   // This is the exon that belongs after this node.
+   // If it remains null, the new exon will be inserted at the end.
+   var afterNode = null;
+   $('.exon').each(function() {
+      if (parseInt(this.getAttribute('data-start')) > start) {
+         afterNode = this;
+         // This breaks.
+         return false;
+      }
+   });
+   document.getElementById('exons').insertBefore(exonElement, afterNode);
 }
 
 function updateExon(key) {
@@ -492,7 +502,6 @@ function collectAnnotationData() {
 // Validate any required information before a submit.
 function validateBeforeSubmit() {
    // The only thing I can think of here is the gene name.
-   console.log($('#annotation-name').val());
    if ($('#annotation-name').val().length === 0) {
       validationError('Must have a Gene Name', 'gene-name-area');
       return false;
