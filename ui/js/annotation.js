@@ -292,6 +292,7 @@ function createExonElement(start, end, key) {
    var exonElement = document.createElement('div');
    exonElement.id = 'exon-' + key;
    exonElement.classList.add('exon');
+   exonElement.setAttribute('data-start', start);
 
    var exonElementString =
          "<span>Begin: </span>" +
@@ -305,7 +306,19 @@ function createExonElement(start, end, key) {
          "<button onclick='removeExon(" + key + ");'>Remove Exon</button>";
 
    exonElement.innerHTML = exonElementString;
-   document.getElementById('exons').appendChild(exonElement);
+
+   // Find the correct place to insert the node.
+   // This is the exon that belongs after this node.
+   // If it remains null, the new exon will be inserted at the end.
+   var afterNode = null;
+   $('.exon').each(function() {
+      if (parseInt(this.getAttribute('data-start')) > start) {
+         afterNode = this;
+         // This breaks.
+         return false;
+      }
+   });
+   document.getElementById('exons').insertBefore(exonElement, afterNode);
 }
 
 function updateExon(key) {
