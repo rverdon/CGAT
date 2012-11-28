@@ -33,7 +33,7 @@ db.annotations.insert({
 db.annotations.insert({
    "_id" : ObjectId("000000000000000000000005"),
    "contig_id" : ObjectId("000000000000000000000002"),
-   "end" : 7000,
+   "end" : 4000,
    "exons" : [
       {
          "start" : 100,

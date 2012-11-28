@@ -203,15 +203,18 @@ function updateBoundingMarkers() {
    var startSize = Math.floor(window.cgat.geneStart * sizeRatio);
    var endSize = Math.floor((window.cgat.dna.length - window.cgat.geneEnd) * sizeRatio);
 
+   console.log("len: " + window.cgat.dna.length + ", geneEnd: " + window.cgat.geneEnd);
+   console.log("Start: " + startSize + ", End: " + endSize);
+
    var startBound = document.createElement('div');
-   startBound.className = 'top-dna-boundary-marker';
+   startBound.className = 'top-dna-boundary-marker top-dna-boundary-marker-begin';
    startBound.style.top = '0px';
    startBound.style.width = '' + startSize + 'px';
    startBound.style.left = '0px';
    document.getElementById('top-dna').appendChild(startBound);
 
    var endBound = document.createElement('div');
-   endBound.className = 'top-dna-boundary-marker';
+   endBound.className = 'top-dna-boundary-marker top-dna-boundary-marker-end';
    endBound.style.top = '0px';
    endBound.style.width = '' + endSize + 'px';
    endBound.style.right = '0px';
