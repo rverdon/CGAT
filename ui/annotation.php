@@ -72,7 +72,7 @@
          Add Exon
       </h2>
       <div id='add-exon-collapse-area' class='collapsing-area'>
-         <span id='add-exon-start-span'>Start: </span>
+         <span id='add-exon-start-span'>Begin: </span>
          <input type='number' id='add-exon-start' value=0 />
          <span>End: </span>
          <input type='number' id='add-exon-end' value=0 />

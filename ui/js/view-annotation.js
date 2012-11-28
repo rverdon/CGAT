@@ -49,7 +49,7 @@ document.addEventListener('DOMContentLoaded', function() {
          if (data.annotation.exons) {
             var exons = '';
             data.annotation.exons.forEach(function(exon) {
-               exons += "<p>Start: " + exon.start + ", End: " + exon.end + "</p>";
+               exons += "<p>Begin: " + exon.start + ", End: " + exon.end + "</p>";
             });
             $('#exons-inset').html(exons);
          }

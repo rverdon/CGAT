@@ -206,7 +206,7 @@
 }
 
 .exonStart:after {
-   content: "START";
+   content: "BEGIN";
    left: -10px;
 }
 

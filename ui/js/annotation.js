@@ -181,7 +181,7 @@ function startEndValidate(start, end, errorDump) {
    if (start < 0 || end < 0 ||
        start >= window.cgat.dna.length ||
        end >= window.cgat.dna.length) {
-      validationError('Start and End must be >= 0 and < ' + window.cgat.dna.length,
+      validationError('Gene Start and End must be >= 0 and < ' + window.cgat.dna.length,
                       errorDump);
       return false;
    } else if (start >= end) {
@@ -291,7 +291,7 @@ function createExonElement(start, end, key) {
    exonElement.classList.add('exon');
 
    var exonElementString =
-         "<span>Start: </span>" +
+         "<span>Begin: </span>" +
          "<input type='number' id='exon-start-" + key + "'" +
             " value=" + start +
             " onchange='updateExon(" + key + ");'/>" +
