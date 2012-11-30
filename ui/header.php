@@ -57,7 +57,7 @@ function makeHeader($title = 'CGAT', $subtitle = '', $extraCSS = array(), $extra
    echo "</head><body>";
    echo "<div id='header' class='top-level-area'>
             <a class='logo-link' href='/'>
-               <img src='images/logo.png' alt='GCAT'></img>
+               <img src='/images/logo.png' alt='GCAT'></img>
             </a>
             <div id='top-title'>";
 

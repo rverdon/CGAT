@@ -438,6 +438,17 @@ function assignTask($userId, $userName, $groups, $description, $contigId, $endDa
    $db->users->update($query, $update, false /* upsert */, true /* multiple updates */);
 }
 
+function getFullHelpInfo($helpId) {
+   $db = getDB();
+
+   $rtn = array();
+   $rtn['help'] = "hello";
+   //$rtn['help'] = $db->help->findOne(array('_id' => new MongoId($helpId)),
+                                    // array('text' => 0));
+
+   return $rtn;
+}
+
 function getFullContigInfo($contigId) {
    $db = getDB();
 
