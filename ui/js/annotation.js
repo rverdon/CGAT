@@ -75,7 +75,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
          // Fill in the gene name
          window.cgat.geneName = data.annotation.isoform_name || '';
-         document.title = 'Annotate: ' + window.cgat.geneName;
          setSubtitle(window.cgat.geneName);
          simpleBoxSelectValue(0, window.cgat.geneName, window.cgat.geneName);
 
@@ -127,7 +126,6 @@ document.addEventListener('DOMContentLoaded', function () {
    document.getElementById('annotation-name').addEventListener('change', function() {
       var newName = document.getElementById('annotation-name').value;
       window.cgat.geneName = newName;
-      document.title = 'Annotate: ' + newName;
       setSubtitle(newName);
    });
 
