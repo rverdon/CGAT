@@ -91,6 +91,14 @@ db.groups.insert({
          "user_id": ObjectId("000000000000000000000003"),
          "name": "Bob"
       }
+   ],
+   "tasks" : [
+      {
+         "_id": new ObjectId("000000000000000000000007"),
+         "desc" : "Need more data for contig1!",
+         "contig_id" : ObjectId("000000000000000000000002"),
+         "end_date" : ISODate("2099-02-01T08:00:00Z")
+      }
    ]
 });
 db.groups.insert({
@@ -98,7 +106,8 @@ db.groups.insert({
    "created" : ISODate("2012-11-09T04:04:39.746Z"),
    "description" : "Another group.",
    "name" : "Some other Group",
-   "users" : []
+   "users" : [],
+   "tasks" : []
 });
 
 db.users.remove();
@@ -135,7 +144,7 @@ db.users.insert({
    },
    "tasks" : [
       {
-         "_id": new ObjectId(),
+         "_id": new ObjectId("000000000000000000000007"),
          "desc" : "Need more data for contig1!",
          "contig_id" : ObjectId("000000000000000000000002"),
          "end_date" : ISODate("2099-02-01T08:00:00Z")

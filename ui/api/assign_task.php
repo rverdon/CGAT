@@ -1,6 +1,4 @@
 <?php
-   // You get automatic membership in created group.
-
    session_start();
 
    require_once '../db.php';
@@ -21,11 +19,6 @@
    foreach ($_POST['groups'] as $group) {
       $finalGroups[] = new MongoId(mongoGroupSanitize($group));
    }
-
-   error_log("\n\n-----\n\n");
-   //error_log(var_export($_POST, true));
-   error_log(var_export($finalGroups, true));
-   error_log("\n\n-----\n\n");
 
    assignTask(mongoIdSanitize($_SESSION['userId']),
               mongoUserSanitize($_SESSION['userName']),

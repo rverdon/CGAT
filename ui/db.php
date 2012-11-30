@@ -288,16 +288,25 @@ function updateContigIsoformList($contigId, $annotationId, $oldName, $newName) {
    $db->contigs->update($query, $update);
 }
 
+// TODO(eriq): Expire tasks.
 function joinGroup($userId, $userName, $groupId) {
    $db = getDB();
 
    $groupQuery = array('_id' => new MongoId($groupId));
    $groupUpdate = array('$addToSet' => array('users' => array('user_id' => new MongoId($userId),
-                                                          'name' => $userName)));
+                                                              'name' => $userName)));
    $db->groups->update($groupQuery, $groupUpdate);
 
+   $joinedGroup = $db->groups->findOne($groupQuery);
+
+   $newTasks = array();
+   if (array_key_exists('tasks', $joinedGroup)) {
+      $newTasks = $joinedGroup['tasks'];
+   }
+
    $userQuery = array('_id' => new MongoId($userId));
-   $userUpdate = array('$addToSet' => array('groups' => new MongoId($groupId)));
+   $userUpdate = array('$addToSet' => array('groups' => new MongoId($groupId),
+                                            'tasks' => array('$each' => $newTasks)));
    $db->users->update($userQuery, $userUpdate);
 }
 
@@ -436,6 +445,10 @@ function assignTask($userId, $userName, $groups, $description, $contigId, $endDa
                                                      'end_date' => new MongoDate($endDateEpoch))));
 
    $db->users->update($query, $update, false /* upsert */, true /* multiple updates */);
+
+   // Update the actual group
+   $groupQuery = array('_id' => array('$in' => $groups));
+   $db->groups->update($query, $update, false /* upsert */, true /* multiple updates */);
 }
 
 function getFullHelpInfo($helpId) {
