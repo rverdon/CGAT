@@ -147,6 +147,13 @@ function makeContig(contig) {
    return contigInfo;
 }
 
+// Generate some html to represent the help info (given the standard information from the api).
+function makeHelp(help) {
+   var helpInfo = '';
+   helpInfo += "<p>" + "hi" + "</p>";
+   return helpInfo;
+}
+
 // Generate some html meant to diplay an inline annotation given stantard api annotation info.
 function makeInlineAnnotation(annotation) {
    var numExons = annotation.exons ? annotation.exons.length : 0;
