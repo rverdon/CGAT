@@ -1,5 +1,28 @@
 "use strict";
 
+// This will round an int using its largest order.
+// Ex: 10023 => 10000, 1500 => 2000
+function highestOrderIntRound(num) {
+   var stringNum = '' + parseInt(num);
+   var finalNum = '';
+
+   if (stringNum.length < 2) {
+      return parseInt(stringNum);
+   }
+
+   if (parseInt(stringNum[1]) >= 5) {
+      finalNum += (parseInt(stringNum[0]) + 1);
+   } else {
+      finalNum += parseInt(stringNum[0]);
+   }
+
+   for (var i = 1; i < stringNum.length; i++) {
+      finalNum += '0';
+   }
+
+   return parseInt(finalNum);
+}
+
 function collapse(buttonId, collapseAreaId) {
    $('#' + buttonId).addClass('collapse-on');
    $('#' + collapseAreaId).addClass('collapse');

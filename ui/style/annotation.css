@@ -53,6 +53,24 @@
    z-index: 2;
 }
 
+.top-dna-boundary-marker:after {
+   content: '';
+   position: absolute;
+   height: 65px;
+   width: 5px;
+   background: black;
+   opacity: 1;
+   bottom: -10px;
+}
+
+.top-dna-boundary-marker-begin:after {
+   right: 0;
+}
+
+.top-dna-boundary-marker-end:before {
+   left: 0;
+}
+
 #dna-selection-draggable {
    background: transparent;
    border: 2px solid red;
@@ -206,7 +224,7 @@
 }
 
 .exonStart:after {
-   content: "START";
+   content: "BEGIN";
    left: -10px;
 }
 

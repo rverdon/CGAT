@@ -9,6 +9,22 @@ Completed Workload [ProfileWorkload]...
 Run Time 7008818ms
 
 Running Workload [AssignTaskWorkload]...
+Run Time 157431049ms as calculated by aldrin:
+--------------------------------------------------------------------------------
+   Friday - 6:41 PM Eriq emailed "I will start them up"
+   Sunday - 4:22 PM Eriq discovers workloads are dead
+   Difference is:
+      45 hours and 41 minutes -> 2741 minutes -> 164460000 ms
+   Subtract 'ContigUploadWorkload' and 'ProfileWorkload' from total time:
+      164460000 - 7008818 - 20133 = 157431049ms
+
+   Note: This is a lower bound since the workload did not actually finish (or
+   at least Eriq didn't say that the 3rd ever finished and the workloads had
+   all died in a 4 hour time window...)
+
+   157431049ms => 43.7308 hours (LOL)
+--------------------------------------------------------------------------------
+
 Running Workload [StupidWorkload]...
 Completed Workload [StupidWorkload]...
 Run Time 58581ms
