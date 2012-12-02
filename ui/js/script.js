@@ -49,9 +49,18 @@ function toggleCollapse(buttonId, collapseAreaId) {
 }
 
 // This assumes that the page is under the normal framework and uses header.php.
-function setSubtitle(subtitle) {
-   document.getElementById('top-subtitle-text').innerHTML = subtitle;
+function setTitle(title) {
+   window.cgatTitle.title = title;
+   document.title = window.cgatTitle.title + " | " +
+                    window.cgatTitle.subtitle;
 }
+function setSubtitle(subtitle) {
+   window.cgatTitle.subtitle = subtitle;
+   document.getElementById('top-subtitle-text').innerHTML = subtitle;
+   document.title = window.cgatTitle.title + " | " +
+                    window.cgatTitle.subtitle;
+}
+
 
 // This accpets time string from an input[type=date] field ('yyyy-mm-dd').
 // Will return epoch time in seconds.

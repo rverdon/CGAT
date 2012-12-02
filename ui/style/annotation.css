@@ -357,3 +357,54 @@
 #add-exon-area span {
    margin-left: 10px;
 }
+
+#gene-diagram {
+   padding-left: 20px;
+   padding-right: 20px;
+   padding-top: 10px;
+}
+
+.gene-diagram-element {
+   display: inline-block;
+   margin-bottom: 20px;
+}
+
+.gene-diagram-exon {
+   min-width: 100px;
+   background: #C22121;
+   padding: 5px;
+   border-radius: 5px;
+   box-shadow: 2px 2px 2px #888;
+}
+
+.gene-diagram-intron {
+   padding-top: 12px;
+   padding-bottom: 12px;
+   width: 85px;
+}
+
+.gene-diagram-intron-line {
+   height: 11px;
+   background: black;
+   width: 100%;
+   box-shadow: 2px 2px 2px #888;
+}
+
+.gene-diagram-start-exon {
+}
+
+.gene-diagram-exon-begin,
+.gene-diagram-exon-end {
+   height: 25px;
+   font-size: 20px;
+   display: inline;
+}
+
+.gene-diagram-exon-begin {
+   float: left;
+   margin-right: 20px;
+}
+
+.gene-diagram-exon-end {
+   float: right;
+}

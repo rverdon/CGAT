@@ -51,6 +51,9 @@ function makeHeader($title = 'CGAT', $subtitle = '', $extraCSS = array(), $extra
       echo "<script> window.cgatSession = {};
                      window.cgatSession.userName = '" . $_SESSION['userName'] . "';
                      window.cgatSession.userId = '" . $_SESSION['userId'] . "';
+                     window.cgatTitle = {};
+                     window.cgatTitle.title = '" . $title . "';
+                     window.cgatTitle.subtitle = '" . $subtitle . "';
             </script>";
    }
 

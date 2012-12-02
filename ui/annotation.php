@@ -58,12 +58,20 @@
       </div>
    </div>
 
+   <div class='gene-diagram-area second-level-area'>
+      <h2 onclick='toggleCollapse("gene-diagram-collapse-button", "gene-diagram");'>
+         <div class='collapse-button' id='gene-diagram-collapse-button'></div>
+         Gene Exon View
+      </h2>
+      <div id='gene-diagram' class='collapsing-area'></div>
+   </div>
+
    <div class='dna-closeup second-level-area'>
       <h2 onclick='toggleCollapse("standard-collapse-button", "standard-sequence");'>
-         <div class='collapse-button' id='standard-collapse-button'></div>
+         <div class='collapse-button collapse-on' id='standard-collapse-button'></div>
          Sequence And Translation
       </h2>
-      <div id='standard-sequence' class='sequence-closeup collapsing-area'></div>
+      <div id='standard-sequence' class='sequence-closeup collapsing-area collapse'></div>
    </div>
 
    <div id='add-exon-area' class='second-level-area'>

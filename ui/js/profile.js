@@ -98,7 +98,7 @@ function makeGroup(group, userId) {
    var groupId = group.info['_id']['$id'];
 
    if (window.cgatSession && window.cgatSession.userId === userId) {
-      cancelButton = "<div class='cancel-button' onclick='leaveGroup(\"" +
+      cancelButton = "<div class='cancel-button group-cancel-button' onclick='leaveGroup(\"" +
                      groupId + "\");'></div>";
    }
 
@@ -119,7 +119,7 @@ function makeRecent(recent, userId) {
                 recent.contig_info.meta.name + "</a></span>" +
           "<span>Score: " + recent.meta.experience_gained + "</span>" +
           "<span>Submitted At: " + formatEpochDate(recent.meta.date.sec) + "</span>" +
-          "<div class='annotate-button' onclick='viewAnnotation(\"" + annotationId + "\");'></div>" +
+          "<div class='annotate-button history-annotate-button' onclick='viewAnnotation(\"" + annotationId + "\");'></div>" +
           "</div>";
 }
 
@@ -146,7 +146,7 @@ function makeNotification(notification, userId) {
           "<span>Species: <a href='search?species=" + notification.contig_meta.meta.species + "'>" +
                 notification.contig_meta.meta.species + "</a></span>" +
           "<span>Difficulty: " + notification.contig_meta.meta.difficulty + "</span>" +
-          "<div class='cancel-button' onclick='cancelNotification(\"" + notificationId + "\");'></div>" +
+          "<div class='cancel-button annotation-cancel-button' onclick='cancelNotification(\"" + notificationId + "\");'></div>" +
           "<div class='annotate-button' onclick='createAnnotation(\"" + notificationId +
                 "\", \"" + notification.contig_meta['_id']['$id'] + "\");'></div>" +
           "</div>";

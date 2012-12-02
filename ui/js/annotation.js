@@ -75,7 +75,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
          // Fill in the gene name
          window.cgat.geneName = data.annotation.isoform_name || '';
-         document.title = 'Annotate: ' + window.cgat.geneName;
          setSubtitle(window.cgat.geneName);
          simpleBoxSelectValue(0, window.cgat.geneName, window.cgat.geneName);
 
@@ -127,7 +126,6 @@ document.addEventListener('DOMContentLoaded', function () {
    document.getElementById('annotation-name').addEventListener('change', function() {
       var newName = document.getElementById('annotation-name').value;
       window.cgat.geneName = newName;
-      document.title = 'Annotate: ' + newName;
       setSubtitle(newName);
    });
 
@@ -182,7 +180,7 @@ function startEndValidate(start, end, errorDump) {
                       errorDump);
       return false;
    } else if (start >= end) {
-      validationError('Start must be < End', errorDump);
+      validationError('Begin must be < End', errorDump);
       return false;
    }
 
@@ -395,6 +393,42 @@ function placeExons() {
       // TODO(eriq): Append all the kids at the same time.
       document.getElementById('top-dna').appendChild(marker);
    }
+
+   placeExonDiagram();
+}
+
+function placeExonDiagram() {
+   var html = '';
+
+   var count = 0;
+   sortExons(window.cgat.exons).forEach(function(exon) {
+      html += "<div class='gene-diagram-exon gene-diagram-element'>" +
+              "<p class='gene-diagram-exon-begin'>" + exon.start + "</p>" +
+              "<p class='gene-diagram-exon-end'>" + exon.end + "</p>" +
+              "</div>";
+
+      count++;
+
+      if (count != window.cgat.exons.length) {
+         html += "<div class='gene-diagram-element gene-diagram-intron'>" +
+                 "<div class='gene-diagram-intron-line'></div>" +
+                 "</div>";
+      }
+   });
+
+   $('#gene-diagram').html(html);
+}
+
+function sortExons(exons) {
+   var sorted = [];
+
+   for (var exonKey in exons) {
+      sorted.push(exons[exonKey]);
+   }
+
+   return sorted.sort(function(a, b) {
+      return a.start - b.start;
+   });
 }
 
 // markPosition is meant to mark the first nucleotide in each line.
