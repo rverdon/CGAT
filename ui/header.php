@@ -38,7 +38,7 @@ function makeHeader($title = 'CGAT', $subtitle = '', $extraCSS = array(), $extra
    }
 
    foreach ($allJS as $key => $file) {
-      echo "<script src='js/" . $file . "'></script>";
+      echo "<script src='/js/" . $file . "'></script>";
    }
 
    echo "<title>" . $fullTitle . "</title>";

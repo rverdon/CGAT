@@ -173,7 +173,7 @@ function makeContig(contig) {
 // Generate some html to represent the help info (given the standard information from the api).
 function makeHelp(help) {
    var helpInfo = '';
-   helpInfo += "<p>" + "hi" + "</p>";
+   helpInfo += "<p>" + String(help) + "</p>";
    return helpInfo;
 }
 

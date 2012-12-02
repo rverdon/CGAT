@@ -2,19 +2,19 @@
 
 document.addEventListener('DOMContentLoaded', function() {
    enableLoadingModal('help');
-   
-   if (!window.params.id) {
+
+   if (!window.params.page) {
       enableErrorModal("No help file specified.", 'help');
       return;
    }
    
    window.cgat = {};
-   window.cgat.helpId = '';
+   window.cgat.helpPage = '';
    
    $.ajax({
       url: 'api/help',
       dataType: 'json',
-      data: {id: window.params.id},
+      data: {id: window.params.page},
       error: function(jqXHR, textStatus, errorThrown) {
          enableErrorModal('Fetching help file', 'help');
       },
@@ -26,7 +26,7 @@ document.addEventListener('DOMContentLoaded', function() {
          
          //setSubtitle(data.info.help.meta.name);
 
-         window.cgat.helpId = data.info.help['_id']['$id'];
+         window.cgat.helpPage = data.info.help['_page']['$page'];
 
          // Place the help info.
          $('#help-info-area').html(makeHelp(data.info.help));
@@ -36,20 +36,20 @@ document.addEventListener('DOMContentLoaded', function() {
    });
 });
 
-function postAHelpFile() {
+function setHelpPage() {
    enableLoadingModal('help');
    $.ajax({
-      url: 'api/create_help',
+      url: 'api/set_help',
       type: 'POST',
       dataType: 'json',
       data: {help: window.cgat.helpId},
       error: function(jqXHR, textStatus, errorThrown) {
-         enableErrorConfirmModal('Creating help info', 'help');
+         enableErrorConfirmModal('Setting help info', 'help');
          return;
       },
       success: function(data, textStatus, jqXHR) {
          if (!data.valid) {
-            enableErrorConfirmModal('Creating help info', 'help');
+            enableErrorConfirmModal('Setting help info', 'help');
             return;
          }
       }

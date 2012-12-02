@@ -6,8 +6,8 @@
    $response = array();
    $response['valid'] = false;
 
-   if (isset($_GET['id'])) {
-      $response['info'] = getFullHelpInfo(mongoIdSanitize($_GET['id']));
+   if (isset($_GET['page'])) {
+      $response['info'] = getFullHelpInfo(mongoIdSanitize($_GET['page']));
 
       if ($response['info']) {
          $response['valid'] = true;
