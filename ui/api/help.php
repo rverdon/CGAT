@@ -7,12 +7,13 @@
    $response['valid'] = false;
 
    if (isset($_GET['page'])) {
-      $response['info'] = getFullHelpInfo(mongoIdSanitize($_GET['page']));
+      $response['info'] = getFullHelpInfo(mongoNameSanitize($_GET['page']));
 
       if ($response['info']) {
          $response['valid'] = true;
       }
    }
 
+   error_log(json_encode($response));
    echo json_encode($response);
 ?>

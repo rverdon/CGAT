@@ -453,12 +453,7 @@ function assignTask($userId, $userName, $groups, $description, $contigId, $endDa
 
 function getFullHelpInfo($helpPageName) {
    $db = getDB();
-
-   $rtn = array();
-
-   $rtn['help'] = $db->help->findOne(array('_page' => new MongoId($helpPageName)));
-
-   return $rtn;
+   return $db->help_pages->findOne(array('_id' => $helpPageName));
 }
 
 function getFullContigInfo($contigId) {

@@ -151,3 +151,12 @@ db.users.insert({
       }
    ]
 });
+
+db.help_pages.remove();
+db.help_pages.insert({
+   "_id": "test",
+   "title": "Test Page",
+   "html": "<h1>Oh Boy!</h1><p>Here is some content!</p><img src='/images/paring-animation.gif' />",
+   "created" : ISODate("2012-11-09T04:34:12.758Z"),
+   "last_modified" : ISODate("2012-11-09T04:34:12.758Z")
+});
