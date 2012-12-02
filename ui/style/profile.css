@@ -74,13 +74,25 @@
    background: #CC9860;
 }
 
+.cancel-button,
+.annotate-button {
+   position: relative;
+   cursor: pointer;
+   border: 1px solid black;
+   background-repeat: no-repeat;
+   border-radius: 5px;
+   box-shadow: 1px 1px 2px;
+   padding: 2px;
+   background-position-x: 2px;
+   background-position-y: 2px;
+   display: inline;
+   float: right;
+}
+
 .cancel-button {
    height: 20px;
    width: 20px;
-   cursor: pointer;
-   background: url('../images/cancel.png');
-   display: inline;
-   float: right;
+   background-image: url('../images/cancel.png');
    margin-left: 30px;
    margin-right: 10px;
 }
@@ -88,10 +100,46 @@
 .annotate-button {
    height: 20px;
    width: 63px;
-   cursor: pointer;
-   background: url('../images/annotate.png');
-   display: inline;
-   float: right;
+   background-image: url('../images/annotate.png');
+}
+
+.annotate-button:before,
+.cancel-button:before {
+   font-size: 10px;
+   position: absolute;
+   width: 100%;
+   text-align: center;
+   top: -10px;
+   left: 0;
+}
+
+.annotation-cancel-button:before {
+   content: 'Dismiss';
+   left: -7px;
+}
+
+.group-cancel-button:before {
+   content: 'Leave';
+   left: -4px;
+}
+
+.annotate-button:before {
+   content: 'Annotate';
+}
+
+/* OVERRIDES: .annotate-button:before */
+.history-annotate-button:before {
+   content: 'View';
+}
+
+.annotate-button:hover,
+.cancel-button:hover {
+   background-color: lightSteelBlue;
+}
+
+.annotate-button:active,
+.cancel-button:active {
+   background-color: #395668;
 }
 
 .group-tag {
