@@ -453,8 +453,8 @@ function assignTask($userId, $userName, $groups, $description, $contigId, $endDa
 
 function setHelpPage($userId, $pageName, $pageTitle, $pageHTML) {
    $db = getDB();
-
-   $query = array('help_pages' => array('$_id' => $pageName));
+   $query = array('$_id' => $pageName);
+   //$query = array('help_pages' => array('$_id' => $pageName));
    $update = array('$set' => array('_id' => $pageName,
                                    'html' => $pageHTML,
                                    'title' => $pageTitle));
