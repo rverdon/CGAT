@@ -61,7 +61,7 @@ various features of our UI. Lastly, section \ref{sec:future} describes the futur
 do.
 
 \section{Motivation}\label{sec:motive}
-Dr. Anya Goodman, a professor in the biochemistry department at Cal Poly, San Luis
+Dr. Anya Goodman, a professor in the Chemistry department at Cal Poly, San Luis
 Obispo, offers a bioinformatics course that covers several aspects of gene
 annotation. Her work is a part of the Genomics Education Partnership (GEP) at 
 Washington University in St. Louis.\cite{gep} The goal of GEP is to teach undergrad students
@@ -70,9 +70,23 @@ The CGAT project is spearheaded by Ryan Verdon to accommodate Dr.
 Goodman's needs and ideas for ideal gene annotation software.
 
 \section{Database Choice}\label{sec:choice}
-% TODO(ryan): Put decision and considereations here.
-%  Schema will go in implementation section.
-%  Incoude some text about how having the documents in JSON (Mongo is actually BSON) makes it really easy to use in JSON.
+The choice for backend database was between MySQL, Couchbase, and MongoDB.
+We included MySQL in the options because its the standard that small websites tend to use. Then we included both
+Couchbase and MongoDB in our considerations because they are popular NoSQL database that are different types of NoSQL
+databases. Couchbase is a key-value store unlike MongoDB which is a document-store.
+
+We ended up using MongoDB for several reasons. Firstly, the document structure was extremely helpful when storing
+relation. We ended up attaching a lot of data on our relations that would of been a pain to store in SQL but being
+able to store the data as complex objects in JSON was super helpful. Secondly, being able to store the data in JSON
+(BSON in MongoDB) made it extremely easy to retrieve and use the data in a web application. Because of these two reasons
+we narrowed our choices down to MongoDB and Couchbase. 
+
+When we were deciding between MongoDB and Couchbase we looked at the features they 
+provided and noticed several things. First, Couchbase currently is a pure key-value store it has
+no idea what the structure of the value. Unlike MongoDB, which can query for fields inside an 
+object specified by a key. This feature of MongoDB makes updating relations (which we 
+have a lot of) super easy. Second, Couchbase provides a huge
+cluster/map reduce overhead that is not necessary for our data. 
 
 \section{Implementation}\label{sec:implementation}
 CGAT uses a standard LAMP (Linux Apache MySQL PHP) stack with MySQL traded out for MongoDB.
