@@ -46,15 +46,19 @@ function makeHeader($title = 'CGAT', $subtitle = '', $extraCSS = array(), $extra
    // Load all the params.
    echo "<script> window.params = JSON.parse('" . json_encode($_GET) . "'); </script>";
 
+   echo "<script>
+         window.cgatTitle = {};
+         window.cgatTitle.title = '" . $title . "';
+         window.cgatTitle.subtitle = '" . $subtitle . "';";
+
    // Store session info.
    if (isset($_SESSION['userId'])) {
-      echo "<script> window.cgatSession = {};
-                     window.cgatSession.userName = '" . $_SESSION['userName'] . "';
-                     window.cgatSession.userId = '" . $_SESSION['userId'] . "';
-                     window.cgatTitle = {};
-                     window.cgatTitle.title = '" . $title . "';
-                     window.cgatTitle.subtitle = '" . $subtitle . "';
+      echo "window.cgatSession = {};
+            window.cgatSession.userName = '" . $_SESSION['userName'] . "';
+            window.cgatSession.userId = '" . $_SESSION['userId'] . "';
             </script>";
+   } else {
+      echo "</script>";
    }
 
    echo "</head><body>";
