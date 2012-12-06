@@ -82,16 +82,62 @@ common operations.
 %  Incoude some text about how having the documents in JSON (Mongo is actually BSON) makes it really easy to use in JSON.
 
 \section{Implementation}\label{sec:implementation}
+CGAT uses a standard LAMP stack with MySQL traded out for MongoDB.
 
 \subsection{Backend}
+The \textit{backend} of the system consists of a PHP server connecting to a MongoDB database.
+We do not use any templating systems.
+We chose PHP for the backend because we did not require most of the functionality of a templating system, and we wanted a simple
+system that can be easily understood when passed off to the next generation.
+
+Mongo's PHP connecter is fully featured.
+TODO(eriq): Cite mongo's php connector.
 
 \subsubsection{Database Schema}
 
-\subsection{Frontend}
-
-\subsubsection{Technologies}
-
 \subsubsection{API}
+CGAT is an entireley API driven product. The API is central to all the behavior.
+The API supplies \textbf{all} the information that is displayed in the UI.
+This is a very important design choice. Having the API be the sole data provider and manipulator for the system
+means that all functionality can be programatically provided and different applications can present the same
+fuinctionality with a different UI.
+
+The API accepts GET and PUT requests (depending on the action) and will always return a JSON response.
+
+The current API supports 21 different calls, 7 GET requests and 14 POST actions.
+
+\paragraph{GET Requests}
+\begin{itemize}
+\item administration_info - Provides the user with meta information information that the user would need to perform administrative tasks such as greating a group or assigning a task.
+\item annotation - Provide the user with information about an specified annotation.
+\item contig - Get information about a specific contig.
+\item gene - Get information about a specific gene.
+\item group - Get information about a specific group.
+\item help - Get help information on a specific topic.
+\item user_profile - Get the profile information about a specific user. If the user is logged in and requests information about themselves, more information is provided.
+\end{itemize}
+
+\paragraph{POST Actions}
+Most POST actions require that the user is logged in.
+
+\begin{itemize}
+\item assign_task - Ask a group of people to perform an annotation.
+\item cancel_notification - Clear a notification from a user.
+\item create_annotation - Create a new annotation of a contig.
+\item create_group - Create a group.
+\item join_group - Join a group.
+\item leave_group - Leave a group.
+\item login - Login.
+\item logout - Logout.
+\item parse_fasta - Upload a FASTA file to the server, parse the contents, and returned the parsed structure.
+\item register - Register a new user.
+\item save_annotation - Save a work-in-progress annotation.
+\item set_help - Upload a help page.
+\item submit_annotation - Submit a finalized annotaion.
+\item upload_contig - Uplaod a contig into CGAT.
+\end{itemize}
+
+\subsection{Frontend}
 
 \section{UI Design}
 
