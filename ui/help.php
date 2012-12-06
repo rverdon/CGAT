@@ -7,7 +7,8 @@
 
 <div id='content' class='top-level-area'>
 
-   <div id='help-info-area'>
+   <h2 id='help-title'></h2>
+   <div id='help-info-area' class='second-level-area'>
 
    </div>
 

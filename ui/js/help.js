@@ -33,33 +33,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
 /*
          window.cgat.helpPage = data.info.help['_id']['$page'];
-
-         // Place the help info.
-         $('#help-info-area').html(makeHelp(data.info.help));
 */
+         // Place the help info.
+         $('#help-title').html(makeHelp(data.info.title));
+         $('#help-info-area').html(makeHelp(data.info.html));
+
 
          disableModal();
       }
    });
 });
-
-function setHelpPage() {
-   enableLoadingModal('help');
-   $.ajax({
-      url: '/api/set_help',
-      type: 'POST',
-      dataType: 'json',
-      data: {help: window.cgat.helpId},
-      error: function(jqXHR, textStatus, errorThrown) {
-         enableErrorConfirmModal('Setting help info', 'help');
-         return;
-      },
-      success: function(data, textStatus, jqXHR) {
-         if (!data.valid) {
-            enableErrorConfirmModal('Setting help info', 'help');
-            return;
-         }
-      }
-   });
-}
 

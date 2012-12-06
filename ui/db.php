@@ -451,6 +451,19 @@ function assignTask($userId, $userName, $groups, $description, $contigId, $endDa
    $db->groups->update($query, $update, false /* upsert */, true /* multiple updates */);
 }
 
+function setHelpPage($userId, $pageName, $pageTitle, $pageHTML) {
+   $db = getDB();
+
+   $query = array('help_pages' => array('$_id' => $pageName));
+   $update = array('$set' => array('_id' => $pageName,
+                                   'html' => $pageHTML,
+                                   'title' => $pageTitle));
+
+   $db->help_pages->update($query, $update, true, false);
+
+   return true;
+}
+
 function getFullHelpInfo($helpPageName) {
    $db = getDB();
    return $db->help_pages->findOne(array('_id' => $helpPageName));
