@@ -5,27 +5,26 @@
 
    require_once '../db.php';
 
-   /*if (!isset($_POST['pageName'])) {
-      die('user and page must be present');
+   if (!isset($_POST['pageTitle']) || !isset($_POST['pageName']) ||
+       !isset($_POST['pageHTML'])) {
+      die('not all paramaters provided');
       return;
    }
 
    if (!isset($_SESSION['userId'])) {
       die('Not logged in');
       return;
-   }*/
-   
-   //$retStatus = createHelp('', '', '', '');
-/*mongoIdSanitize($_SESSION['userId'])*/
-//mongoIdSanitize($_POST['pageName'])
-//mongoIdSanitize($_POST['pageTitle'])
-//mongoIdSanitize($_POST['pageHTML'])
-   $retStatus = setHelpPage('', $_POST['pageName'], $_POST['pageTitle'], $_POST['pageHTML']);
+   }
+
+   $retStatus = setHelpPage(mongoIdSanitize($_SESSION['userId']),
+                            mongoNameSanitize($_POST['pageName']),
+                            mongoNameSanitize($_POST['pageTitle']),
+                            mongoHtmlSanitize($_POST['pageHTML']));
 
    if (!$retStatus) {
       echo json_encode(array('valid' => false));
    } else {
       echo json_encode(array('valid' => true));
    }
-   
+
 ?>

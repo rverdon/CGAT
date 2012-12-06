@@ -73,6 +73,11 @@ function mongoSequenceSanitize($val) {
    return preg_replace('/[^ATCG]/', '', strtoupper($val));
 }
 
+//TODO(eriq): Mongo probably has an html sanitize
+function mongoHtmlSanitize($val) {
+   return $val;
+}
+
 // A general name. Like a group or contig name. Maybe a username?
 // TODO(eriq): We need rules!
 function mongoNameSanitize($val) {
@@ -444,22 +449,24 @@ function assignTask($userId, $userName, $groups, $description, $contigId, $endDa
                                                      'contig_id' => new MongoId($contigId),
                                                      'end_date' => new MongoDate($endDateEpoch))));
 
-   $db->users->update($query, $update, false /* upsert */, true /* multiple updates */);
+   $db->users->update($query, $update, array('multiple' => true));
 
    // Update the actual group
    $groupQuery = array('_id' => array('$in' => $groups));
-   $db->groups->update($query, $update, false /* upsert */, true /* multiple updates */);
+   $db->groups->update($query, $update, array('multiple' => true));
 }
 
 function setHelpPage($userId, $pageName, $pageTitle, $pageHTML) {
    $db = getDB();
-   $query = array('$_id' => $pageName);
-   //$query = array('help_pages' => array('$_id' => $pageName));
-   $update = array('$set' => array('_id' => $pageName,
-                                   'html' => $pageHTML,
-                                   'title' => $pageTitle));
+   $query = array('_id' => $pageName);
+   $update = array('_id' => $pageName,
+                   'html' => $pageHTML,
+                   'title' => $pageTitle);
 
-   $db->help_pages->update($query, $update, true, false);
+   //TEST
+   error_log(var_export($update, true));
+
+   $db->help_pages->update($query, $update, array('upsert' => true));
 
    return true;
 }

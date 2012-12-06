@@ -156,7 +156,7 @@ db.help_pages.remove();
 db.help_pages.insert({
    "_id": "annotation",
    "title": "Annotation Help Page",
-   "html": "<h1>How to make an annotation</h1><p>Here is some content!</p><br /><br /><br /><br /><img src='/images/paring-animation.gif' />",
+   "html": "<img src='/images/paring-animation.gif' /><h1>Top DNA Ruler</h1><img src='/images/help/top-dna.png' /><h1>Sequence Viewer</h1><p>If you need a fine grained view of the contig, use the 'Sequence and Annotation' section!</p><img src='/images/help/translation-view.png' />",
    "created" : ISODate("2012-11-09T04:34:12.758Z"),
    "last_modified" : ISODate("2012-11-09T04:34:12.758Z")
 });
