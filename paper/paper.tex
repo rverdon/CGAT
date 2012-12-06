@@ -75,7 +75,7 @@ Goodman's needs and ideas for ideal gene annotation software.
 %  Incoude some text about how having the documents in JSON (Mongo is actually BSON) makes it really easy to use in JSON.
 
 \section{Implementation}\label{sec:implementation}
-CGAT uses a standard LAMP stack with MySQL traded out for MongoDB.
+CGAT uses a standard LAMP (Linux Apache MySQL PHP) stack with MySQL traded out for MongoDB.
 
 \subsection{Backend}
 The \textit{backend} of the system consists of a PHP server connecting to a MongoDB database.
@@ -83,17 +83,21 @@ We do not use any templating systems.
 We chose PHP for the backend because we did not require most of the functionality of a templating system, and we wanted a simple
 system that can be easily understood when passed off to the next generation.
 
-Mongo's PHP connecter is fully featured.
-TODO(eriq): Cite mongo's php connector.
+PHP and MongoDB work together very nicely and MongoDB's PHP connector is fully featured \cite{phpMongo}.
 
 \subsubsection{Database Schema}
+Although we use MongoDB which does not enforce a specific schema, by convention we enforce a schema on our documents.
+MongoDB uses BSON (Binary JSON). BSON is an extended JSON format that supports additional types like a datetimes \cite{bson}.
+
+The schemas for our four JSON objects are shown in Figures \ref{fig:JSON-contig}, \ref{fig:JSON-annotation},
+\ref{fig:JSON-user}, and \ref{fig:JSON-group} in Appendix \ref{sec:data_models}.
 
 \subsubsection{API}
-CGAT is an entireley API driven product. The API is central to all the behavior.
+CGAT is an entirely API driven product. The API is central to all the behavior.
 The API supplies \textbf{all} the information that is displayed in the UI.
 This is a very important design choice. Having the API be the sole data provider and manipulator for the system
-means that all functionality can be programatically provided and different applications can present the same
-fuinctionality with a different UI.
+means that all functionality can be programmatically provided and different applications can present the same
+functionality with a different UI.
 
 The API accepts GET and PUT requests (depending on the action) and will always return a JSON response.
 
@@ -101,7 +105,7 @@ The current API supports 21 different calls, 7 GET requests and 14 POST actions.
 
 \paragraph{GET Requests}
 \begin{itemize}
-\item administration_info - Provides the user with meta information information that the user would need to perform administrative tasks such as greating a group or assigning a task.
+\item administration_info - Provides the user with meta information information that the user would need to perform administrative tasks such as creating a group or assigning a task.
 \item annotation - Provide the user with information about an specified annotation.
 \item contig - Get information about a specific contig.
 \item gene - Get information about a specific gene.
@@ -126,13 +130,15 @@ Most POST actions require that the user is logged in.
 \item register - Register a new user.
 \item save_annotation - Save a work-in-progress annotation.
 \item set_help - Upload a help page.
-\item submit_annotation - Submit a finalized annotaion.
-\item upload_contig - Uplaod a contig into CGAT.
+\item submit_annotation - Submit a finalized annotation.
+\item upload_contig - Upload a contig into CGAT.
 \end{itemize}
 
 \subsection{Frontend}
+CGAT's frontend uses standard web technologies (HTML, Javascript, and CSS).
+CGAT uses many HTML5/CSS3 features such as transforms and pseudo-elements.
 
-\section{UI Design}\label{sec:ui}
+Because the entire system is API based, the frontend heavily relies on asynchronous fetches (AJAX).
 
 \section{Future Work}\label{sec:future}
 
