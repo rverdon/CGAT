@@ -463,9 +463,6 @@ function setHelpPage($userId, $pageName, $pageTitle, $pageHTML) {
                    'html' => $pageHTML,
                    'title' => $pageTitle);
 
-   //TEST
-   error_log(var_export($update, true));
-
    $db->help_pages->update($query, $update, array('upsert' => true));
 
    return true;
