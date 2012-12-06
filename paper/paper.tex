@@ -53,12 +53,15 @@ information obscuring their view while also embodying a Wikipedia-like emphasis
 on collaboration and openness.
 
 This paper discusses the progress that has been made this quarter and the future work that 
-still needs to be done. The rest of the paper is as follows. Section \ref{sec:motive} discusses the
+still needs to be done. The rest of the paper is as follows. Section \ref{sec:background} discusses
+the common terms and biological meanings used in the project. Section \ref{sec:motive} discusses the
 motivation for creating CGAT. Section \ref{sec:choice} explains why we chose MongoDB
 as our backend. Section \ref{sec:implementation} goes into the details of how
-our backend and frontend are implemented currently. Section \ref{sec:ui} explains the
-various features of our UI. Lastly, section \ref{sec:future} describes the future work still left to
-do.
+our backend and frontend are implemented currently. Section \ref{sec:results} discusses
+the results of our demo to our customer. Lastly, section \ref{sec:future} 
+describes the future work still left to do.
+
+\section{Background}\label{sec:background}
 
 \section{Motivation}\label{sec:motive}
 Dr. Anya Goodman, a professor in the Chemistry department at Cal Poly, San Luis
@@ -71,13 +74,13 @@ Goodman's needs and ideas for ideal gene annotation software.
 
 \section{Database Choice}\label{sec:choice}
 The choice for backend database was between MySQL, Couchbase, and MongoDB.
-We included MySQL in the options because its the standard that small websites tend to use. Then we included both
-Couchbase and MongoDB in our considerations because they are popular NoSQL database that are different types of NoSQL
-databases. Couchbase is a key-value store unlike MongoDB which is a document-store.
+We included MySQL in the options because its the standard that websites tend to use. Then we included both
+Couchbase and MongoDB in our considerations because they are popular NoSQL database of different types of NoSQL
+databases. Couchbase is a key-value store whereas MongoDB which is a document-store.
 
-We ended up using MongoDB for several reasons. Firstly, the document structure was extremely helpful when storing
-relation. We ended up attaching a lot of data on our relations that would of been a pain to store in SQL but being
-able to store the data as complex objects in JSON was super helpful. Secondly, being able to store the data in JSON
+We ended up using MongoDB for several reasons. First, the document structure was extremely helpful when storing
+relations. We ended up attaching a lot of data on our relations that would of been a pain to store in SQL but being
+able to store the data as complex objects in JSON was super helpful. Second, being able to store the data in JSON
 (BSON in MongoDB) made it extremely easy to retrieve and use the data in a web application. Because of these two reasons
 we narrowed our choices down to MongoDB and Couchbase. 
 
@@ -86,7 +89,8 @@ provided and noticed several things. First, Couchbase currently is a pure key-va
 no idea what the structure of the value. Unlike MongoDB, which can query for fields inside an 
 object specified by a key. This feature of MongoDB makes updating relations (which we 
 have a lot of) super easy. Second, Couchbase provides a huge
-cluster/map reduce overhead that is not necessary for our data. 
+cluster/map reduce overhead that is not necessary for our data. Therefore we choose to use
+MongoDB for the CGAT database.
 
 \section{Implementation}\label{sec:implementation}
 CGAT uses a standard LAMP (Linux Apache MySQL PHP) stack with MySQL traded out for MongoDB.
@@ -154,7 +158,30 @@ CGAT uses many HTML5/CSS3 features such as transforms and pseudo-elements.
 
 Because the entire system is API based, the frontend heavily relies on asynchronous fetches (AJAX).
 
+\section{Results}\label{sec:results}
+We demoed CGAT to Dr. Anya Goodman on the 19th of November. She was pleased with
+the work accomplished so far. But she had numerous recommendations for things to fix and update.
+We have taken her ideas and attempted to get as much fixed in the last weeks of the quarter.
+Some of the notable fixes were removing some of the "prettiness" from the site, making
+buttons look more like buttons, and changing some of the words and terminology used on the site.
+
 \section{Future Work}\label{sec:future}
+The future work that is left to be done on CGAT falls into several categories. 
+
+\subsection{Missing use cases}
+We still need to add some of the main use cases that Dr. Goodman wanted. This includes things like
+user leveling and immediate feedback on annotations. 
+
+\subsection{Bug fixes}
+We know of several bugs that still need to be fixed based on feedback from the demo with
+Dr. Goodman.
+
+\subsection{New features}
+New features for CGAT will most likely be desired after user feedback.
+
+\subsection{Accessibility}
+Need to test the accessibility of the site. This includes things like the color set used
+and text size.
 
 
 \bibliographystyle{acm}
