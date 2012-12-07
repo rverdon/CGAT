@@ -27,6 +27,7 @@ Cal Poly, San Luis Obispo\\
 
 \thispagestyle{empty}
 \pagestyle{empty}
+\bstctlcite{test}
 
 \section{Introduction}\label{sec:introduction}
 Dr. Anya Goodman, a professor in the department of chemistry and biochemistry
@@ -35,7 +36,7 @@ several aspects of gene annotation and genomic research. Her work is a part of
 the \textit{Genomics Education Partnership} (GEP), based at Washington
 University in St. Louis~\cite{gep}. GEP is an organization that aims to bring
 genomics research to academic institutions, especially undergraduate classes.
-This allows undergraduate students to get the opportunity to learn about, and
+This allows undergraduate students the opportunity to learn about, and
 practice, basic genomic research and, in turn, contribute meaningful work to
 the biological research community. However, GEP does not have an existing
 system in which users can input and save gene annotations and get immediate
@@ -44,7 +45,7 @@ software--RepeatMasker, Artemis, and others~\cite{repeatmasker, artemis}--is
 not designed to provide immediate feedback for users regarding their
 performance. In this paper, we present Community Genome Annotation Trainer,
 \textit{CGAT}, a web-based gene annotation application designed to provide
-feedback of gene annotation quality to students faster.
+students with feedback on the quality of their gene annotations faster.
 
 \textit{CGAT} is spearheaded by Ryan Verdon and has been built with usability,
 simplicity, and efficiency in mind. It is not a feature-rich and data-rich
@@ -68,8 +69,8 @@ discusses the common terms and biological meanings used in the project. Section
 \ref{sec:choice} explains why we chose MongoDB as our backend. Section
 \ref{sec:implementation} goes into the details of how our backend and frontend
 are implemented currently. Section \ref{sec:results} discusses the results of
-our demo to our customer. Lastly, section \ref{sec:future} describes the future
-work still left to do.
+our demo to our customer. Lastly, section \ref{sec:future} describes our future
+work.
 
 \section{Background}\label{sec:background}
 Genomics research attempts to understand information contained in the
@@ -210,7 +211,8 @@ Need to test the accessibility of the site. This includes things like the color 
 and text size.
 
 
-\bibliographystyle{acm}
+%\bibliographystyle{acm}
+\bibliographystyle{IEEEtran}
 \bibliography{refs}
 
 \onecolumn
