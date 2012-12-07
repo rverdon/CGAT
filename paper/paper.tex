@@ -28,56 +28,82 @@ Cal Poly, San Luis Obispo\\
 \thispagestyle{empty}
 \pagestyle{empty}
 
+% TODO include more background:
+% http://www.weizmann.ac.il/complex/tlusty/courses/landmark/JacobMonod1960.pdf
+% http://www.ncbi.nlm.nih.gov/pmc/articles/PMC2443188/
+% http://www.sciencemag.org/content/suppl/2012/04/11/336.6078.179.DC1/Zerbino.SM.pdf
+% http://gep.wustl.edu/community/publications
+% http://gep.wustl.edu/projects/dot_chromosome
 \section{Introduction}\label{sec:introduction}
-Genomics research attempts to understand information maintained in the genomes
-of various organisms. A \textit{genome} is a sequence of DNA containing all
-information for an organism. Genomes contain several types of regions,
-\textit{exons}, \textit{introns}, \textit{CDS}s,   In order to link biological information of the organism
-to genomic information in the DNA sequence... to  To understand this information, it
-\cite{annotation}
+Dr. Anya Goodman, a professor in the department of chemistry and biochemistry
+at Cal Poly, San Luis Obispo, offers a bioinformatics course that covers
+several aspects of gene annotation and genomic research. Her work is a part of
+the \textit{Genomics Education Partnership} (GEP) which is based at Washington
+University in St. Louis~\cite{gep}. GEP is an organization that aims to bring
+genomics research to academic institutions, especially undergraduate classes.
+This allows undergraduate students to get the opportunity to learn about, and
+practice, basic genomic research and, in turn, contribute meaningful work to
+the biological research community. However, GEP does not have an existing
+system in which users can input and save gene annotations and get immediate
+feedback regarding their performance. Similarly, available gene annotation
+software--RepeatMasker, Artemis, and others~\cite{repeatmasker, artemis}--is
+not designed to provide immediate feedback for users regarding their
+performance. In this paper, we present Community Genome Annotation Trainer,
+\textit{CGAT}, a web-based gene annotation application designed to provide
+feedback of gene annotation quality to students faster.
 
-Gene annotation is the process of associating metadata about a gene with the
-contig, a dna sequence, on which the gene resides.\cite{annotation} This metadata is necessary for conducting
-genomic research projects and analysis involving the contig's genomic sequence.
-Currently, there is no specialty gene annotation software. Genome browsers
-all maintain lots of genomic data and are used when manually annotating genes,
-but do not provide a user-friendly interface. While genome browsers
-will likely never be replaced (UCSC genome browser, etc. are well
-established\cite{ucscbrowser, ncbi}), it would be desirable to have a software system that better
-accommodates the visual and informational needs of gene annotation.
+\textit{CGAT} is spearheaded by Ryan Verdon and has been built with usability,
+simplicity, and efficiency in mind. It is not a feature-rich and data-rich
+genome browser like \textit{UCSC genome brower}~\cite{ucscbrowser},
+\textit{Ensembl}~\cite{ensembl}, or \textit{BioViz}~\cite{bioviz}, nor is it
+designed to be a replacement for gene annotatioin software such as
+RepeatMasker, Artemis, or any others, in any aspect other than for teaching, or
+practicing, gene annotation. Other gene browsers or annotation software offer
+many features to accommodate the needs of the biology community, and so tend to
+be complex. Gene annotation, while not a trivial task, can be well-serviced by
+a simple data model. Ideally, by focusing on a simple data model, \textit{CGAT}
+is able to provide a clean, streamlined experience capable of providing users
+with a way to view gene annotations made by others or have their gene
+annotations reviewed by experts. In particular, \textit{CGAT} strives towards a
+Wikipedia-like emphasis on collaboration and openness.
 
-\textit{CGAT} is a web-based gene annotation application designed with
-usability, simplicity, and efficiency in mind. It is not a feature-rich and data-rich
- genome browser like the \textit{UCSC genome brower}. Nor is \textit{CGAT}
-designed to be a replacement for other genome browsers in any aspect other than
-gene annotation. Other gene browsers attempt to accommodate many needs of the
-biology community and so offer many features, and a cluttered, chaotic
-interface. Gene annotation, while not a trivial task, can be well-serviced by a
-simple data model. Ideally, by focusing on a simple data model, \textit{CGAT}
-is able to provide a clean, streamlined experience. \textit{CGAT} aims to
-provide users with a way to view gene annotations without extra, unnecessary
-information obscuring their view while also embodying a Wikipedia-like emphasis
-on collaboration and openness.
-
-This paper discusses the progress that has been made this quarter and the future work that 
-still needs to be done. The rest of the paper is as follows. Section \ref{sec:background} discusses
-the common terms and biological meanings used in the project. Section \ref{sec:motive} discusses the
-motivation for creating CGAT. Section \ref{sec:choice} explains why we chose MongoDB
-as our backend. Section \ref{sec:implementation} goes into the details of how
-our backend and frontend are implemented currently. Section \ref{sec:results} discusses
-the results of our demo to our customer. Lastly, section \ref{sec:future} 
-describes the future work still left to do.
+This paper discusses the progress that has been made during a graduate database
+class at Cal Poly, San Luis Obispo on \textit{CGAT} as well as relevant future
+work. The rest of the paper is as follows. Section \ref{sec:background}
+discusses the common terms and biological meanings used in the project. Section
+\ref{sec:motive} discusses the motivation for creating CGAT. Section
+\ref{sec:choice} explains why we chose MongoDB as our backend. Section
+\ref{sec:implementation} goes into the details of how our backend and frontend
+are implemented currently. Section \ref{sec:results} discusses the results of
+our demo to our customer. Lastly, section \ref{sec:future} describes the future
+work still left to do.
 
 \section{Background}\label{sec:background}
-
-\section{Motivation}\label{sec:motive}
-Dr. Anya Goodman, a professor in the Chemistry department at Cal Poly, San Luis
-Obispo, offers a bioinformatics course that covers several aspects of gene
-annotation. Her work is a part of the Genomics Education Partnership (GEP) at 
-Washington University in St. Louis.\cite{gep} The goal of GEP is to teach undergrad students
-in Biology how to annotate genes and other features in raw sequence data.
-The CGAT project is spearheaded by Ryan Verdon to accommodate Dr.
-Goodman's needs and ideas for ideal gene annotation software.
+Genomics research attempts to understand information contained in the
+\textit{genomes} of various organisms. The genome is the entire DNA sequence
+that encodes information and drives all cellular processes in an organism.
+However, due to the size of genomes, biologists are only able to sequence
+sections, or fragments, of a genome at a time. One or more contiguous fragments
+of the genome together form a \textit{contig}, or simply a contiguous sequence
+of DNA nucleotides. The genome contains several components, or sub-regions,
+that have different functions or roles. These components describe in detail how
+a genome is decoded to drive cellular processes. \textit{Annotations}--the
+process of linking biological information of the organism to the genome--are an
+important step to being able to relate information learned from the sequence back
+to broader understandings of the associated organism and, ideally, related
+organisms~\cite{annotation}. Again, since the genome is so large, biologists
+typically annotate sections of the genome, specifically \textit{genes}. A gene
+is a section of the genome that codes for a functional \textit{protein} used
+for biological processes inside and outside of the cell. A gene contains
+several components, or sub-regions, that have different functions or
+roles--\textit{exons}, \textit{introns}, \textit{CDS}s, \textit{UTR}s, and
+others. These components that are located in a gene some of the most basic but
+most important pieces of information that must be annotated in order to be able
+to make meaningful biological interpretations from information learned from the
+genomic sequence, and where our project, \textit{CGAT}, is useful. Considering
+the scope of an undergraduate genomics research class, it is preferable to have
+a system that emphasizes simplicity and usability as well as houses information
+in a collaborative and educational environment.
 
 \section{Database Choice}\label{sec:choice}
 The choice for backend database was between MySQL, Couchbase, and MongoDB.
