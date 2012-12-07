@@ -42,7 +42,7 @@ system in which users can input and save gene annotations and get immediate
 feedback regarding their performance. Similarly, available gene annotation
 software--RepeatMasker, Artemis, and others~\cite{repeatmasker, artemis}--is
 not designed to provide immediate feedback for users regarding their
-performance. In this paper, we present Community Genome Annotation Trainer,
+performance. In this paper, we present Community Genome Annotation Training database,
 \textit{CGAT}, a web-based gene annotation application designed to provide
 feedback of gene annotation quality to students faster.
 
@@ -111,8 +111,8 @@ able to store the data as complex objects in JSON was super helpful. Second, bei
 we narrowed our choices down to MongoDB and Couchbase. 
 
 When we were deciding between MongoDB and Couchbase we looked at the features they 
-provided and noticed several things. First, Couchbase currently is a pure key-value store it has
-no idea what the structure of the value. Unlike MongoDB, which can query for fields inside an 
+provided and noticed several things. First, Couchbase currently is a pure key-value store. Couchbase has
+no idea what the structure of the value is. Unlike MongoDB, which can query for fields inside an 
 object specified by a key. This feature of MongoDB makes updating relations (which we 
 have a lot of) super easy. Second, Couchbase provides a huge
 cluster/map reduce overhead that is not necessary for our data. Therefore we choose to use
