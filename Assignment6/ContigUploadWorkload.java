@@ -15,6 +15,16 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.PreparedStatement;
 
+import com.mongodb.MongoClient;
+import com.mongodb.MongoException;
+import com.mongodb.WriteConcern;
+import com.mongodb.DB;
+import com.mongodb.DBCollection;
+import com.mongodb.BasicDBObject;
+import com.mongodb.DBObject;
+import com.mongodb.DBCursor;
+import com.mongodb.ServerAddress;
+
 /**
  * This one measures uploading a ton of contigs.
  */
@@ -22,13 +32,15 @@ public class ContigUploadWorkload extends Workload {
    // Should be no more than 9999999999999999999999999999
    // DON'T TOUCH THIS NUMBER. I need to keep it consistent for testing. -Eriq
    private static final int TIMES = 10000;
-   //private static final int TIMES = 1;
+   //private static final int TIMES = 10;
    private static final int MIN_SEQ_LENGTH = 45000;
    private static final int MAX_ADDITIONAL_LENGTH = 15001;
 
    private ArrayList<String> seqs;
    private String[] userIds;
    private Random rand;
+
+   private DBCollection coll;
 
    /**
     * Precomputes a list of 100 random sequences of varying lengths.
@@ -63,8 +75,27 @@ public class ContigUploadWorkload extends Workload {
       }
    }
 
+   protected void initMongo() {
+      super.initMongo();
+
+      for (int i = 0; i < TIMES; i++) {
+         int extra_length = rand.nextInt(MAX_ADDITIONAL_LENGTH);
+         seqs.add(randomSequence(MIN_SEQ_LENGTH + extra_length));
+      }
+
+      coll = db.getCollection("contigs");
+   }
+
    protected void cleanupMySQL() {
       super.cleanupMySQL();
+
+      seqs.clear();
+      seqs = null;
+      userIds = null;
+   }
+
+   protected void cleanupMongo() {
+      super.cleanupMongo();
 
       seqs.clear();
       seqs = null;
@@ -125,6 +156,50 @@ public class ContigUploadWorkload extends Workload {
 
 
       json = null;
+      return new Stats();
+   }
+
+   protected Stats executeMongoImpl() {
+      for (int i = 0; i < TIMES; i++) {
+         int uploaderIdVal = rand.nextInt(TIMES)+1;
+         int newContigId = 9000 + i;
+         BasicDBObject doc = new BasicDBObject();
+
+         String contigName = "contig" + (newContigId);
+         String contigId = String.valueOf(newContigId);
+         String difficulty = randomDouble();
+         String sequence = seqs.get(rand.nextInt(seqs.size()));//SEQUENCE
+         String uploaderId = String.valueOf(uploaderIdVal);
+         String uploaderName = randomString(25);
+         String source = randomString(15);
+         String species = randomString(40);
+         String status = randomString(20);
+         String uploadDate = randomDate();
+
+
+         doc.put("sequence", sequence);
+         doc.put("contig_id", contigId);
+         
+
+         BasicDBObject meta = new BasicDBObject();
+         meta.put("uploader", uploaderId);
+         meta.put("uploader_name", uploaderName);
+         meta.put("upload_date", uploadDate);
+         meta.put("status", status);
+         meta.put("species", species);
+         meta.put("source", source);
+         meta.put("name", contigName);
+         meta.put("difficulty", difficulty);
+
+         doc.put("meta", meta);         
+
+
+         doc.put("expert_annotations", new ArrayList());
+         doc.append("isoform_names", new ArrayList());
+ 
+         coll.insert(doc);
+      }
+     
       return new Stats();
    }
 

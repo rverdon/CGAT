@@ -21,17 +21,17 @@ public class TestMaster {
 
    public static void main(String[] args) {
       Workload[] workloads = {
-                              //new ContigUploadWorkload(),
-                              //new ProfileWorkload(),
-                              //new StupidWorkload(),
-                              //new GroupMemWorkload(),
+                              new ContigUploadWorkload(),
+                              new ProfileWorkload(),
+                              new StupidWorkload(),
                               new PublishWorkload(),
                               new AssignTaskWorkload(),
+                              new GroupMemWorkload()
                               };
 
       for (Workload workload : workloads) {
          System.out.println("Running Workload [" + workload.getClass().getCanonicalName() + "]...");
-         Stats results = workload.executeCouch();
+         Stats results = workload.executeMongo();
          System.out.println("Completed Workload [" + workload.getClass().getCanonicalName() + "]...");
          System.out.println(results + "\n");
       }

@@ -1,5 +1,4 @@
-import java.util.List;
-import java.util.LinkedList;
+import java.util.*;
 import java.net.URI;
 
 import java.sql.Connection;
@@ -7,12 +6,26 @@ import java.sql.DriverManager;
 
 import com.couchbase.client.CouchbaseClient;
 
+import com.mongodb.MongoClient;
+import com.mongodb.MongoException;
+import com.mongodb.WriteConcern;
+import com.mongodb.DB;
+import com.mongodb.DBCollection;
+import com.mongodb.BasicDBObject;
+import com.mongodb.DBObject;
+import com.mongodb.DBCursor;
+import com.mongodb.ServerAddress;
+import com.mongodb.ReadPreference;
+
 /**
  * The base class for all workloads.
  */
 public abstract class Workload {
    protected Connection conn;
    protected CouchbaseClient client;
+
+   protected MongoClient mongoClient;
+   protected DB db;
 
    // See if we can get a clean connection.
    public static void main(String[] args) {
@@ -111,6 +124,46 @@ public abstract class Workload {
       client = null;
    }
 
+
+   /**
+    * Do the assigned workload using the MongoDB Cluster.
+    */
+   public Stats executeMongo() {
+      initMongo();
+
+      long startTime = System.currentTimeMillis();
+      Stats stats = executeMongoImpl();
+      long finalTime = System.currentTimeMillis();
+
+      stats.setRunningTime(finalTime - startTime);
+
+      cleanupMongo();
+
+      return stats;
+   }
+
+
+   /**
+    * Do whatever setup must be done to initialize the Couch version of the workload.
+    */
+   protected void initMongo() {
+
+      try {
+         mongoClient = new MongoClient(Arrays.asList(new ServerAddress("localhost", 27017)));
+
+         mongoClient.setReadPreference(ReadPreference.secondaryPreferred());
+
+         db = mongoClient.getDB("cgat");
+         db.setWriteConcern(WriteConcern.NONE);
+      } catch (Exception e) {
+         System.err.println("Error: problems connecting to mongo servers");
+      }
+   }
+
+   protected void cleanupMongo() {
+      mongoClient.close();
+   }
+
    /**
     * The actual work for the Mysql.
     */
@@ -121,4 +174,9 @@ public abstract class Workload {
     * The actual work for the CouchDB.
     */
    protected abstract Stats executeCouchImpl();
+
+   /**
+    * The actual work for the MongoDB.
+    */
+   protected abstract Stats executeMongoImpl();
 }

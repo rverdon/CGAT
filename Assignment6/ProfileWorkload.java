@@ -12,6 +12,16 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.mongodb.MongoClient;
+import com.mongodb.MongoException;
+import com.mongodb.WriteConcern;
+import com.mongodb.DB;
+import com.mongodb.DBCollection;
+import com.mongodb.BasicDBObject;
+import com.mongodb.DBObject;
+import com.mongodb.DBCursor;
+import com.mongodb.ServerAddress;
+
 /**
  * This one measures fetching a complete user's profile.
  */
@@ -23,7 +33,10 @@ public class ProfileWorkload extends Workload {
    //private static final int TIMES = 1;
 
    private String[] userIds;
-
+   private DBCollection contigColl;
+   private DBCollection annotationColl;
+   private DBCollection userColl;
+   private DBCollection groupColl;
    /**
     * Fetch the user ids here, and preserve the connection.
     */
@@ -159,6 +172,98 @@ public class ProfileWorkload extends Workload {
          }
       }
 
+      return new Stats();
+   }
+
+   protected void initMongo() {
+      super.initMongo();
+      Random rand = new Random(4);
+
+      for (int i = 0; i < TIMES; i++) {
+         userIds[i] = "" + (rand.nextInt(MAX_USERS) + 1);
+      }
+
+      contigColl = db.getCollection("contigs");
+      annotationColl = db.getCollection("annotations");
+      userColl = db.getCollection("users");
+      groupColl = db.getCollection("groups");
+   }
+
+   protected void cleanupMongo() {
+      super.cleanupMongo();
+
+      userIds = null;
+   }
+
+   protected Stats executeMongoImpl() {
+      // THis shouldn't even be necessary, but I am being neurotic.
+      Object throwAway = null;
+
+      List<String> groups = null;
+      List<DBObject> history = null;
+      List<String> partials = null;
+      List<DBObject> tasks = null;
+
+      for (int i = 1; i <= TIMES; i++) {
+         try {
+            BasicDBObject userQuery = new BasicDBObject("user_id", String.valueOf(i));
+            DBCursor cursor = userColl.find(userQuery);
+ 
+            DBObject user = cursor.next(); 
+
+            // Expand groups
+            groups = (List<String>)user.get("groups");
+            for (int j = 0; j < groups.size(); j++) {
+               String groupId = groups.get(j);
+
+               BasicDBObject groupQuery = new BasicDBObject("group_id", groupId);
+               DBCursor gcursor = groupColl.find(groupQuery);
+ 
+               throwAway = gcursor.next();
+            }
+
+            // Expand history
+            history = (List<DBObject>)user.get("history");
+            for (int j = 0; j < history.size(); j++) {
+               DBObject hist = history.get(j);
+               String annotationId = (String)hist.get("anno_id");
+     
+               BasicDBObject annoQuery = new BasicDBObject("annotation_id", annotationId);
+               DBCursor acursor = annotationColl.find(annoQuery);
+
+               throwAway = acursor.next();
+            }
+
+            // Expand partials
+            partials = (List<String>)user.get("incomplete_annotations");
+            for (int j = 0; j < partials.size(); j++) {
+               String annotationId = partials.get(j);
+
+               BasicDBObject annoQuery = new BasicDBObject("annotation_id", annotationId);
+               DBCursor acursor = annotationColl.find(annoQuery);
+
+               throwAway = acursor.next();
+            }
+
+            // Expand tasks
+            tasks = (List<DBObject>)user.get("tasks");
+            for (int j = 0; j < tasks.size(); j++) {
+               DBObject hist = tasks.get(j);
+               String contigId = (String)hist.get("contig_id");
+
+               BasicDBObject conQuery = new BasicDBObject("contig_id", contigId);
+               BasicDBObject meta = new BasicDBObject("meta", 1);
+               DBCursor acursor = contigColl.find(conQuery, meta);
+
+               throwAway = acursor.next();
+            }
+         } catch (Exception ex) {
+            System.err.println("Error fetching profile: " + ex);
+            ex.printStackTrace(System.err);
+         }
+      }
+      throwAway = null;
+ 
       return new Stats();
    }
 }

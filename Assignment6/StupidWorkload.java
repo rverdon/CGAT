@@ -1,12 +1,20 @@
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+
+import com.mongodb.MongoClient;
+import com.mongodb.MongoException;
+import com.mongodb.WriteConcern;
+import com.mongodb.DB;
+import com.mongodb.DBCollection;
+import com.mongodb.BasicDBObject;
+import com.mongodb.DBObject;
+import com.mongodb.DBCursor;
+import com.mongodb.ServerAddress;
 
 /**
  * This one measures time between reads and writes of the same document.
@@ -18,6 +26,8 @@ public class StupidWorkload extends Workload {
    //private static final int TIMES = 10;
 
    private String[] randomStrings;
+
+   private DBCollection readWriteColl;
 
    /**
     * Do setup in constructor to avoid artifically slowing down the experiment.
@@ -110,6 +120,53 @@ public class StupidWorkload extends Workload {
 
          time = System.currentTimeMillis();
       }
+
+      return new ReadWriteStats(readAfterWriteTimes, writeAfterReadTimes);
+   }
+
+   protected void initMongo() {
+      super.initMongo();
+
+      Set<String> names = db.getCollectionNames();
+      if(names.contains("readWrite")) {
+         DBCollection garbage = db.getCollection("readWrite");
+         garbage.drop();
+      }
+      readWriteColl = db.createCollection("readWrite", null);
+      BasicDBObject test = new BasicDBObject("test", "");
+      readWriteColl.insert(test);
+   }
+
+   protected void cleanupMongo() {
+      super.cleanupMongo();
+   }
+
+   protected Stats executeMongoImpl() {
+      List<Long> readAfterWriteTimes = new ArrayList<Long>(TIMES);
+      List<Long> writeAfterReadTimes = new ArrayList<Long>(TIMES);
+      long time = System.currentTimeMillis();
+      Object throwAway;
+
+      BasicDBObject test = null;
+      
+
+      for (int i = 0; i < TIMES; i++) {
+         throwAway = readWriteColl.findOne();
+         test = new BasicDBObject("test", randomStrings[i]);
+
+         if (i != 0) {
+            readAfterWriteTimes.add(System.currentTimeMillis() - time);
+         }
+
+         time = System.currentTimeMillis();
+         readWriteColl.update(new BasicDBObject("test",new BasicDBObject("$exists", true)), 
+                              new BasicDBObject("test",test));
+         writeAfterReadTimes.add(System.currentTimeMillis() - time);
+
+         time = System.currentTimeMillis();
+      }
+
+      
 
       return new ReadWriteStats(readAfterWriteTimes, writeAfterReadTimes);
    }

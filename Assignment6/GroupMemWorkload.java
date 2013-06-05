@@ -11,6 +11,17 @@ import java.sql.Statement;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import com.mongodb.MongoClient;
+import com.mongodb.MongoException;
+import com.mongodb.WriteConcern;
+import com.mongodb.DB;
+import com.mongodb.DBCollection;
+import com.mongodb.BasicDBObject;
+import com.mongodb.DBObject;
+import com.mongodb.DBCursor;
+import com.mongodb.ServerAddress;
+
 /**
  * This one measures fetching a complete user's profile.
  */
@@ -28,6 +39,11 @@ public class GroupMemWorkload extends Workload {
    private String[] userIds;
    private String[] groupIds;
    private Random rand;
+
+   private DBCollection contigColl;
+   private DBCollection annotationColl;
+   private DBCollection userColl;
+   private DBCollection groupColl;
    /**
     * Fetch the user ids here, and preserve the connection.
     */
@@ -130,5 +146,66 @@ public class GroupMemWorkload extends Workload {
          }
       }
       return new Stats();  
+   }
+
+   protected void initMongo() {
+      super.initMongo();
+
+      contigColl = db.getCollection("contigs");
+      annotationColl = db.getCollection("annotations");
+      userColl = db.getCollection("users");
+      groupColl = db.getCollection("groups");
+   }
+
+   protected void cleanupMongo() {
+      super.cleanupMongo();
+
+      userIds = null;
+      groupIds = null;
+   }
+
+
+   protected Stats executeMongoImpl() {
+      DBObject jsonUser = null;
+      DBObject jsonGroup = null;
+      ArrayList<String> users = null;
+      int groupId = 0;
+
+      for (int i = 0; i < TIMES; i++) {
+         try {
+            //Get a random group from Couchbase
+            BasicDBObject groupQuery = new BasicDBObject("group_id", "" + (rand.nextInt(MAX_GROUP_ID) + 1));
+            DBCursor gcursor = groupColl.find(groupQuery, new BasicDBObject("users", 1));
+ 
+            jsonGroup = gcursor.next(); 
+            users = (ArrayList<String>)jsonGroup.get("users");
+            if(0 < users.size()) {
+               //Debug System.out.println(users.get(0)); 
+               //Remove the first user from that group
+               String removedUser = (String) users.get(0);
+               users.remove(0);
+               //Put the modified user list back into the group JSON
+               jsonGroup.put("users", users);
+               //Update the group list
+               groupColl.findAndModify(groupQuery, 
+                            new BasicDBObject("$set", new BasicDBObject("users",users)));
+
+               //Get the same group back from Couchbase
+               gcursor = groupColl.find(groupQuery, new BasicDBObject("users", 1));
+ 
+               jsonGroup = gcursor.next(); 
+               users = (ArrayList<String>)jsonGroup.get("users");
+               //Put the user back into the group
+               users.add(removedUser);
+              
+               groupColl.findAndModify(groupQuery, 
+                            new BasicDBObject("$set", new BasicDBObject("users",users))); 
+            }
+         } catch (Exception ex) {
+            System.err.println("Error fetching profile: " + ex);
+            ex.printStackTrace(System.err);
+         }
+      }
+      return new Stats(); 
    }
 }

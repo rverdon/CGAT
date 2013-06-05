@@ -21,21 +21,21 @@ public class GenerateMongoData {
    private static final String DB_USER = "root";
    private static final String DB_PASS = "csc560";
 
-  /*private static int numGeneNames = 500;
+  private static int numGeneNames = 500;
    private static int numContigs = 100;
    private static int numGroups =100;
    private static int numUsers = 100000;
    private static int numAnnotations = 1000000;
    private static double groupJoinChance = 0.1;
-   private static double taskAssignChance = 0.05;*/
-
-   private static int numGeneNames = 10;
-   private static int numContigs = 10;
-   private static int numGroups =10;
-   private static int numUsers = 10;
-   private static int numAnnotations = 100;
-   private static double groupJoinChance = 0.1;
    private static double taskAssignChance = 0.05;
+
+   /*private static int numGeneNames = 500;
+   private static int numContigs = 100;
+   private static int numGroups =100;
+   private static int numUsers = 10000;
+   private static int numAnnotations = 10000;
+   private static double groupJoinChance = 0.1;
+   private static double taskAssignChance = 0.05;*/
 
 
    private static Random rand;
@@ -248,20 +248,22 @@ public class GenerateMongoData {
          ArrayList<BasicDBObject> history = new ArrayList<BasicDBObject>();
 
          ArrayList<Integer> annoIds = usersToAnnotationId.get(Integer.parseInt(userId));
-         for(Integer aId: annoIds) {
-            if(annotationToFinished.get(aId)) {
-               BasicDBObject hist = new BasicDBObject();
-               BasicDBObject metaHist = new BasicDBObject();
+         if(annoIds != null) {
+            for(Integer aId: annoIds) {
+               if(annotationToFinished.get(aId)) {
+                  BasicDBObject hist = new BasicDBObject();
+                  BasicDBObject metaHist = new BasicDBObject();
 
-               metaHist.put("experience_gained", randomInt(100));
-               metaHist.put("date", randomDate());
-               hist.put("meta", metaHist);
-               hist.put("anno_id", aId.toString());
-               history.add(hist);
-            }
-            else
-            { //PARTIAL
-               incomplete.add(aId.toString());
+                  metaHist.put("experience_gained", randomInt(100));
+                  metaHist.put("date", randomDate());
+                  hist.put("meta", metaHist);
+                  hist.put("anno_id", aId.toString());
+                  history.add(hist);
+               }
+               else
+               { //PARTIAL
+                  incomplete.add(aId.toString());
+               }
             }
          }
          
