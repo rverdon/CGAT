@@ -318,27 +318,9 @@ public class PublishWorkload extends Workload {
          DBObject user = ucursor.next(); 
          DBObject anno = acursor.next(); 
 
-         String contigId = (String)anno.get("contig_id");
-
-         BasicDBObject conQuery = new BasicDBObject("contig_id", contigId);
-         DBCursor ccursor = contigColl.find(conQuery, new BasicDBObject("meta", 1));
- 
-         DBObject contig = ccursor.next();
-
          try {
 
             /*###############################################################*/
-            //CONTIG DIFFICULTY
-            //System.out.println("getting contig difficulty");
-
-            /*
-             * Get the contig document based on the contig_id in the annotation
-             * document
-             */
-
-            DBObject contigMeta = (DBObject)contig.get("meta");
-
-            //Get the difficulty from the contig document
             Integer contigDifficulty = Integer.parseInt("1");
 
             /*###############################################################*/
@@ -359,9 +341,6 @@ public class PublishWorkload extends Workload {
             int xpTotal = contigDifficulty.intValue() + userXP.intValue();
 
 
-            userColl.findAndModify(new BasicDBObject("user_id", user_id), new BasicDBObject("$set", new BasicDBObject("meta.exp", String.valueOf(xpTotal))));
-
-     
 
             /*###############################################################*/
             //USER HISTORY
@@ -370,7 +349,7 @@ public class PublishWorkload extends Workload {
             /*
              * Add annotation to user history
              */
-            ArrayList<DBObject> userHistory = (ArrayList<DBObject>)user.get("history");
+            //ArrayList<DBObject> userHistory = (ArrayList<DBObject>)user.get("history");
 
             //build a meta object to add to the user's history array
             BasicDBObject historyMeta = new BasicDBObject();
@@ -384,11 +363,7 @@ public class PublishWorkload extends Workload {
             historyJSON.put("meta", historyMeta);
             historyJSON.put("anno_id", anno_id);
 
-            userHistory.add(historyJSON);
-
-            userColl.findAndModify(new BasicDBObject("user_id", user_id), new BasicDBObject("$set", new BasicDBObject("history", userHistory)));
-
-            
+            //userHistory.add(historyJSON);
 
             /*###############################################################*/
             //USER INCOMPLETE ANNOTATIONS
@@ -397,7 +372,7 @@ public class PublishWorkload extends Workload {
             /*
              * Remove annotation from user's incomplete annotations if it is present
              */
-            List<String> inc_annotations = (List<String>)user.get("incomplete_annotations");
+            /*List<String> inc_annotations = (List<String>)user.get("incomplete_annotations");
 
             for (int ann_ndx = 0; ann_ndx < inc_annotations.size(); ann_ndx++) {
                String inc_annotation = inc_annotations.get(ann_ndx);
@@ -406,8 +381,14 @@ public class PublishWorkload extends Workload {
                   inc_annotations.remove(ann_ndx);
                   break;
                }
-            }
-            userColl.findAndModify(new BasicDBObject("user_id", user_id), new BasicDBObject("$set", new BasicDBObject("incomplete_annotations", inc_annotations)));
+            }*/
+            userColl.update(new BasicDBObject("user_id", user_id), new BasicDBObject("$pull", new BasicDBObject("incomplete_annotations",annotationIdList.get(iter_ndx))));
+            userColl.update(new BasicDBObject("user_id", user_id), new BasicDBObject("$push", historyJSON));
+
+            BasicDBObject updates = new BasicDBObject();
+            updates.put("meta.exp", String.valueOf(xpTotal));
+            userColl.update(new BasicDBObject("user_id", user_id), new BasicDBObject("$set", updates));
+
 
             /*###############################################################*/
             //ANNOTATION META
@@ -416,7 +397,7 @@ public class PublishWorkload extends Workload {
             /*
              * Modify annotation to be marked as finished.
              */
-            annotationColl.findAndModify(new BasicDBObject("annotation_id", anno_id), 
+            annotationColl.update(new BasicDBObject("annotation_id", anno_id), 
                             new BasicDBObject("$set", new BasicDBObject("meta.finished", this.currDate()).append("last_modified", this.currDate())));
 
             /*###############################################################*/

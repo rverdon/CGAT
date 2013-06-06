@@ -1,0 +1,35 @@
+Running Workload [ContigUploadWorkload]...
+Completed Workload [ContigUploadWorkload]...
+Run Time 57124ms
+
+Running Workload [ProfileWorkload]...
+Completed Workload [ProfileWorkload]...
+Run Time 165409ms
+
+Running Workload [StupidWorkload]...
+Completed Workload [StupidWorkload]...
+Run Time 152268ms
+Reads After Writes of Same Document:
+   Min: 1.000000
+   Max: 11.000000
+   Mean: 1.491435
+   Median: 1.000000
+   Standard Deviation: 0.514808
+Writes After Reads of Same Document:
+   Min: 0.000000
+   Max: 1.000000
+   Mean: 0.027080
+   Median: 0.000000
+   Standard Deviation: 0.162317
+Combined:
+   Min: 0.000000
+   Max: 11.000000
+   Mean: 0.759254
+   Median: 1.000000
+   Standard Deviation: 0.825694
+
+Running Workload [PublishWorkload]...
+Completed Workload [PublishWorkload]...
+Run Time 324601ms
+
+Running Workload [GroupMemWorkload]...

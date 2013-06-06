@@ -150,6 +150,11 @@ public class GroupMemWorkload extends Workload {
 
    protected void initMongo() {
       super.initMongo();
+        
+      for (int i = 0; i < TIMES; i++) {
+         userIds[i] = "" + (rand.nextInt(100000)+1);
+         groupIds[i] = "" + (rand.nextInt(100)+1);
+      }
 
       contigColl = db.getCollection("contigs");
       annotationColl = db.getCollection("annotations");
@@ -169,38 +174,16 @@ public class GroupMemWorkload extends Workload {
       DBObject jsonUser = null;
       DBObject jsonGroup = null;
       ArrayList<String> users = null;
-      int groupId = 0;
 
       for (int i = 0; i < TIMES; i++) {
          try {
-            //Get a random group from Couchbase
-            BasicDBObject groupQuery = new BasicDBObject("group_id", "" + (rand.nextInt(MAX_GROUP_ID) + 1));
-            DBCursor gcursor = groupColl.find(groupQuery, new BasicDBObject("users", 1));
- 
-            jsonGroup = gcursor.next(); 
-            users = (ArrayList<String>)jsonGroup.get("users");
-            if(0 < users.size()) {
-               //Debug System.out.println(users.get(0)); 
-               //Remove the first user from that group
-               String removedUser = (String) users.get(0);
-               users.remove(0);
-               //Put the modified user list back into the group JSON
-               jsonGroup.put("users", users);
-               //Update the group list
-               groupColl.findAndModify(groupQuery, 
-                            new BasicDBObject("$set", new BasicDBObject("users",users)));
+            BasicDBObject groupQuery = new BasicDBObject("group_id", groupIds[i]);
+                 
+            groupColl.update(groupQuery, 
+                         new BasicDBObject("$pull", new BasicDBObject("users",userIds[i])));
 
-               //Get the same group back from Couchbase
-               gcursor = groupColl.find(groupQuery, new BasicDBObject("users", 1));
- 
-               jsonGroup = gcursor.next(); 
-               users = (ArrayList<String>)jsonGroup.get("users");
-               //Put the user back into the group
-               users.add(removedUser);
-              
-               groupColl.findAndModify(groupQuery, 
-                            new BasicDBObject("$set", new BasicDBObject("users",users))); 
-            }
+            groupColl.update(new BasicDBObject("group_id", groupIds[TIMES-i-1]), 
+                          new BasicDBObject("$push", new BasicDBObject("users",userIds[i]))); 
          } catch (Exception ex) {
             System.err.println("Error fetching profile: " + ex);
             ex.printStackTrace(System.err);

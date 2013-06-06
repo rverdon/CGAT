@@ -213,50 +213,38 @@ public class ProfileWorkload extends Workload {
 
             // Expand groups
             groups = (List<String>)user.get("groups");
-            for (int j = 0; j < groups.size(); j++) {
-               String groupId = groups.get(j);
-
-               BasicDBObject groupQuery = new BasicDBObject("group_id", groupId);
-               DBCursor gcursor = groupColl.find(groupQuery);
- 
-               throwAway = gcursor.next();
-            }
+            BasicDBObject groupQuery = new BasicDBObject("group_id", new BasicDBObject("$in",groups));
+            DBCursor gcursor = groupColl.find(groupQuery);
 
             // Expand history
             history = (List<DBObject>)user.get("history");
+            ArrayList<String> aIds = new ArrayList<String>();
             for (int j = 0; j < history.size(); j++) {
                DBObject hist = history.get(j);
-               String annotationId = (String)hist.get("anno_id");
-     
-               BasicDBObject annoQuery = new BasicDBObject("annotation_id", annotationId);
-               DBCursor acursor = annotationColl.find(annoQuery);
-
-               throwAway = acursor.next();
+               aIds.add((String)hist.get("anno_id"));
             }
+            BasicDBObject histQuery = new BasicDBObject("annotation_id", new BasicDBObject("$in", aIds));
+            DBCursor hcursor = annotationColl.find(histQuery);
 
+  
             // Expand partials
             partials = (List<String>)user.get("incomplete_annotations");
-            for (int j = 0; j < partials.size(); j++) {
-               String annotationId = partials.get(j);
-
-               BasicDBObject annoQuery = new BasicDBObject("annotation_id", annotationId);
-               DBCursor acursor = annotationColl.find(annoQuery);
-
-               throwAway = acursor.next();
-            }
+            BasicDBObject partQuery = new BasicDBObject("annotation_id", new BasicDBObject("$in",partials));
+            DBCursor pcursor = annotationColl.find(partQuery);
+            
 
             // Expand tasks
             tasks = (List<DBObject>)user.get("tasks");
+            ArrayList<String> cIds = new ArrayList<String>();
             for (int j = 0; j < tasks.size(); j++) {
                DBObject hist = tasks.get(j);
-               String contigId = (String)hist.get("contig_id");
-
-               BasicDBObject conQuery = new BasicDBObject("contig_id", contigId);
-               BasicDBObject meta = new BasicDBObject("meta", 1);
-               DBCursor acursor = contigColl.find(conQuery, meta);
-
-               throwAway = acursor.next();
+               cIds.add((String)hist.get("contig_id"));
             }
+
+            BasicDBObject meta = new BasicDBObject("meta", 1);
+            BasicDBObject conQuery = new BasicDBObject("contig_id", new BasicDBObject("$in",cIds));
+            DBCursor ccursor = contigColl.find(conQuery, meta);
+
          } catch (Exception ex) {
             System.err.println("Error fetching profile: " + ex);
             ex.printStackTrace(System.err);

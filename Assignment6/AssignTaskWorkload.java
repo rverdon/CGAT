@@ -150,25 +150,10 @@ public class AssignTaskWorkload extends Workload {
             jsonGroup = gcursor.next(); 
 
             users = (List<String>)jsonGroup.get("users");
+          
+            userColl.update(new BasicDBObject("user_id", new BasicDBObject("$in", users)),
+                            new BasicDBObject("$push", new BasicDBObject("tasks",task)));
 
-            // assign the task to every user in the group we randomly selected
-            for (int j = 0; j < users.size(); j++) {
-               String userId = (String)users.get(j);
-
-               BasicDBObject userQuery = new BasicDBObject("user_id", userId);
-               DBCursor ucursor = userColl.find(userQuery, new BasicDBObject("tasks", 1));
- 
-               jsonUser = ucursor.next(); 
-
-               tasks = (ArrayList<DBObject>)jsonUser.get("tasks");
-
-               // Update the user's tasks.
-               tasks.add(task);
-
-               // Rewrite the user.
-               userColl.findAndModify(new BasicDBObject("user_id", userId), 
-                            new BasicDBObject("$set", new BasicDBObject("tasks",tasks)));
-            }
          } catch (Exception ex) {
             System.err.println("Error fetching profile: " + ex);
             ex.printStackTrace(System.err);
