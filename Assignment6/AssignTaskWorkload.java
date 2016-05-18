@@ -12,6 +12,16 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.mongodb.MongoClient;
+import com.mongodb.MongoException;
+import com.mongodb.WriteConcern;
+import com.mongodb.DB;
+import com.mongodb.DBCollection;
+import com.mongodb.BasicDBObject;
+import com.mongodb.DBObject;
+import com.mongodb.DBCursor;
+import com.mongodb.ServerAddress;
+
 /**
  * This one measures assigning a task to an arbitraty group.
  * This is pretty much exacly a 50% R/W Workload.
@@ -29,6 +39,11 @@ public class AssignTaskWorkload extends Workload {
    private static final String DESCRIPTION = "Some task description.";
    private static final String DATE = "2012-12-12";
    private static final int CONTIG_ID = 2;
+
+   private DBCollection contigColl;
+   private DBCollection annotationColl;
+   private DBCollection userColl;
+   private DBCollection groupColl;
 
    private Random rand;
 
@@ -97,6 +112,53 @@ public class AssignTaskWorkload extends Workload {
          }
       }
 
+      return new Stats();
+   }
+ 
+   protected void initMongo() {
+      super.initMongo();
+      Random rand = new Random(4);
+
+      contigColl = db.getCollection("contigs");
+      annotationColl = db.getCollection("annotations");
+      userColl = db.getCollection("users");
+      groupColl = db.getCollection("groups");
+   }
+
+   protected void cleanupMongo() {
+      super.cleanupMongo();
+   }
+  
+   protected Stats executeMongoImpl() {
+      DBObject jsonUser = null;
+      DBObject jsonGroup = null;
+      List<String> users = null;
+      ArrayList<DBObject> tasks = null;
+
+      BasicDBObject task = new BasicDBObject();
+      
+      // Since the rest of the db stringifys their numbers, stringify this.
+      task.put("contig_id", "" + CONTIG_ID);
+      task.put("end_date", DATE);
+      task.put("desc", DESCRIPTION);
+
+      for (int i = 1; i <= TIMES; i++) {
+         try {
+            BasicDBObject groupQuery = new BasicDBObject("group_id", "" + (rand.nextInt(MAX_GROUP_ID) + 1));
+            DBCursor gcursor = groupColl.find(groupQuery, new BasicDBObject("users", 1));
+ 
+            jsonGroup = gcursor.next(); 
+
+            users = (List<String>)jsonGroup.get("users");
+          
+            userColl.update(new BasicDBObject("user_id", new BasicDBObject("$in", users)),
+                            new BasicDBObject("$push", new BasicDBObject("tasks",task)));
+
+         } catch (Exception ex) {
+            System.err.println("Error fetching profile: " + ex);
+            ex.printStackTrace(System.err);
+         }
+      }
       return new Stats();
    }
 }

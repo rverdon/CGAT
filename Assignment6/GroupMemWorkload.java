@@ -11,6 +11,17 @@ import java.sql.Statement;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import com.mongodb.MongoClient;
+import com.mongodb.MongoException;
+import com.mongodb.WriteConcern;
+import com.mongodb.DB;
+import com.mongodb.DBCollection;
+import com.mongodb.BasicDBObject;
+import com.mongodb.DBObject;
+import com.mongodb.DBCursor;
+import com.mongodb.ServerAddress;
+
 /**
  * This one measures fetching a complete user's profile.
  */
@@ -28,6 +39,11 @@ public class GroupMemWorkload extends Workload {
    private String[] userIds;
    private String[] groupIds;
    private Random rand;
+
+   private DBCollection contigColl;
+   private DBCollection annotationColl;
+   private DBCollection userColl;
+   private DBCollection groupColl;
    /**
     * Fetch the user ids here, and preserve the connection.
     */
@@ -130,5 +146,49 @@ public class GroupMemWorkload extends Workload {
          }
       }
       return new Stats();  
+   }
+
+   protected void initMongo() {
+      super.initMongo();
+        
+      for (int i = 0; i < TIMES; i++) {
+         userIds[i] = "" + (rand.nextInt(100000)+1);
+         groupIds[i] = "" + (rand.nextInt(100)+1);
+      }
+
+      contigColl = db.getCollection("contigs");
+      annotationColl = db.getCollection("annotations");
+      userColl = db.getCollection("users");
+      groupColl = db.getCollection("groups");
+   }
+
+   protected void cleanupMongo() {
+      super.cleanupMongo();
+
+      userIds = null;
+      groupIds = null;
+   }
+
+
+   protected Stats executeMongoImpl() {
+      DBObject jsonUser = null;
+      DBObject jsonGroup = null;
+      ArrayList<String> users = null;
+
+      for (int i = 0; i < TIMES; i++) {
+         try {
+            BasicDBObject groupQuery = new BasicDBObject("group_id", groupIds[i]);
+                 
+            groupColl.update(groupQuery, 
+                         new BasicDBObject("$pull", new BasicDBObject("users",userIds[i])));
+
+            groupColl.update(new BasicDBObject("group_id", groupIds[TIMES-i-1]), 
+                          new BasicDBObject("$push", new BasicDBObject("users",userIds[i]))); 
+         } catch (Exception ex) {
+            System.err.println("Error fetching profile: " + ex);
+            ex.printStackTrace(System.err);
+         }
+      }
+      return new Stats(); 
    }
 }
